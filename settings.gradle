@@ -1,0 +1,21 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        mavenCentral()
+        gradlePluginPortal()
+        maven { url 'https://jitpack.io' }
+        google()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+        maven { url "https://maven.aliyun.com/repository/public" } //jcenter & central
+        google()
+    }
+}
+
+rootProject.name = "FreezeApp"
+include ':app'

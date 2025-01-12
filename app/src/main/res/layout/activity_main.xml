@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:paddingTop="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        app:title="@string/app_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:padding="20dp"
+        android:background="@drawable/tip_background"
+        android:layout_margin="10dp"
+        android:textSize="15dp"
+        android:text=""
+        android:id="@+id/tv_server"
+        android:textColor="#333333"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <LinearLayout
+        android:id="@+id/ll_start_server"
+        android:layout_margin="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="@string/main_adb_start_server_title"
+            android:textColor="#333333"
+            android:layout_marginBottom="10dp"
+            android:textSize="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:padding="15dp"
+            android:background="@drawable/tip_background"
+            android:textSize="10dp"
+            android:textColor="#666666"
+            android:text=""
+            android:id="@+id/tv_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_active_server"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_margin="10dp"
+            android:onClick="toManager"
+            android:text="@string/main_manager_app"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <Button
+            android:onClick="toCommand"
+            android:layout_margin="10dp"
+            android:id="@+id/tv_execute"
+            android:textAllCaps="false"
+            android:text="@string/main_command_app"
+            android:textColor="@color/white"
+            android:background="@drawable/btn_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
+</LinearLayout>

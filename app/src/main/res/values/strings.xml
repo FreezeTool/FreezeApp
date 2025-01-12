@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">FreezeApp</string>
+    <string name="manager_name">FreezeManager</string>
+
+    <string name="command_name">ExecuteCommand</string>
+
+    <string name="main_app_server_active">Freeze服务已启动</string>
+    <string name="main_app_server_not_active">Freeze服务未启动</string>
+    <string name="main_manager_app">管理APP</string>
+    <string name="main_command_app">执行Command</string>
+    <string name="main_adb_start_server_title">ADB开启服务</string>
+
+    <string name="manager_running_app_title">运行中APP</string>
+    <string name="manager_freeze_app_title">可冻结APP</string>
+    <string name="manager_defrost_app_title">冻结中APP</string>
+
+    <string name="manager_btn_stop">停止</string>
+    <string name="manager_btn_freeze">冻结</string>
+    <string name="manager_btn_defrost">解冻</string>
+
+    <string name="command_btn_execute">执行</string>
+</resources>

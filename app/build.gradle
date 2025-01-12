@@ -1,0 +1,45 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.john.freezeapp'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "com.john.freezeapp"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+    }
+
+    signingConfigs {
+        sky {
+            storeFile file("${rootDir}/keyStore/demo.jks")
+            storePassword 'song123'
+            keyAlias 'demo'
+            keyPassword 'song123'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.sky
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation libs.appcompat
+    implementation libs.gson
+    implementation libs.recyclerview
+    implementation libs.material
+}
