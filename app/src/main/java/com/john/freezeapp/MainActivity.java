@@ -1,8 +1,10 @@
 package com.john.freezeapp;
 
+import android.content.BroadcastReceiver;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -31,7 +33,7 @@ import rikka.shizuku.ShizukuRemoteProcess;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvContent, tvServer, tvShizukuStatus,tvShizukuStartServer, tvRootStatus, tvRootStartServer;
+    TextView tvContent, tvServer, tvShizukuStatus, tvShizukuStartServer, tvRootStatus, tvRootStartServer;
     LinearLayout llStartServer, llActiveServer;
     Toolbar toolbar;
     RelativeLayout loadingView;
@@ -57,6 +59,21 @@ public class MainActivity extends AppCompatActivity {
         tvRootStartServer = findViewById(R.id.tv_root_start_server);
         generateShell();
         initRoot();
+
+        registerAppProcessReceiver();
+    }
+
+    BroadcastReceiver receiver =  new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            checkBind();
+        }
+    };
+
+    private void registerAppProcessReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AppProcessHelper.ACTION_APP_PROCESS_START);
+        registerReceiver(receiver, intentFilter);
     }
 
     @Override
@@ -76,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initShizuku() {
         Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
-        if(isShizukuActive()) {
+        if (isShizukuActive()) {
             tvShizukuStatus.setText(getResources().getString(R.string.main_shizuku_server_active));
             tvShizukuStartServer.setVisibility(View.VISIBLE);
         } else {
@@ -102,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRoot() {
-        if(isSuEnable()) {
+        if (isSuEnable()) {
             tvRootStatus.setText(getResources().getString(R.string.main_root_server_active));
             tvRootStartServer.setVisibility(View.VISIBLE);
         } else {
@@ -181,9 +198,9 @@ public class MainActivity extends AppCompatActivity {
         PrintWriter printWriter = null;
         try {
             printWriter = new PrintWriter(shellFilePath);
-            printWriter.println("am force-stop " + getPackageName());
+//            printWriter.println("am force-stop " + getPackageName());
             printWriter.println(getStartShell());
-            printWriter.println("am start -a com.cleanmaster.hook.LAUNCH -p " + getApplicationContext().getPackageName() + " > /dev/null 2>&1 ;");
+//            printWriter.println("am start -a com.cleanmaster.hook.LAUNCH -p " + getApplicationContext().getPackageName() + " > /dev/null 2>&1 ;");
             printWriter.println("echo success");
             printWriter.close();
             ShellUtils.execCommand("chmod a+r " + shellFilePath, false);
@@ -374,14 +391,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void toRoot(View view) {
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               ShellUtils.ShellCommandResult shellCommandResult = ShellUtils.execCommand(getStartShell(), true, true);
-               if(shellCommandResult.result == 0) {
-                   delayCheckBind(500);
-               }
-           }
-       }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ShellUtils.ShellCommandResult shellCommandResult = ShellUtils.execCommand(getStartShell(), true, true);
+                if (shellCommandResult.result == 0) {
+                    delayCheckBind(500);
+                }
+            }
+        }).start();
     }
 }

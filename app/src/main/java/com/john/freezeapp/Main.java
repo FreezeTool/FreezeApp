@@ -3,6 +3,8 @@ package com.john.freezeapp;
 import android.app.ActivityThread;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Handler;
 import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,7 +13,6 @@ import androidx.annotation.Keep;
 
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -21,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +39,7 @@ public class Main {
     private static ServerSocket serverSocket = null;
 
     private static Context mContext = null;
+    private static Handler mHandler = null;
 
 
     public static void main(String[] args) {
@@ -46,9 +47,18 @@ public class Main {
         try {
             Looper.prepareMainLooper();
             log("main", "main execute 1");
-            ActivityThread activityThread =  ActivityThread.systemMain();
+            ActivityThread activityThread = ActivityThread.systemMain();
             log("main", "main execute 2");
             mContext = activityThread.getSystemContext();
+            mHandler = new Handler(Looper.getMainLooper());
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent();
+                    intent.setAction(AppProcessHelper.ACTION_APP_PROCESS_START);
+                    mContext.sendBroadcast(intent);
+                }
+            }, 500);
             log("main", "main execute 3");
             startServer();
             log("main", "main execute 4");
@@ -256,7 +266,12 @@ public class Main {
             }
             sExecutorService.shutdown();
             sCommandExecutorService.shutdown();
-            Looper.getMainLooper().quit();
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Looper.getMainLooper().quit();
+                }
+            });
         }
     }
 
