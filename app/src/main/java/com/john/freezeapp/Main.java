@@ -1,5 +1,9 @@
 package com.john.freezeapp;
 
+import android.app.ActivityThread;
+import android.app.usage.UsageStatsManager;
+import android.content.Context;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -7,6 +11,7 @@ import androidx.annotation.Keep;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -16,6 +21,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
@@ -32,24 +38,46 @@ public class Main {
     private static boolean stopServer = false;
     private static ServerSocket serverSocket = null;
 
+    private static Context mContext = null;
+
+
     public static void main(String[] args) {
-        startServer();
+        log("main", "main start");
+        try {
+            Looper.prepareMainLooper();
+            log("main", "main execute 1");
+            ActivityThread activityThread =  ActivityThread.systemMain();
+            log("main", "main execute 2");
+            mContext = activityThread.getSystemContext();
+            log("main", "main execute 3");
+            startServer();
+            log("main", "main execute 4");
+            Looper.loop();
+        } catch (Exception e) {
+            log("main", "main Exception");
+        }
+
     }
 
     private static void startServer() {
-        try {
-            serverSocket = new ServerSocket(33456);
-            Log.d("freeze-server", "startServer");
-            int index = 0;
-            while (!stopServer) {
-                final Socket socket = serverSocket.accept();
-                index++;
-                sExecutorService.execute(new Task("TASK-" + index, socket));
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    serverSocket = new ServerSocket(AppProcessHelper.PORT);
+                    Log.d("freeze-server", "startServer");
+                    int index = 0;
+                    while (!stopServer) {
+                        final Socket socket = serverSocket.accept();
+                        index++;
+                        sExecutorService.execute(new Task("TASK-" + index, socket));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.d("freeze-server", "startServer exception");
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.d("freeze-server", "startServer exception");
-        }
+        }).start();
     }
 
     private static void log(String name, String msg) {
@@ -132,14 +160,14 @@ public class Main {
                 JSONObject jsonObject = new JSONObject(read);
                 String type = jsonObject.optString("type");
                 log(name, "execute type=" + type);
-                if (TextUtils.equals(type, "shell")) {
+                if (TextUtils.equals(type, AppProcessHelper.IPC_TYPE_SHELL)) {
                     String command = jsonObject.optString("data");
                     sCommandExecutorService.execute(new Command(socket, command, name));
-                } else if (TextUtils.equals(type, "bind")) {
+                } else if (TextUtils.equals(type, AppProcessHelper.IPC_TYPE_BIND)) {
                     doBind(socket, name);
                     log(name, "bind end");
                     isFinish = true;
-                } else if (TextUtils.equals(type, "stop")) {
+                } else if (TextUtils.equals(type, AppProcessHelper.IPC_TYPE_STOP)) {
                     doStop(socket, name);
                     log(name, "stop end");
                     isFinish = true;
@@ -228,6 +256,7 @@ public class Main {
             }
             sExecutorService.shutdown();
             sCommandExecutorService.shutdown();
+            Looper.getMainLooper().quit();
         }
     }
 

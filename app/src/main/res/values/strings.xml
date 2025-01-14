@@ -8,7 +8,13 @@
     <string name="main_app_server_not_active">Freeze服务未启动</string>
     <string name="main_manager_app">管理APP</string>
     <string name="main_command_app">执行Command</string>
-    <string name="main_adb_start_server_title">ADB开启服务</string>
+    <string name="main_adb_start_server_title">通过adb开启</string>
+
+    <string name="main_shizuku_start_server_title">通过Shizuku开启</string>
+    <string name="main_shizuku_server_active">Shizuku服务已启动</string>
+    <string name="main_shizuku_server_not_active">Shizuku服务未启动</string>
+
+    <string name="main_start_app_process">启动</string>
 
     <string name="manager_running_app_title">运行中APP</string>
     <string name="manager_freeze_app_title">可冻结APP</string>

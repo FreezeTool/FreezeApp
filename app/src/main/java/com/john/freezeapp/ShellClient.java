@@ -1,5 +1,7 @@
 package com.john.freezeapp;
 
+import com.google.gson.JsonArray;
+
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -10,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +21,7 @@ public class ShellClient {
     private static final ExecutorService sExecutorService = Executors.newFixedThreadPool(4);
 
     public static void stop(Callback callback) {
-        doHandle("stop", "", callback);
+        doHandle(AppProcessHelper.IPC_TYPE_STOP, "", callback);
     }
 
     interface Callback {
@@ -28,7 +31,7 @@ public class ShellClient {
     }
 
     public static void bind(Callback callback) {
-        doHandle("bind", "", callback);
+        doHandle(AppProcessHelper.IPC_TYPE_BIND, "", callback);
     }
 
     private static void doHandle(String type, String data, Callback callback) {
@@ -38,7 +41,7 @@ public class ShellClient {
                 BufferedWriter bufferedWriter = null;
                 BufferedReader bufferedReader = null;
                 try {
-                    Socket socket = new Socket("localhost",33456);
+                    Socket socket = new Socket(AppProcessHelper.LOCALHOST, AppProcessHelper.PORT);
                     socket.setSoTimeout(5000);
                     OutputStream outputStream = socket.getOutputStream();
                     bufferedWriter = new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8"));
@@ -77,6 +80,6 @@ public class ShellClient {
     }
 
     public static void command(String command, Callback callback) {
-        doHandle("shell", command, callback);
+        doHandle(AppProcessHelper.IPC_TYPE_SHELL, command, callback);
     }
 }

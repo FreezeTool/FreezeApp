@@ -3,12 +3,15 @@ package com.john.freezeapp;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -17,14 +20,25 @@ import androidx.appcompat.widget.Toolbar;
 
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import rikka.shizuku.Shizuku;
+import rikka.shizuku.ShizukuRemoteProcess;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvContent, tvServer;
+    TextView tvContent, tvServer, tvShizukuStatus,tvShizukuStartServer;
     LinearLayout llStartServer, llActiveServer;
     Toolbar toolbar;
+    RelativeLayout loadingView;
+
+
+    static final int REQUEST_CODE = 123;
+    AtomicInteger loadingInteger = new AtomicInteger(0);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,6 +50,36 @@ public class MainActivity extends AppCompatActivity {
         tvServer = findViewById(R.id.tv_server);
         llStartServer = findViewById(R.id.ll_start_server);
         llActiveServer = findViewById(R.id.ll_active_server);
+        loadingView = findViewById(R.id.loading);
+        tvShizukuStatus = findViewById(R.id.tv_shizuku_status);
+        tvShizukuStartServer = findViewById(R.id.tv_shizuku_start_server);
+        generateShell();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Shizuku.removeRequestPermissionResultListener(onRequestPermissionResultListener);
+    }
+
+    private Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
+        @Override
+        public void onRequestPermissionResult(int requestCode, int grantResult) {
+            if (requestCode == REQUEST_CODE && grantResult == PackageManager.PERMISSION_GRANTED) {
+                startFreezeByShizuku();
+            }
+        }
+    };
+
+    private void initShizuku() {
+        Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
+        if(isShizukuActive()) {
+            tvShizukuStatus.setText(getResources().getString(R.string.main_shizuku_server_active));
+            tvShizukuStartServer.setVisibility(View.VISIBLE);
+        } else {
+            tvShizukuStatus.setText(getResources().getString(R.string.main_shizuku_server_not_active));
+            tvShizukuStartServer.setVisibility(View.GONE);
+        }
     }
 
     public void toManager(View v) {
@@ -50,12 +94,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void postDelay(Runnable runnable, long delay) {
+        getWindow().getDecorView().postDelayed(runnable, delay);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         tvServer.setVisibility(View.GONE);
         llStartServer.setVisibility(View.GONE);
         llActiveServer.setVisibility(View.GONE);
+        initShizuku();
         checkBind();
     }
 
@@ -77,17 +126,26 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void delayCheckBind(long delay) {
+        postDelay(new Runnable() {
+            @Override
+            public void run() {
+                checkBind();
+            }
+        }, delay);
+    }
+
     private void stopServer() {
         ShellClient.stop(new ShellClient.Callback() {
             @Override
             public void success(String data) {
                 Log.d("song", data);
-                checkBind();
+                delayCheckBind(500);
             }
 
             @Override
             public void fail() {
-                checkBind();
+                delayCheckBind(500);
             }
         });
     }
@@ -100,13 +158,18 @@ public class MainActivity extends AppCompatActivity {
         return file.getAbsolutePath();
     }
 
+
+    private String getStartShell() {
+        return String.format("nohup app_process -Djava.class.path=%s /system/bin %s %s > /dev/null 2>&1 &", getApplicationInfo().sourceDir, Main.class.getName(), getPackageName());
+    }
+
     private void generateShell() {
         String shellFilePath = getShellFilePath();
         PrintWriter printWriter = null;
         try {
             printWriter = new PrintWriter(shellFilePath);
             printWriter.println("am force-stop " + getPackageName());
-            printWriter.println(String.format("nohup app_process -Djava.class.path=%s /system/bin %s %s > /dev/null 2>&1 &", getApplicationInfo().sourceDir, Main.class.getName(), getPackageName()));
+            printWriter.println(getStartShell());
             printWriter.println("am start -a com.cleanmaster.hook.LAUNCH -p " + getApplicationContext().getPackageName() + " > /dev/null 2>&1 ;");
             printWriter.println("echo success");
             printWriter.close();
@@ -126,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
         llStartServer.setVisibility(View.VISIBLE);
         String shellFilePath = getShellFilePath();
-        tvContent.setText(String.format("$ adb shell \n$ sh %s", shellFilePath));
+        tvContent.setText(String.format("$ adb shell sh %s", shellFilePath));
         tvContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,10 +200,71 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private boolean checkShizukuPermission() {
+        if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        return true;
+    }
+
+    private void startFreezeByShizuku() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+//                showLoading();
+                String[] arrays = {"sh"};
+                ShizukuRemoteProcess shizukuRemoteProcess = Shizuku.newProcess(arrays, null, null);
+                DataOutputStream os = null;
+                try {
+                    os = new DataOutputStream(shizukuRemoteProcess.getOutputStream());
+                    os.write(getStartShell().getBytes());
+                    os.writeBytes("\n");
+                    os.flush();
+                    os.writeBytes("exit\n");
+                    os.flush();
+                    int i = ShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
+                    if (i == 0) {
+                        delayCheckBind(500);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    delayCheckBind(500);
+                } finally {
+                    try {
+                        os.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+//                hideLoading();
+            }
+        }).start();
+    }
+
+    private boolean isShizukuActive() {
+        try {
+            return Shizuku.getBinder() != null;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public void toShizuku(View v) {
+        Log.d("song", "");
+        if (!checkShizukuPermission()) {
+            Shizuku.requestPermission(REQUEST_CODE);
+        } else {
+            startFreezeByShizuku();
+        }
+    }
+
+
     private void showServerUnRunning() {
         tvServer.setVisibility(View.VISIBLE);
         tvServer.setText(R.string.main_app_server_not_active);
         llActiveServer.setVisibility(View.GONE);
+        llStartServer.setVisibility(View.VISIBLE);
     }
 
     private void showServerRunning(String task) {
@@ -148,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
         tvServer.setText(getString(R.string.main_app_server_active) + " " + task);
         tvContent.setOnClickListener(null);
         llActiveServer.setVisibility(View.VISIBLE);
+        llStartServer.setVisibility(View.GONE);
     }
 
 
@@ -186,11 +311,33 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        generateShell();
                         showServerUnRunning();
                         showGuide();
                     }
                 });
+            }
+        });
+    }
+
+
+    public void showLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingInteger.getAndIncrement();
+                loadingView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void hideLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingInteger.getAndDecrement();
+                if (loadingInteger.get() == 0) {
+                    loadingView.setVisibility(View.GONE);
+                }
             }
         });
     }

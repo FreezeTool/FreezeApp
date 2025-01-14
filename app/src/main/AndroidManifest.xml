@@ -11,6 +11,7 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:name=".App"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.FreezeApp"
@@ -44,6 +45,15 @@
             android:name=".CommandActivity">
 
         </activity>
+
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="com.john.freezeapp.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
     </application>
 

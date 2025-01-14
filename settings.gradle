@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "FreezeApp"
 include ':app'
+include ':hidden-api-stub'

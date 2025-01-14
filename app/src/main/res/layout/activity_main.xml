@@ -1,78 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:paddingTop="10dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        app:title="@string/app_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
-        android:padding="20dp"
-        android:background="@drawable/tip_background"
-        android:layout_margin="10dp"
-        android:textSize="15dp"
-        android:text=""
-        android:id="@+id/tv_server"
-        android:textColor="#333333"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="10dp">
 
     <LinearLayout
-        android:id="@+id/ll_start_server"
-        android:layout_margin="10dp"
-        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/app_name" />
+
         <TextView
-            android:text="@string/main_adb_start_server_title"
-            android:textColor="#333333"
-            android:layout_marginBottom="10dp"
-            android:textSize="12dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:padding="15dp"
+            android:id="@+id/tv_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:background="@drawable/tip_background"
-            android:textSize="10dp"
-            android:textColor="#666666"
+            android:padding="20dp"
             android:text=""
-            android:id="@+id/tv_content"
+            android:textColor="#333333"
+            android:textSize="15dp" />
+
+
+        <LinearLayout
+            android:id="@+id/ll_start_server"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/main_adb_start_server_title"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15dp" />
+
+                <TextView
+                    android:id="@+id/tv_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tip_background"
+                    android:padding="15dp"
+                    android:text=""
+                    android:textColor="#666666"
+                    android:textSize="12dp" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_marginLeft="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="@string/main_shizuku_start_server_title"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15dp" />
+
+                <LinearLayout
+                    android:padding="20dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/tip_background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/tv_shizuku_status"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="1111"
+                        android:textColor="#666666"
+                        android:textSize="15dp" />
+
+                    <Button
+                        android:id="@+id/tv_shizuku_start_server"
+                        android:gravity="center"
+                        android:layout_width="50dp"
+                        android:layout_height="30dp"
+                        android:textSize="10dp"
+                        android:background="@drawable/btn_background"
+                        android:onClick="toShizuku"
+                        android:text="@string/main_start_app_process"
+                        android:textColor="@color/white" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/ll_active_server"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/btn_background"
+                android:onClick="toManager"
+                android:text="@string/main_manager_app"
+                android:textColor="@color/white" />
+
+            <!--        <Button-->
+            <!--            android:onClick="toCommand"-->
+            <!--            android:layout_margin="10dp"-->
+            <!--            android:id="@+id/tv_execute"-->
+            <!--            android:textAllCaps="false"-->
+            <!--            android:text="@string/main_command_app"-->
+            <!--            android:textColor="@color/white"-->
+            <!--            android:background="@drawable/btn_background"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"/>-->
+
+        </LinearLayout>
+
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_active_server"
-        android:orientation="vertical"
+
+    <RelativeLayout
+        android:id="@+id/loading"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_margin="10dp"
-            android:onClick="toManager"
-            android:text="@string/main_manager_app"
-            android:textColor="@color/white"
-            android:background="@drawable/btn_background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:background="#50000000"
+        android:visibility="gone">
 
-        <Button
-            android:onClick="toCommand"
-            android:layout_margin="10dp"
-            android:id="@+id/tv_execute"
-            android:textAllCaps="false"
-            android:text="@string/main_command_app"
-            android:textColor="@color/white"
-            android:background="@drawable/btn_background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="visible" />
+    </RelativeLayout>
 
-    </LinearLayout>
-
-</LinearLayout>
+</FrameLayout>
