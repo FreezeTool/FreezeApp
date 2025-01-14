@@ -31,7 +31,7 @@ import rikka.shizuku.ShizukuRemoteProcess;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvContent, tvServer, tvShizukuStatus,tvShizukuStartServer;
+    TextView tvContent, tvServer, tvShizukuStatus,tvShizukuStartServer, tvRootStatus, tvRootStartServer;
     LinearLayout llStartServer, llActiveServer;
     Toolbar toolbar;
     RelativeLayout loadingView;
@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
         loadingView = findViewById(R.id.loading);
         tvShizukuStatus = findViewById(R.id.tv_shizuku_status);
         tvShizukuStartServer = findViewById(R.id.tv_shizuku_start_server);
+        tvRootStatus = findViewById(R.id.tv_root_status);
+        tvRootStartServer = findViewById(R.id.tv_root_start_server);
         generateShell();
+        initRoot();
     }
 
     @Override
@@ -96,6 +99,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void postDelay(Runnable runnable, long delay) {
         getWindow().getDecorView().postDelayed(runnable, delay);
+    }
+
+    private void initRoot() {
+        if(isSuEnable()) {
+            tvRootStatus.setText(getResources().getString(R.string.main_root_server_active));
+            tvRootStartServer.setVisibility(View.VISIBLE);
+        } else {
+            tvRootStatus.setText(getResources().getString(R.string.main_root_server_not_active));
+            tvRootStartServer.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -260,6 +273,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public static boolean isSuEnable() {
+        File file = null;
+        String[] paths = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/", "/su/bin/"};
+        try {
+            for (String path : paths) {
+                file = new File(path + "su");
+                if (file.exists() && file.canExecute()) {
+                    return true;
+                }
+            }
+        } catch (Exception x) {
+            x.printStackTrace();
+        }
+        return false;
+    }
+
+
     private void showServerUnRunning() {
         tvServer.setVisibility(View.VISIBLE);
         tvServer.setText(R.string.main_app_server_not_active);
@@ -340,5 +370,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+    public void toRoot(View view) {
+       new Thread(new Runnable() {
+           @Override
+           public void run() {
+               ShellUtils.ShellCommandResult shellCommandResult = ShellUtils.execCommand(getStartShell(), true, true);
+               if(shellCommandResult.result == 0) {
+                   delayCheckBind(500);
+               }
+           }
+       }).start();
     }
 }

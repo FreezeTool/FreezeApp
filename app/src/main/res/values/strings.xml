@@ -14,6 +14,11 @@
     <string name="main_shizuku_server_active">Shizuku服务已启动</string>
     <string name="main_shizuku_server_not_active">Shizuku服务未启动</string>
 
+
+    <string name="main_root_start_server_title">通过Root开启</string>
+    <string name="main_root_server_active">检测到当前手机已Root</string>
+    <string name="main_root_server_not_active">未检测到Root</string>
+
     <string name="main_start_app_process">启动</string>
 
     <string name="manager_running_app_title">运行中APP</string>
