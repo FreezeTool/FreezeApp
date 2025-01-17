@@ -27,57 +27,64 @@
             <EditText
                 android:id="@+id/et_command"
                 android:layout_width="0dp"
-                android:textSize="14dp"
-                android:textColor="#333333"
-                android:paddingLeft="10dp"
-                android:paddingRight="10dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@drawable/tip_background" />
+                android:background="@drawable/tip_background"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:textColor="#333333"
+                android:textSize="14dp" />
 
             <Button
                 android:id="@+id/command_send"
-                android:layout_marginLeft="20dp"
-                android:textColor="@color/white"
-                android:text="@string/command_btn_execute"
-                android:background="@drawable/btn_background"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/btn_background"
+                android:text="@string/command_btn_execute"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
-        <ScrollView
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <LinearLayout
-                android:layout_margin="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/command_result"
-                    android:text=""
-                    android:textColor="#666666"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-        </ScrollView>
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp">
+
+                    <TextView
+                        android:id="@+id/command_result"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="#666666" />
+                </LinearLayout>
+            </ScrollView>
+
+            <RelativeLayout
+                android:id="@+id/loading"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#50000000"
+                android:visibility="gone">
+
+                <ProgressBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:visibility="visible" />
+            </RelativeLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
-
-    <RelativeLayout
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#50000000"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="visible" />
-    </RelativeLayout>
 
 </FrameLayout>

@@ -23,7 +23,7 @@
             android:layout_height="50dp"
             app:tabGravity="fill"
             app:tabTextColor="#999999"
-            app:tabIndicatorColor="@color/main"
+            app:tabIndicatorColor="@color/daemon"
             app:tabSelectedTextColor="#333333"
             app:tabMode="fixed" />
 

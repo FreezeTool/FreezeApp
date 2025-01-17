@@ -6,26 +6,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-
-import com.google.gson.Gson;
-
-import org.json.JSONObject;
+import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientRemoteShell;
 
 public class CommandActivity extends AppCompatActivity {
     Toolbar toolbar;
     EditText etCommand;
     Button btnSend;
     TextView tvCommandResult;
+    RelativeLayout loadingView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command);
+        loadingView = findViewById(R.id.loading);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -38,48 +39,35 @@ public class CommandActivity extends AppCompatActivity {
                 if (TextUtils.isEmpty(command)) {
                     return;
                 }
-                executeCommand(command);
+                executeCommand2(command);
             }
         });
         tvCommandResult = findViewById(R.id.command_result);
     }
 
-    private void executeCommand(String command) {
-        ShellClient.command(command, new ShellClient.Callback() {
-            @Override
-            public void success(String data) {
-                try {
-                    JSONObject jsonObject = new JSONObject(data);
-                    int code = jsonObject.optInt("code", 0);
-                    if (code == 0) {
-                        String result = jsonObject.optString("data", "");
-                        if (!TextUtils.isEmpty(result)) {
+    private void executeCommand2(String command) {
+        if (ClientBinderManager.isActive()) {
+            showLoading();
+            tvCommandResult.setText("");
+            ClientRemoteShell.execCommand(command, new ClientRemoteShell.RemoteShellCommandResultCallback() {
+                @Override
+                public void callback(ClientRemoteShell.RemoteShellCommandResult result) {
+                    hideLoading();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!TextUtils.isEmpty(result.successMsg)) {
+                                tvCommandResult.setText(result.successMsg);
+                            } else if (!TextUtils.isEmpty(result.errorMsg)) {
+                                tvCommandResult.setText(result.errorMsg);
+                            }
 
-                            Gson gson = new Gson();
-                            ShellUtils.ShellCommandResult commandResult = gson.fromJson(result, ShellUtils.ShellCommandResult.class);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (!TextUtils.isEmpty(commandResult.successMsg)) {
-                                        tvCommandResult.setText(commandResult.successMsg);
-                                    } else if (!TextUtils.isEmpty(commandResult.errorMsg)) {
-                                        tvCommandResult.setText(commandResult.errorMsg);
-                                    }
-
-                                }
-                            });
                         }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    });
                 }
-            }
+            });
 
-            @Override
-            public void fail() {
-
-            }
-        });
+        }
     }
 
     @Override
@@ -92,5 +80,23 @@ public class CommandActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void showLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingView.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    public void hideLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loadingView.setVisibility(View.GONE);
+            }
+        });
     }
 }

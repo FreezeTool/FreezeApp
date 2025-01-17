@@ -35,6 +35,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+
+    buildFeatures {
+        buildConfig  true
+        aidl true
+    }
 }
 
 dependencies {
@@ -45,5 +50,6 @@ dependencies {
     implementation libs.shisuku.api
     implementation libs.shisuku.provider
     compileOnly project(':hidden-api-stub')
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3' // bypass hidden api restriction, https://github.com/LSPosed/AndroidHiddenApiBypass
 
 }

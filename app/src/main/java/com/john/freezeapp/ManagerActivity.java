@@ -89,21 +89,21 @@ public class ManagerActivity extends AppCompatActivity {
     private void initCommonAdapter() {
         defrostAppAdapter = new CommonAdapter(getString(R.string.manager_btn_freeze), new CommonAdapter.OnItemClick() {
             @Override
-            public void onRightClick(IceBoxManager.AppModel appModel) {
+            public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestFreezeApp(appModel.packageName);
             }
         });
 
         freezeAppAdapter = new CommonAdapter(getString(R.string.manager_btn_defrost), new CommonAdapter.OnItemClick() {
             @Override
-            public void onRightClick(IceBoxManager.AppModel appModel) {
+            public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestDefrostApp(appModel.packageName);
             }
         });
 
         runningAdapter = new CommonAdapter(getString(R.string.manager_btn_stop), new CommonAdapter.OnItemClick() {
             @Override
-            public void onRightClick(IceBoxManager.AppModel appModel) {
+            public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestForceStopApp(appModel.packageName);
             }
         });
@@ -128,9 +128,9 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestEnableApp() {
         showLoading();
-        IceBoxManager.requestEnableApp(this, new IceBoxManager.Callback() {
+        FreezeAppManager.requestEnableApp(this, new FreezeAppManager.Callback() {
             @Override
-            public void success(List<IceBoxManager.AppModel> list) {
+            public void success(List<FreezeAppManager.AppModel> list) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -149,9 +149,9 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestDisableApp() {
         showLoading();
-        IceBoxManager.requestDisableApp(this, new IceBoxManager.Callback() {
+        FreezeAppManager.requestDisableApp(this, new FreezeAppManager.Callback() {
             @Override
-            public void success(List<IceBoxManager.AppModel> list) {
+            public void success(List<FreezeAppManager.AppModel> list) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -170,7 +170,7 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestFreezeApp(String packageName) {
         showLoading();
-        IceBoxManager.requestFreezeApp(packageName, new IceBoxManager.Callback2() {
+        FreezeAppManager.requestFreezeApp(packageName, new FreezeAppManager.Callback2() {
             @Override
             public void success() {
                 hideLoading();
@@ -188,7 +188,7 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestDefrostApp(String packageName) {
         showLoading();
-        IceBoxManager.requestDefrostApp(packageName, new IceBoxManager.Callback2() {
+        FreezeAppManager.requestDefrostApp(packageName, new FreezeAppManager.Callback2() {
             @Override
             public void success() {
                 hideLoading();
@@ -205,9 +205,9 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestRunningApp() {
         showLoading();
-        IceBoxManager.requestRunningApp(this, new IceBoxManager.Callback3() {
+        FreezeAppManager.requestRunningApp(this, new FreezeAppManager.Callback3() {
             @Override
-            public void success(List<IceBoxManager.RunningModel> list) {
+            public void success(List<FreezeAppManager.RunningModel> list) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -227,7 +227,7 @@ public class ManagerActivity extends AppCompatActivity {
 
     private void requestForceStopApp(String packageName) {
         showLoading();
-        IceBoxManager.requestForceStopApp(packageName, new IceBoxManager.Callback2() {
+        FreezeAppManager.requestForceStopApp(packageName, new FreezeAppManager.Callback2() {
             @Override
             public void success() {
                 runOnUiThread(new Runnable() {
@@ -287,7 +287,7 @@ public class ManagerActivity extends AppCompatActivity {
     }
 
     public static class CommonUIModel {
-        public IceBoxManager.AppModel appModel;
+        public FreezeAppManager.AppModel appModel;
         public boolean isProcessExpand = false;
         public LinearLayout cacheView;
     }
@@ -297,10 +297,10 @@ public class ManagerActivity extends AppCompatActivity {
         public OnItemClick mRightBtnClickListener;
 
 
-        public void update(List<IceBoxManager.AppModel> list) {
+        public void update(List<FreezeAppManager.AppModel> list) {
 
             comonUiModels.clear();
-            for (IceBoxManager.AppModel appModel : list) {
+            for (FreezeAppManager.AppModel appModel : list) {
                 CommonUIModel uiModel = new CommonUIModel();
                 uiModel.appModel = appModel;
                 comonUiModels.add(uiModel);
@@ -309,13 +309,13 @@ public class ManagerActivity extends AppCompatActivity {
         }
 
 
-        public void update2(List<IceBoxManager.RunningModel> list) {
+        public void update2(List<FreezeAppManager.RunningModel> list) {
             Map<String, CommonUIModel> tempMap = new HashMap<>();
             for (CommonUIModel commonUiModel : comonUiModels) {
                 tempMap.put(commonUiModel.appModel.packageName, commonUiModel);
             }
             comonUiModels.clear();
-            for (IceBoxManager.AppModel appModel : list) {
+            for (FreezeAppManager.AppModel appModel : list) {
                 CommonUIModel uiModel = new CommonUIModel();
                 uiModel.appModel = appModel;
                 if (tempMap.containsKey(appModel.packageName)) {
@@ -327,7 +327,7 @@ public class ManagerActivity extends AppCompatActivity {
         }
 
         public interface OnItemClick {
-            void onRightClick(IceBoxManager.AppModel appModel);
+            void onRightClick(FreezeAppManager.AppModel appModel);
         }
 
         CommonAdapter(String rightBtnName, OnItemClick onClickListener) {
@@ -361,7 +361,7 @@ public class ManagerActivity extends AppCompatActivity {
                 }
             });
 
-            if (commonUIModel.appModel instanceof IceBoxManager.RunningModel) {
+            if (commonUIModel.appModel instanceof FreezeAppManager.RunningModel) {
                 holder.appContainer.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -371,12 +371,12 @@ public class ManagerActivity extends AppCompatActivity {
                 });
             }
 
-            if (commonUIModel.appModel instanceof IceBoxManager.RunningModel) {
+            if (commonUIModel.appModel instanceof FreezeAppManager.RunningModel) {
                 if (commonUIModel.cacheView == null) {
                     Context context = holder.llProcess.getContext();
                     LinearLayout linearLayout = new LinearLayout(context);
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    for (IceBoxManager.ProcessModel processModel : ((IceBoxManager.RunningModel) commonUIModel.appModel).processModels) {
+                    for (FreezeAppManager.ProcessModel processModel : ((FreezeAppManager.RunningModel) commonUIModel.appModel).processModels) {
                         View processView = LayoutInflater.from(context).inflate(R.layout.process_info, null);
                         TextView processName = processView.findViewById(R.id.tv_process_name);
                         TextView processTime = processView.findViewById(R.id.tv_process_time);

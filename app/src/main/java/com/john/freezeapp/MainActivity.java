@@ -1,13 +1,16 @@
 package com.john.freezeapp;
 
-import android.content.BroadcastReceiver;
+import android.app.ActivityManager;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.pm.IPackageInstaller;
+import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,11 +23,16 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import org.json.JSONObject;
+import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientLog;
+import com.john.freezeapp.daemon.Daemon;
+import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.daemon.DaemonShellUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -33,19 +41,29 @@ import rikka.shizuku.ShizukuRemoteProcess;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView tvContent, tvServer, tvShizukuStatus, tvShizukuStartServer, tvRootStatus, tvRootStartServer;
+    TextView tvContent, tvServer, tvShizukuStatus, tvShizukuStartServer, tvRootStatus, tvRootStartServer, tvTest;
     LinearLayout llStartServer, llActiveServer;
     Toolbar toolbar;
     RelativeLayout loadingView;
 
-
     static final int REQUEST_CODE = 123;
     AtomicInteger loadingInteger = new AtomicInteger(0);
+
+    private final Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
+        @Override
+        public void onRequestPermissionResult(int requestCode, int grantResult) {
+            if (requestCode == REQUEST_CODE && grantResult == PackageManager.PERMISSION_GRANTED) {
+                startFreezeByShizuku();
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tvTest = findViewById(R.id.tv_test);
+        tvTest.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         tvContent = findViewById(R.id.tv_content);
@@ -57,23 +75,45 @@ public class MainActivity extends AppCompatActivity {
         tvShizukuStartServer = findViewById(R.id.tv_shizuku_start_server);
         tvRootStatus = findViewById(R.id.tv_root_status);
         tvRootStartServer = findViewById(R.id.tv_root_start_server);
+
         generateShell();
         initRoot();
-
-        registerAppProcessReceiver();
+        checkUI();
+        initBinderContainerListener();
     }
 
-    BroadcastReceiver receiver =  new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            checkBind();
+    private void checkUI() {
+        ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
+        if (ClientBinderManager.isActive()) {
+            showServerRunning("");
+        } else {
+            showServerUnRunning();
+            showGuide();
         }
-    };
+    }
 
-    private void registerAppProcessReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(AppProcessHelper.ACTION_APP_PROCESS_START);
-        registerReceiver(receiver, intentFilter);
+    private void initBinderContainerListener() {
+        ClientBinderManager.registerDaemonBinderContainerListener(new ClientBinderManager.IDaemonBinderContainerListener() {
+            @Override
+            public void bind(IDaemonBinderContainer daemonBinderContainer) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkUI();
+                    }
+                });
+            }
+
+            @Override
+            public void unbind() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkUI();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -81,15 +121,6 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         Shizuku.removeRequestPermissionResultListener(onRequestPermissionResultListener);
     }
-
-    private Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
-        @Override
-        public void onRequestPermissionResult(int requestCode, int grantResult) {
-            if (requestCode == REQUEST_CODE && grantResult == PackageManager.PERMISSION_GRANTED) {
-                startFreezeByShizuku();
-            }
-        }
-    };
 
     private void initShizuku() {
         Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
@@ -114,8 +145,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void postDelay(Runnable runnable, long delay) {
-        getWindow().getDecorView().postDelayed(runnable, delay);
+    public void toTest(View v) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                List<ActivityManager.RunningTaskInfo> tasks = ClientBinderManager.iActivityManager.get().getTasks(10);
+                for (ActivityManager.RunningTaskInfo task : tasks) {
+                    ClientLog.log(task.toString());
+                }
+            }
+        } catch (Throwable e) {
+            //
+        }
     }
 
     private void initRoot() {
@@ -131,11 +171,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        tvServer.setVisibility(View.GONE);
-        llStartServer.setVisibility(View.GONE);
-        llActiveServer.setVisibility(View.GONE);
         initShizuku();
-        checkBind();
     }
 
     @Override
@@ -150,34 +186,20 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (R.id.menu_stop_server == itemId) {
-            stopServer();
+            stopDaemon();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void delayCheckBind(long delay) {
-        postDelay(new Runnable() {
-            @Override
-            public void run() {
-                checkBind();
+    private void stopDaemon() {
+        if (ClientBinderManager.isActive()) {
+            try {
+                ClientBinderManager.getDaemonBinderContainer().closeDeamon();
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
             }
-        }, delay);
-    }
-
-    private void stopServer() {
-        ShellClient.stop(new ShellClient.Callback() {
-            @Override
-            public void success(String data) {
-                Log.d("song", data);
-                delayCheckBind(500);
-            }
-
-            @Override
-            public void fail() {
-                delayCheckBind(500);
-            }
-        });
+        }
     }
 
 
@@ -190,7 +212,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private String getStartShell() {
-        return String.format("nohup app_process -Djava.class.path=%s /system/bin %s %s > /dev/null 2>&1 &", getApplicationInfo().sourceDir, Main.class.getName(), getPackageName());
+        return String.format("nohup app_process -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
+                getApplicationInfo().sourceDir,
+                DaemonHelper.DAEMON_NICKNAME,
+                Daemon.class.getName(),
+                getPackageName());
     }
 
     private void generateShell() {
@@ -198,12 +224,10 @@ public class MainActivity extends AppCompatActivity {
         PrintWriter printWriter = null;
         try {
             printWriter = new PrintWriter(shellFilePath);
-//            printWriter.println("am force-stop " + getPackageName());
             printWriter.println(getStartShell());
-//            printWriter.println("am start -a com.cleanmaster.hook.LAUNCH -p " + getApplicationContext().getPackageName() + " > /dev/null 2>&1 ;");
             printWriter.println("echo success");
             printWriter.close();
-            ShellUtils.execCommand("chmod a+r " + shellFilePath, false);
+            DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
         } catch (Throwable th) {
             try {
                 if (printWriter != null) {
@@ -216,7 +240,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showGuide() {
-
         llStartServer.setVisibility(View.VISIBLE);
         String shellFilePath = getShellFilePath();
         tvContent.setText(String.format("$ adb shell sh %s", shellFilePath));
@@ -241,7 +264,6 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-//                showLoading();
                 String[] arrays = {"sh"};
                 ShizukuRemoteProcess shizukuRemoteProcess = Shizuku.newProcess(arrays, null, null);
                 DataOutputStream os = null;
@@ -252,13 +274,9 @@ public class MainActivity extends AppCompatActivity {
                     os.flush();
                     os.writeBytes("exit\n");
                     os.flush();
-                    int i = ShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
-                    if (i == 0) {
-                        delayCheckBind(500);
-                    }
+                    boolean result = DaemonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    delayCheckBind(500);
                 } finally {
                     try {
                         os.close();
@@ -266,7 +284,6 @@ public class MainActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
-//                hideLoading();
             }
         }).start();
     }
@@ -323,50 +340,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void checkBind() {
-        ShellClient.bind(new ShellClient.Callback() {
-            @Override
-            public void success(String data) {
-                Log.d("song", data);
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int commandActiveCount = 0;
-                        int commandTotalCount = 0;
-                        try {
-                            JSONObject jsonObject = new JSONObject(data);
-                            int code = jsonObject.optInt("code", -1);
-                            if (code == 0) {
-                                JSONObject dataObject = jsonObject.optJSONObject("data");
-                                if (dataObject != null) {
-                                    commandActiveCount = dataObject.optInt("command_active_count", 0);
-                                    commandTotalCount = dataObject.optInt("command_total_count", 0);
-                                }
-                            }
-                        } catch (Exception e) {
-                            //
-                        }
-                        showServerRunning(String.format("(%d/%d)", commandActiveCount, commandTotalCount));
-                    }
-                });
-            }
-
-            @Override
-            public void fail() {
-                Log.d("song", "bind fail");
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        showServerUnRunning();
-                        showGuide();
-                    }
-                });
-            }
-        });
-    }
-
-
     public void showLoading() {
         runOnUiThread(new Runnable() {
             @Override
@@ -394,10 +367,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                ShellUtils.ShellCommandResult shellCommandResult = ShellUtils.execCommand(getStartShell(), true, true);
-                if (shellCommandResult.result == 0) {
-                    delayCheckBind(500);
-                }
+                DaemonShellUtils.execCommand(getStartShell(), true, null);
             }
         }).start();
     }

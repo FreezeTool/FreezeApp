@@ -8,6 +8,7 @@
     <string name="main_app_server_not_active">Freeze服务未启动</string>
     <string name="main_manager_app">管理APP</string>
     <string name="main_command_app">执行Command</string>
+    <string name="main_test">TEST</string>
     <string name="main_adb_start_server_title">通过adb开启</string>
 
     <string name="main_shizuku_start_server_title">通过Shizuku开启</string>

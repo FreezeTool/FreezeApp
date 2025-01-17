@@ -1,14 +1,20 @@
 package android.app;
 
-import android.content.Context;
-
 public class ActivityThread {
+
     public static ActivityThread systemMain() {
-        throw new UnsupportedOperationException();
+        throw new RuntimeException();
+    }
+
+    public static ActivityThread currentActivityThread() {
+        throw new RuntimeException();
+    }
+
+    public Application getApplication() {
+        throw new RuntimeException();
     }
 
     public ContextImpl getSystemContext() {
-        throw new UnsupportedOperationException();
+        throw new RuntimeException();
     }
-
 }

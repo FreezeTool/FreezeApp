@@ -41,14 +41,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginBottom="10dp"
                     android:text="@string/main_adb_start_server_title"
                     android:textColor="#333333"
-                    android:textStyle="bold"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_content"
@@ -69,41 +69,42 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginBottom="10dp"
                     android:text="@string/main_shizuku_start_server_title"
                     android:textColor="#333333"
-                    android:textStyle="bold"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:padding="20dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/tip_background"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tip_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
                     <TextView
                         android:id="@+id/tv_shizuku_status"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="1111"
                         android:textColor="#666666"
                         android:textSize="15dp" />
 
                     <Button
                         android:id="@+id/tv_shizuku_start_server"
-                        android:gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="30dp"
-                        android:textSize="10dp"
                         android:background="@drawable/btn_background"
+                        android:gravity="center"
                         android:onClick="toShizuku"
                         android:text="@string/main_start_app_process"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:textSize="10dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -115,41 +116,42 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_marginLeft="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:layout_marginBottom="10dp"
                     android:text="@string/main_root_start_server_title"
                     android:textColor="#333333"
-                    android:textStyle="bold"
-                    android:textSize="15dp" />
+                    android:textSize="15dp"
+                    android:textStyle="bold" />
 
                 <LinearLayout
-                    android:padding="20dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:background="@drawable/tip_background"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/tip_background"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
                     <TextView
                         android:id="@+id/tv_root_status"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:text="1111"
                         android:textColor="#666666"
                         android:textSize="15dp" />
 
                     <Button
                         android:id="@+id/tv_root_start_server"
-                        android:gravity="center"
                         android:layout_width="50dp"
                         android:layout_height="30dp"
-                        android:textSize="10dp"
                         android:background="@drawable/btn_background"
+                        android:gravity="center"
                         android:onClick="toRoot"
                         android:text="@string/main_start_app_process"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/white"
+                        android:textSize="10dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -171,16 +173,27 @@
                 android:text="@string/main_manager_app"
                 android:textColor="@color/white" />
 
-            <!--        <Button-->
-            <!--            android:onClick="toCommand"-->
-            <!--            android:layout_margin="10dp"-->
-            <!--            android:id="@+id/tv_execute"-->
-            <!--            android:textAllCaps="false"-->
-            <!--            android:text="@string/main_command_app"-->
-            <!--            android:textColor="@color/white"-->
-            <!--            android:background="@drawable/btn_background"-->
-            <!--            android:layout_width="match_parent"-->
-            <!--            android:layout_height="wrap_content"/>-->
+            <Button
+                android:id="@+id/tv_execute"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/btn_background"
+                android:onClick="toCommand"
+                android:text="@string/main_command_app"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
+
+            <Button
+                android:id="@+id/tv_test"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/btn_background"
+                android:onClick="toTest"
+                android:text="@string/main_test"
+                android:textAllCaps="false"
+                android:textColor="@color/white" />
 
         </LinearLayout>
 
