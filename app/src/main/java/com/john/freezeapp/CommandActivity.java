@@ -4,29 +4,36 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientRemoteShell;
 
-public class CommandActivity extends AppCompatActivity {
+public class CommandActivity extends BaseActivity {
     Toolbar toolbar;
     EditText etCommand;
     Button btnSend;
     TextView tvCommandResult;
-    RelativeLayout loadingView;
+    FrameLayout mContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command);
-        loadingView = findViewById(R.id.loading);
+
+        if(!isDaemonActive()) {
+            finish();
+            return;
+        }
+
+        mContainer = findViewById(R.id.fl_container);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -43,6 +50,12 @@ public class CommandActivity extends AppCompatActivity {
             }
         });
         tvCommandResult = findViewById(R.id.command_result);
+    }
+
+    @Override
+    protected void unbindDaemon() {
+        super.unbindDaemon();
+        finish();
     }
 
     private void executeCommand2(String command) {
@@ -82,21 +95,8 @@ public class CommandActivity extends AppCompatActivity {
         }
     }
 
-    public void showLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingView.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    public void hideLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingView.setVisibility(View.GONE);
-            }
-        });
+    @Override
+    protected ViewGroup getLoadingContainer() {
+        return mContainer;
     }
 }

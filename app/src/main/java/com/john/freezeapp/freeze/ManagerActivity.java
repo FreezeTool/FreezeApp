@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.freeze;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -9,12 +9,10 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,37 +20,39 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.john.freezeapp.BaseActivity;
+import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class ManagerActivity extends AppCompatActivity {
+public class ManagerActivity extends BaseActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
-    RelativeLayout loadingView;
     Toolbar toolbar;
 
-    AtomicInteger loadingInteger = new AtomicInteger(0);
 
     List<View> viewPageViews = new ArrayList<>();
 
     List<String> tabs = new ArrayList<>();
-    List<CommonAdapter> commonAdapters = new ArrayList<>();
+    List<FreezeAppAdapter> commonAdapters = new ArrayList<>();
 
-    CommonAdapter defrostAppAdapter;
-
-
-    CommonAdapter freezeAppAdapter ;
-
-    CommonAdapter runningAdapter;
+    FreezeAppAdapter defrostAppAdapter;
+    FreezeAppAdapter freezeAppAdapter;
+    FreezeAppAdapter runningAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager);
+
+        if (!isDaemonActive()) {
+            finish();
+            return;
+        }
 
         tabs.add(getString(R.string.manager_running_app_title));
         tabs.add(getString(R.string.manager_freeze_app_title));
@@ -61,10 +61,9 @@ public class ManagerActivity extends AppCompatActivity {
         initCommonAdapter();
 
         tabLayout = findViewById(R.id.tablayout);
-        loadingView = findViewById(R.id.loading);
         viewPager = findViewById(R.id.viewpage);
 
-        for (CommonAdapter commonAdapter : commonAdapters) {
+        for (FreezeAppAdapter commonAdapter : commonAdapters) {
             RecyclerView recyclerView = new RecyclerView(this);
             recyclerView.setLayoutManager(new LinearLayoutManager(this));
             recyclerView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -86,22 +85,30 @@ public class ManagerActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    protected void unbindDaemon() {
+        super.unbindDaemon();
+        finish();
+    }
+
     private void initCommonAdapter() {
-        defrostAppAdapter = new CommonAdapter(getString(R.string.manager_btn_freeze), new CommonAdapter.OnItemClick() {
+
+
+        defrostAppAdapter = new FreezeAppAdapter(new FreezeAppAdapter.OnItemClick() {
             @Override
             public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestFreezeApp(appModel.packageName);
             }
         });
 
-        freezeAppAdapter = new CommonAdapter(getString(R.string.manager_btn_defrost), new CommonAdapter.OnItemClick() {
+        freezeAppAdapter = new FreezeAppAdapter(new FreezeAppAdapter.OnItemClick() {
             @Override
             public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestDefrostApp(appModel.packageName);
             }
         });
 
-        runningAdapter = new CommonAdapter(getString(R.string.manager_btn_stop), new CommonAdapter.OnItemClick() {
+        runningAdapter = new FreezeAppAdapter(new FreezeAppAdapter.OnItemClick() {
             @Override
             public void onRightClick(FreezeAppManager.AppModel appModel) {
                 requestForceStopApp(appModel.packageName);
@@ -135,7 +142,7 @@ public class ManagerActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         hideLoading();
-                        defrostAppAdapter.update(list);
+                        defrostAppAdapter.updateData(getFreezeApps(getResources().getString(R.string.manager_btn_freeze), list));
                     }
                 });
             }
@@ -156,7 +163,7 @@ public class ManagerActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         hideLoading();
-                        freezeAppAdapter.update(list);
+                        freezeAppAdapter.updateData(getFreezeApps(getResources().getString(R.string.manager_btn_defrost), list));
                     }
                 });
             }
@@ -212,7 +219,8 @@ public class ManagerActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         hideLoading();
-                        runningAdapter.update2(list);
+                        List<FreezeAppData> uiList = runningAdapter.getItems();
+                        runningAdapter.updateData(getFreezeRunningApp(getResources().getString(R.string.manager_btn_stop),list, uiList));
                     }
                 });
             }
@@ -286,166 +294,34 @@ public class ManagerActivity extends AppCompatActivity {
         }
     }
 
-    public static class CommonUIModel {
-        public FreezeAppManager.AppModel appModel;
-        public boolean isProcessExpand = false;
-        public LinearLayout cacheView;
+    public List<FreezeAppData> getFreezeApps(String operate, List<FreezeAppManager.AppModel> list) {
+        List<FreezeAppData> freezeAppDatas = new ArrayList<>();
+        for (FreezeAppManager.AppModel appModel : list) {
+            FreezeAppData uiModel = new FreezeAppData();
+            uiModel.appModel = appModel;
+            uiModel.rightName = operate;
+            freezeAppDatas.add(uiModel);
+        }
+        return freezeAppDatas;
     }
 
-    public static class CommonAdapter extends RecyclerView.Adapter<CommonViewHolder> {
-        public String mRightBtnName = "";
-        public OnItemClick mRightBtnClickListener;
 
+    public List<FreezeAppData> getFreezeRunningApp(String operate,List<FreezeAppManager.RunningModel> list, List<FreezeAppData> uiList) {
+        Map<String, FreezeAppData> tempMap = new HashMap<>();
 
-        public void update(List<FreezeAppManager.AppModel> list) {
-
-            comonUiModels.clear();
-            for (FreezeAppManager.AppModel appModel : list) {
-                CommonUIModel uiModel = new CommonUIModel();
-                uiModel.appModel = appModel;
-                comonUiModels.add(uiModel);
-            }
-            notifyDataSetChanged();
+        for (FreezeAppData commonUiModel : uiList) {
+            tempMap.put(commonUiModel.appModel.packageName, commonUiModel);
         }
-
-
-        public void update2(List<FreezeAppManager.RunningModel> list) {
-            Map<String, CommonUIModel> tempMap = new HashMap<>();
-            for (CommonUIModel commonUiModel : comonUiModels) {
-                tempMap.put(commonUiModel.appModel.packageName, commonUiModel);
+        List<FreezeAppData> newList = new ArrayList<>();
+        for (FreezeAppManager.AppModel appModel : list) {
+            FreezeAppData uiModel = new FreezeAppData();
+            uiModel.appModel = appModel;
+            uiModel.rightName = operate;
+            if (tempMap.containsKey(appModel.packageName)) {
+                uiModel.isProcessExpand = tempMap.get(appModel.packageName).isProcessExpand;
             }
-            comonUiModels.clear();
-            for (FreezeAppManager.AppModel appModel : list) {
-                CommonUIModel uiModel = new CommonUIModel();
-                uiModel.appModel = appModel;
-                if (tempMap.containsKey(appModel.packageName)) {
-                    uiModel.isProcessExpand = tempMap.get(appModel.packageName).isProcessExpand;
-                }
-                comonUiModels.add(uiModel);
-            }
-            notifyDataSetChanged();
+            newList.add(uiModel);
         }
-
-        public interface OnItemClick {
-            void onRightClick(FreezeAppManager.AppModel appModel);
-        }
-
-        CommonAdapter(String rightBtnName, OnItemClick onClickListener) {
-            mRightBtnName = rightBtnName;
-            mRightBtnClickListener = onClickListener;
-        }
-
-        List<CommonUIModel> comonUiModels = new ArrayList<>();
-
-        @NonNull
-        @Override
-        public CommonViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            View inflate = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_app, parent, false);
-            return new CommonViewHolder(inflate);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull CommonViewHolder holder, int position) {
-            CommonUIModel commonUIModel = comonUiModels.get(position);
-            if (commonUIModel.appModel.icon != null) {
-                holder.ivIcon.setImageDrawable(commonUIModel.appModel.icon);
-            }
-            if (commonUIModel.appModel.name != null) {
-                holder.tvName.setText(commonUIModel.appModel.name);
-            }
-            holder.tvOperate.setText(mRightBtnName);
-            holder.tvOperate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mRightBtnClickListener.onRightClick(commonUIModel.appModel);
-                }
-            });
-
-            if (commonUIModel.appModel instanceof FreezeAppManager.RunningModel) {
-                holder.appContainer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        commonUIModel.isProcessExpand = !commonUIModel.isProcessExpand;
-                        notifyDataSetChanged();
-                    }
-                });
-            }
-
-            if (commonUIModel.appModel instanceof FreezeAppManager.RunningModel) {
-                if (commonUIModel.cacheView == null) {
-                    Context context = holder.llProcess.getContext();
-                    LinearLayout linearLayout = new LinearLayout(context);
-                    linearLayout.setOrientation(LinearLayout.VERTICAL);
-                    for (FreezeAppManager.ProcessModel processModel : ((FreezeAppManager.RunningModel) commonUIModel.appModel).processModels) {
-                        View processView = LayoutInflater.from(context).inflate(R.layout.process_info, null);
-                        TextView processName = processView.findViewById(R.id.tv_process_name);
-                        TextView processTime = processView.findViewById(R.id.tv_process_time);
-                        processName.setText(processModel.processName);
-                        processTime.setText("CPU - " + processModel.time);
-                        linearLayout.addView(processView);
-                    }
-                    commonUIModel.cacheView = linearLayout;
-                }
-
-                holder.llProcess.removeAllViews();
-                ViewParent parent = commonUIModel.cacheView.getParent();
-                if (parent instanceof ViewGroup) {
-                    ((ViewGroup) parent).removeAllViews();
-                }
-                holder.llProcess.removeView(commonUIModel.cacheView);
-                holder.llProcess.setVisibility(View.GONE);
-
-                if (commonUIModel.isProcessExpand) {
-                    holder.llProcess.setVisibility(View.VISIBLE);
-                    holder.llProcess.addView(commonUIModel.cacheView);
-                }
-            }
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return comonUiModels.size();
-        }
-    }
-
-    public static class CommonViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvName;
-        public ImageView ivIcon;
-        public TextView tvOperate;
-        public LinearLayout llProcess;
-        public ViewGroup appContainer;
-
-
-        public CommonViewHolder(@NonNull View itemView) {
-            super(itemView);
-            appContainer = itemView.findViewById(R.id.app_container);
-            ivIcon = itemView.findViewById(R.id.iv_image);
-            tvName = itemView.findViewById(R.id.tv_name);
-            tvOperate = itemView.findViewById(R.id.tv_operate);
-            llProcess = itemView.findViewById(R.id.process_info);
-        }
-    }
-
-    public void showLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingInteger.getAndIncrement();
-                loadingView.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    public void hideLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingInteger.getAndDecrement();
-                if (loadingInteger.get() == 0) {
-                    loadingView.setVisibility(View.GONE);
-                }
-            }
-        });
+        return newList;
     }
 }

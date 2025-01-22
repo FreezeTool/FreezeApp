@@ -158,60 +158,10 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ll_active_server"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/btn_background"
-                android:onClick="toManager"
-                android:text="@string/main_manager_app"
-                android:textColor="@color/white" />
-
-            <Button
-                android:id="@+id/tv_execute"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/btn_background"
-                android:onClick="toCommand"
-                android:text="@string/main_command_app"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
-
-            <Button
-                android:id="@+id/tv_test"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="@drawable/btn_background"
-                android:onClick="toTest"
-                android:text="@string/main_test"
-                android:textAllCaps="false"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
-
-
-    <RelativeLayout
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#50000000"
-        android:visibility="gone">
-
-        <ProgressBar
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="visible" />
-    </RelativeLayout>
-
 </FrameLayout>

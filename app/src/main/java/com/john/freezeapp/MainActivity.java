@@ -1,59 +1,69 @@
 package com.john.freezeapp;
 
-import android.app.ActivityManager;
+import android.app.usage.UsageStats;
+import android.app.usage.UsageStatsManager;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.IPackageInstaller;
-import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
+import android.content.pm.ParceledListSlice;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.freeze.ManagerActivity;
+import com.john.freezeapp.home.FreezeHomeAdapter;
+import com.john.freezeapp.home.FreezeHomeFuncData;
+import com.john.freezeapp.home.FreezeHomeFuncHelper;
 
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rikka.shizuku.Shizuku;
 import rikka.shizuku.ShizukuRemoteProcess;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
-    TextView tvContent, tvServer, tvShizukuStatus, tvShizukuStartServer, tvRootStatus, tvRootStartServer, tvTest;
-    LinearLayout llStartServer, llActiveServer;
+    TextView tvContent, tvServer, tvShizukuStatus, tvShizukuStartServer, tvRootStatus, tvRootStartServer;
+    LinearLayout llStartServer;
+    RecyclerView llActiveServer;
     Toolbar toolbar;
-    RelativeLayout loadingView;
+
+    FreezeHomeAdapter homeAdapter = new FreezeHomeAdapter();
 
     static final int REQUEST_CODE = 123;
-    AtomicInteger loadingInteger = new AtomicInteger(0);
 
     private final Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
         @Override
         public void onRequestPermissionResult(int requestCode, int grantResult) {
             if (requestCode == REQUEST_CODE && grantResult == PackageManager.PERMISSION_GRANTED) {
-                startFreezeByShizuku();
+                toRealShizuku();
             }
         }
     };
@@ -62,29 +72,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tvTest = findViewById(R.id.tv_test);
-        tvTest.setVisibility(BuildConfig.DEBUG ? View.VISIBLE : View.GONE);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         tvContent = findViewById(R.id.tv_content);
         tvServer = findViewById(R.id.tv_server);
         llStartServer = findViewById(R.id.ll_start_server);
         llActiveServer = findViewById(R.id.ll_active_server);
-        loadingView = findViewById(R.id.loading);
         tvShizukuStatus = findViewById(R.id.tv_shizuku_status);
         tvShizukuStartServer = findViewById(R.id.tv_shizuku_start_server);
         tvRootStatus = findViewById(R.id.tv_root_status);
         tvRootStartServer = findViewById(R.id.tv_root_start_server);
-
         generateShell();
         initRoot();
         checkUI();
-        initBinderContainerListener();
+        initHomeFuncAdapter();
+    }
+
+    private void initHomeFuncAdapter() {
+        llActiveServer.setLayoutManager(new LinearLayoutManager(this));
+        llActiveServer.setAdapter(homeAdapter);
+        homeAdapter.updateData(FreezeHomeFuncHelper.getFreezeHomeFuncData(this));
     }
 
     private void checkUI() {
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
-        if (ClientBinderManager.isActive()) {
+        if (isDaemonActive()) {
             showServerRunning("");
         } else {
             showServerUnRunning();
@@ -92,33 +104,27 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void initBinderContainerListener() {
-        ClientBinderManager.registerDaemonBinderContainerListener(new ClientBinderManager.IDaemonBinderContainerListener() {
-            @Override
-            public void bind(IDaemonBinderContainer daemonBinderContainer) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkUI();
-                    }
-                });
-            }
+    @Override
+    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
+        super.bindDaemon(daemonBinderContainer);
+        checkUI();
+        removeHideLoading();
+        hideLoading();
+    }
 
-            @Override
-            public void unbind() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        checkUI();
-                    }
-                });
-            }
-        });
+
+    @Override
+    protected void unbindDaemon() {
+        super.unbindDaemon();
+        checkUI();
+        removeHideLoading();
+        hideLoading();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        removeHideLoading();
         Shizuku.removeRequestPermissionResultListener(onRequestPermissionResultListener);
     }
 
@@ -130,31 +136,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             tvShizukuStatus.setText(getResources().getString(R.string.main_shizuku_server_not_active));
             tvShizukuStartServer.setVisibility(View.GONE);
-        }
-    }
-
-    public void toManager(View v) {
-        Intent intent = new Intent(MainActivity.this, ManagerActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    public void toCommand(View v) {
-        Intent intent = new Intent(MainActivity.this, CommandActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-    }
-
-    public void toTest(View v) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                List<ActivityManager.RunningTaskInfo> tasks = ClientBinderManager.iActivityManager.get().getTasks(10);
-                for (ActivityManager.RunningTaskInfo task : tasks) {
-                    ClientLog.log(task.toString());
-                }
-            }
-        } catch (Throwable e) {
-            //
         }
     }
 
@@ -202,14 +183,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     private String getShellFilePath() {
         File externalFilesDir = getExternalFilesDir(null);
         externalFilesDir.mkdirs();
         File file = new File(externalFilesDir.getAbsolutePath() + "/start.sh");
         return file.getAbsolutePath();
     }
-
 
     private String getStartShell() {
         return String.format("nohup app_process -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
@@ -260,7 +239,8 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void startFreezeByShizuku() {
+    private void toRealShizuku() {
+        showLoading();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -302,7 +282,7 @@ public class MainActivity extends AppCompatActivity {
         if (!checkShizukuPermission()) {
             Shizuku.requestPermission(REQUEST_CODE);
         } else {
-            startFreezeByShizuku();
+            toRealShizuku();
         }
     }
 
@@ -339,36 +319,32 @@ public class MainActivity extends AppCompatActivity {
         llStartServer.setVisibility(View.GONE);
     }
 
-
-    public void showLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingInteger.getAndIncrement();
-                loadingView.setVisibility(View.VISIBLE);
-            }
-        });
-    }
-
-    public void hideLoading() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                loadingInteger.getAndDecrement();
-                if (loadingInteger.get() == 0) {
-                    loadingView.setVisibility(View.GONE);
-                }
-            }
-        });
-    }
-
-
     public void toRoot(View view) {
-        new Thread(new Runnable() {
+        showLoading();
+        delayHideLoading();
+        DaemonShellUtils.execCommand(getStartShell(), true, new DaemonShellUtils.ShellCommandResultCallback() {
             @Override
-            public void run() {
-                DaemonShellUtils.execCommand(getStartShell(), true, null);
+            public void callback(DaemonShellUtils.ShellCommandResult commandResult) {
+
             }
-        }).start();
+        });
+    }
+
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private Runnable mHideLoadingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hideLoading();
+        }
+    };
+
+    private void delayHideLoading() {
+        mHandler.postDelayed(mHideLoadingRunnable, 2000);
+    }
+
+    private void removeHideLoading() {
+        mHandler.removeCallbacks(mHideLoadingRunnable);
     }
 }

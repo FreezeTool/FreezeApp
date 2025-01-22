@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/daemon</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
+        <item name="backgroundColor">@color/white</item>
 
         <!-- Customize your theme here. -->
     </style>

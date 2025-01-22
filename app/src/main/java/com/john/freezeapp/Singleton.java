@@ -2,7 +2,7 @@ package com.john.freezeapp;
 
 public abstract class Singleton<T> {
 
-    private T mInstance;
+    protected T mInstance;
 
     protected abstract T create();
 

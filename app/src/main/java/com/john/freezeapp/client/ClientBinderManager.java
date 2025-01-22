@@ -2,13 +2,15 @@ package com.john.freezeapp.client;
 
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
+import android.app.smartspace.ISmartspaceManager;
+import android.app.usage.IUsageStatsManager;
 import android.content.Context;
-import android.content.pm.IPackageInstaller;
 import android.content.pm.IPackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.IDaemonBinderContainer;
 import com.john.freezeapp.Singleton;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
@@ -32,9 +34,6 @@ public class ClientBinderManager {
     public static void registerDaemonBinderContainerListener(IDaemonBinderContainerListener iDaemonBinderContainerListener) {
         if (!sDaemonBinderContainerListeners.contains(iDaemonBinderContainerListener)) {
             sDaemonBinderContainerListeners.add(iDaemonBinderContainerListener);
-            if (isActive()) {
-                iDaemonBinderContainerListener.bind(getDaemonBinderContainer());
-            }
         }
     }
 
@@ -103,14 +102,13 @@ public class ClientBinderManager {
     }
 
     private static void deathServerBinder() {
-        iPackageManager.destroy();
-        iActivityManager.destroy();
+
     }
 
 
-    public final static Singleton<IPackageManager> iPackageManager = new Singleton<IPackageManager>() {
+    private final static ClientBinderSingleton<IPackageManager> iPackageManager = new ClientBinderSingleton<IPackageManager>() {
         @Override
-        protected IPackageManager create() {
+        protected IPackageManager createBinder() {
             if (!isActive()) {
                 return null;
             }
@@ -119,9 +117,9 @@ public class ClientBinderManager {
         }
     };
 
-    public final static Singleton<IActivityManager> iActivityManager = new Singleton<IActivityManager>() {
+    private final static ClientBinderSingleton<IActivityManager> iActivityManager = new ClientBinderSingleton<IActivityManager>() {
         @Override
-        protected IActivityManager create() {
+        protected IActivityManager createBinder() {
             if (!isActive()) {
                 return null;
             }
@@ -133,6 +131,61 @@ public class ClientBinderManager {
             }
         }
     };
+
+
+    private final static ClientBinderSingleton<IBatteryStats> iBatteryStats = new ClientBinderSingleton<IBatteryStats>() {
+        @Override
+        protected IBatteryStats createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+            return IBatteryStats.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("batterystats")));
+        }
+    };
+
+    private final static ClientBinderSingleton<IUsageStatsManager> iUsageStatsManager = new ClientBinderSingleton<IUsageStatsManager>() {
+        @Override
+        protected IUsageStatsManager createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+            return IUsageStatsManager.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService(Context.USAGE_STATS_SERVICE)));
+        }
+    };
+
+
+    private final static ClientBinderSingleton<ISmartspaceManager> iSmartspaceManager = new ClientBinderSingleton<ISmartspaceManager>() {
+        @Override
+        protected ISmartspaceManager createBinder() {
+
+            IBinder systemService = SystemServiceHelper.getSystemService("smartspace");
+            if (systemService != null) {
+                return ISmartspaceManager.Stub.asInterface(new ClientSystemBinderWrapper(systemService));
+            }
+            return null;
+        }
+    };
+
+
+    public static IActivityManager getActivityManager() {
+        return iActivityManager.get();
+    }
+
+    public static IPackageManager getPackageManager() {
+        return iPackageManager.get();
+    }
+
+    public static IBatteryStats getBatteryStats() {
+        return iBatteryStats.get();
+    }
+
+    public static IUsageStatsManager getUsageStatsManager() {
+        return iUsageStatsManager.get();
+    }
+
+    public static ISmartspaceManager getSmartspaceManager() {
+        return iSmartspaceManager.get();
+    }
 
 
 }

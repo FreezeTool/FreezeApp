@@ -1,18 +1,19 @@
 <resources>
     <string name="app_name">FreezeApp</string>
     <string name="manager_name">FreezeManager</string>
-
     <string name="command_name">ExecuteCommand</string>
+    <string name="battery_usage_name">BatteryUsage</string>
 
-    <string name="main_app_server_active">Freeze服务已启动</string>
+    <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
     <string name="main_manager_app">管理APP</string>
+    <string name="main_battery_usage">电池使用记录</string>
     <string name="main_command_app">执行Command</string>
     <string name="main_test">TEST</string>
     <string name="main_adb_start_server_title">通过adb开启</string>
 
     <string name="main_shizuku_start_server_title">通过Shizuku开启</string>
-    <string name="main_shizuku_server_active">Shizuku服务已启动</string>
+    <string name="main_shizuku_server_active">Shizuku服务正在运行</string>
     <string name="main_shizuku_server_not_active">Shizuku服务未启动</string>
 
 
