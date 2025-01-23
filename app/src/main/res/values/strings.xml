@@ -3,6 +3,7 @@
     <string name="manager_name">FreezeManager</string>
     <string name="command_name">ExecuteCommand</string>
     <string name="battery_usage_name">BatteryUsage</string>
+    <string name="daemon_start_name">DaemonStart</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -31,5 +32,10 @@
     <string name="manager_btn_freeze">冻结</string>
     <string name="manager_btn_defrost">解冻</string>
 
+    <string name="btn_submit">确定</string>
+    <string name="btn_cancel">取消</string>
+
     <string name="command_btn_execute">执行</string>
+
+    <string name="freeze_stop_daemon_title">Freeze服务将被停止</string>
 </resources>
