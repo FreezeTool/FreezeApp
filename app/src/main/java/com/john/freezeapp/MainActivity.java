@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
+import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 import com.john.freezeapp.home.FreezeHomeDaemonData;
 import com.john.freezeapp.home.FreezeHomeDeviceData;
@@ -52,6 +54,24 @@ public class MainActivity extends BaseActivity {
         recyclerView.setAdapter(homeAdapter);
         generateShell();
         updateData();
+        requestKernelVersion();
+    }
+
+    private void requestKernelVersion() {
+        if (isDaemonActive()) {
+            // 内核
+            String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
+            if (kernelVersion == null) {
+                ClientRemoteShell.execCommand("uname -r", new ClientRemoteShell.RemoteShellCommandResultCallback() {
+                    @Override
+                    public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
+                        if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
+                            SharedPrefUtil.setString(SharedPrefUtil.KEY_KERNEL_VERSION, commandResult.successMsg.replace("\n",""));
+                        }
+                    }
+                });
+            }
+        }
     }
 
 
@@ -79,15 +99,21 @@ public class MainActivity extends BaseActivity {
     private Object getDeviceData() {
         FreezeHomeDeviceData freezeDeviceData = new FreezeHomeDeviceData();
         // 设备
-        FreezeHomeDeviceData.DeviceInfo deviceNameDeviceInfo = new FreezeHomeDeviceData.DeviceInfo("设备", FreezeUtil.getDevice());
-        freezeDeviceData.add(deviceNameDeviceInfo);
+        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("设备", FreezeUtil.getDevice()));
         // 版本
         String androidVersion = Build.VERSION.PREVIEW_SDK_INT != 0 ? Build.VERSION.CODENAME : Build.VERSION.RELEASE;
-        FreezeHomeDeviceData.DeviceInfo androidVersionDeviceInfo = new FreezeHomeDeviceData.DeviceInfo("版本", String.format("Android %s (%s)", androidVersion, Build.VERSION.SDK_INT));
-        freezeDeviceData.add(androidVersionDeviceInfo);
+        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("版本", String.format("Android %s (%s)", androidVersion, Build.VERSION.SDK_INT)));
         // 架构
-        FreezeHomeDeviceData.DeviceInfo cpuDeviceInfo = new FreezeHomeDeviceData.DeviceInfo("架构", Build.SUPPORTED_ABIS[0]);
-        freezeDeviceData.add(cpuDeviceInfo);
+        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("架构", Build.SUPPORTED_ABIS[0]));
+        // User
+        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("USER", Build.USER));
+        // Build号
+        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("Build号", Build.ID));
+        // 内核
+        String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
+        if (!TextUtils.isEmpty(kernelVersion)) {
+            freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("内核", kernelVersion));
+        }
 
         return freezeDeviceData;
     }
@@ -96,6 +122,7 @@ public class MainActivity extends BaseActivity {
     protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
         super.bindDaemon(daemonBinderContainer);
         updateData();
+        requestKernelVersion();
     }
 
 

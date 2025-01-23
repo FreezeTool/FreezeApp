@@ -22,7 +22,7 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
     public static Creator<FreezeHomeDeviceData> CREATOR = new Creator<FreezeHomeDeviceData>() {
         @Override
         public FreezeHomeDeviceViewHolder createViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            return new FreezeHomeDeviceViewHolder(inflater.inflate(R.layout.item_home_device_info, parent, false));
+            return new FreezeHomeDeviceViewHolder(inflater.inflate(R.layout.item_home_device_container, parent, false));
         }
     };
 
@@ -36,7 +36,6 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
      * android:id="@+id/tv_device_version"
      * android:layout_width="match_parent"
      * android:layout_height="wrap_content"
-     * android:layout_marginTop="5dp"
      * android:text=""
      * android:textColor="#666666"
      * android:textSize="15dp" />
@@ -51,15 +50,16 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
             linearLayout.setOrientation(LinearLayout.VERTICAL);
             for (int i = 0; i < data.deviceInfos.size(); i++) {
                 FreezeHomeDeviceData.DeviceInfo deviceInfo = data.deviceInfos.get(i);
-                TextView textView = new TextView(getContext());
-                textView.setTextColor(0xff666666);
-                textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-                textView.setText(getDeviceInfo(deviceInfo.type, deviceInfo.content));
+                View deviceView = LayoutInflater.from(getContext()).inflate(R.layout.item_home_device_info, linearLayout, false);
+                TextView tvType = deviceView.findViewById(R.id.tv_type);
+                tvType.setText(deviceInfo.type);
+                TextView tvContent = deviceView.findViewById(R.id.tv_content);
+                tvContent.setText(deviceInfo.content);
                 ViewGroup.MarginLayoutParams marginLayoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 if (i != 0) {
-                    marginLayoutParams.topMargin = ScreenUtils.dp2px(getContext(), 5);
+                    marginLayoutParams.topMargin = ScreenUtils.dp2px(getContext(), 8);
                 }
-                linearLayout.addView(textView, marginLayoutParams);
+                linearLayout.addView(deviceView, marginLayoutParams);
             }
             data.cacheView = linearLayout;
         }
@@ -73,10 +73,4 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
 
     }
 
-
-    private Spannable getDeviceInfo(String type, String content) {
-        Spannable spannable = new SpannableString(type + "    " + content);
-        spannable.setSpan(new ForegroundColorSpan(0xff555555), 0, type.length(), Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
-        return spannable;
-    }
 }
