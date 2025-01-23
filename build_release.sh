@@ -1,4 +1,4 @@
-!/bin/bash
+#!/bin/bash
 # 编译
 ./gradlew :app:assembleRelease
 # 安装

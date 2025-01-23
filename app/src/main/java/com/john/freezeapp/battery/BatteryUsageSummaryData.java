@@ -1,6 +1,6 @@
 package com.john.freezeapp.battery;
 
-public class BatteryUsageSummaryData {
+public class BatteryUsageSummaryData extends BatteryUsageData{
 
     public String capacity;
     public long startTimestamp;

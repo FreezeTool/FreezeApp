@@ -139,7 +139,11 @@ public class ClientBinderManager {
             if (!isActive()) {
                 return null;
             }
-            return IBatteryStats.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("batterystats")));
+            try {
+                return IBatteryStats.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("batterystats")));
+            } catch (Throwable e) {
+                return null;
+            }
         }
     };
 

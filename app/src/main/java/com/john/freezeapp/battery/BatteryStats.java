@@ -1,5 +1,6 @@
 package com.john.freezeapp.battery;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.BatteryConsumer;
@@ -13,6 +14,7 @@ import android.util.Range;
 
 import androidx.annotation.RequiresApi;
 
+import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.ThreadPool;
@@ -113,9 +115,17 @@ public class BatteryStats {
 
     @RequiresApi(Build.VERSION_CODES.S)
     public static void requestBatteryUsage(Context context, Callback callback) {
+
         ThreadPool.execute(new Runnable() {
+            @SuppressLint("BlockedPrivateApi")
             @Override
             public void run() {
+                IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
+                if (batteryStats == null) {
+                    callback.fail();
+                    return;
+                }
+
 //                Calendar calendar = Calendar.getInstance();
 //                calendar.set(Calendar.HOUR_OF_DAY, 0);
 //                calendar.set(Calendar.MINUTE, 0);
@@ -136,7 +146,7 @@ public class BatteryStats {
 //                        .aggregateSnapshots(from, to)
                         .build();
                 try {
-                    List list = new ArrayList();
+                    List<BatteryUsageData> list = new ArrayList<>();
                     list.add(new BatteryUsageTitleData("Estimated power use (mAh)"));
                     List<BatteryUsageStats> batteryUsageStatsList = ClientBinderManager.getBatteryStats().getBatteryUsageStats(Collections.singletonList(query));
                     if (batteryUsageStatsList != null && !batteryUsageStatsList.isEmpty()) {
@@ -402,7 +412,7 @@ public class BatteryStats {
                                 batteryUsageAppData.addHardwareData(hardwareData);
 
                             }
-                            if(!batteryUsageAppData.isEmpty()) {
+                            if (!batteryUsageAppData.isEmpty()) {
                                 list.add(batteryUsageAppData);
                             }
                             ClientLog.log("info - " + sb.toString());

@@ -1,6 +1,6 @@
 package com.john.freezeapp.battery;
 
-public class BatteryUsageDeviceData {
+public class BatteryUsageDeviceData extends BatteryUsageData{
 
     public String deviceLabel;
     public String devicePowerMah;

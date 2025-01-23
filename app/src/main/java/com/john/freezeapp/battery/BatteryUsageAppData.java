@@ -6,7 +6,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BatteryUsageAppData {
+public class BatteryUsageAppData extends BatteryUsageData{
 
     public List<HardwareData> hardwareDatas = new ArrayList<>();
     public int uid;

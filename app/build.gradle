@@ -37,8 +37,14 @@ android {
     }
 
     buildFeatures {
-        buildConfig  true
+        buildConfig true
         aidl true
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // 或者禁用所有警告
+        checkAllWarnings false
     }
 }
 

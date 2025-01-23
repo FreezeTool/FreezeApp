@@ -2,7 +2,7 @@ package com.john.freezeapp.home;
 
 import android.view.View;
 
-public class FreezeHomeFuncData {
+public class FreezeHomeFuncData extends FreezeHomeData{
     public String text;
     public View.OnClickListener clickListener;
 

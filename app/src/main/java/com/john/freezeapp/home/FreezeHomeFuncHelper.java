@@ -6,7 +6,6 @@ import android.app.smartspace.SmartspaceSessionId;
 import android.app.smartspace.SmartspaceTarget;
 import android.app.smartspace.SmartspaceTargetEvent;
 import android.app.smartspace.uitemplatedata.BaseTemplateData;
-import android.app.smartspace.uitemplatedata.SubCardTemplateData;
 import android.app.smartspace.uitemplatedata.Text;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
@@ -21,10 +20,12 @@ import android.os.RemoteException;
 import android.os.UserHandle;
 import android.view.View;
 
+import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.CommandActivity;
 import com.john.freezeapp.MainActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.freeze.ManagerActivity;
@@ -37,6 +38,10 @@ import java.util.UUID;
 
 public class FreezeHomeFuncHelper {
     public static List<FreezeHomeFuncData> getFreezeHomeFuncData(Context context) {
+        if (!ClientBinderManager.isActive()) {
+            return null;
+        }
+
         List<FreezeHomeFuncData> list = new ArrayList<>();
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_manager_app), new View.OnClickListener() {
             @Override
@@ -54,25 +59,25 @@ public class FreezeHomeFuncHelper {
                 context.startActivity(intent);
             }
         }));
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage), new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    Intent intent = new Intent(context, BatteryUsageActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    context.startActivity(intent);
-//                }
-//            }));
-//        }
-//        if (BuildConfig.DEBUG) {
-//            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test), new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    toTest2(context);
-//                }
-//            }));
-//        }
+        IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
+        if (batteryStats != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, BatteryUsageActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }
+            }));
+        }
+        if (BuildConfig.DEBUG) {
+            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test), new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toTest2(context);
+                }
+            }));
+        }
 
         return list;
     }

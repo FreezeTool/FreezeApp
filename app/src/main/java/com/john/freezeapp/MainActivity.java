@@ -25,8 +25,10 @@ import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 import com.john.freezeapp.home.FreezeHomeDaemonData;
+import com.john.freezeapp.home.FreezeHomeData;
 import com.john.freezeapp.home.FreezeHomeDeviceData;
 import com.john.freezeapp.home.FreezeHomeAdapter;
+import com.john.freezeapp.home.FreezeHomeFuncData;
 import com.john.freezeapp.home.FreezeHomeFuncHelper;
 
 import java.io.PrintWriter;
@@ -66,7 +68,7 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
                         if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
-                            SharedPrefUtil.setString(SharedPrefUtil.KEY_KERNEL_VERSION, commandResult.successMsg.replace("\n",""));
+                            SharedPrefUtil.setString(SharedPrefUtil.KEY_KERNEL_VERSION, commandResult.successMsg.replace("\n", ""));
                         }
                     }
                 });
@@ -77,7 +79,7 @@ public class MainActivity extends BaseActivity {
 
     private void updateData() {
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
-        List list = new ArrayList();
+        List<FreezeHomeData> list = new ArrayList<>();
         FreezeHomeDaemonData freezeDaemonData = new FreezeHomeDaemonData(isDaemonActive(), new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -89,14 +91,18 @@ public class MainActivity extends BaseActivity {
         list.add(freezeDaemonData);
 
         list.add(getDeviceData());
+
         if (isDaemonActive()) {
-            list.addAll(FreezeHomeFuncHelper.getFreezeHomeFuncData(this));
+            List<FreezeHomeFuncData> freezeHomeFuncData = FreezeHomeFuncHelper.getFreezeHomeFuncData(this);
+            if (freezeHomeFuncData != null) {
+                list.addAll(freezeHomeFuncData);
+            }
         }
 
         homeAdapter.updateData(list);
     }
 
-    private Object getDeviceData() {
+    private FreezeHomeDeviceData getDeviceData() {
         FreezeHomeDeviceData freezeDeviceData = new FreezeHomeDeviceData();
         // 设备
         freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("设备", FreezeUtil.getDevice()));

@@ -2,7 +2,7 @@ package com.john.freezeapp.home;
 
 import android.view.View;
 
-public class FreezeHomeDaemonData {
+public class FreezeHomeDaemonData extends FreezeHomeData{
     public boolean isActive;
     public View.OnClickListener onClickStartDaemon;
 
