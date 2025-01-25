@@ -71,13 +71,14 @@ public class Daemon {
 
 
     public void stop() {
-        DaemonShellUtils.stop();
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                Looper.getMainLooper().quit();
-            }
-        });
+        System.exit(0);
+//        DaemonShellUtils.stop();
+//        mHandler.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                Looper.getMainLooper().quit();
+//            }
+//        });
     }
 
 }

@@ -79,33 +79,9 @@ public class DaemonStartActivity extends BaseActivity {
         initShizuku();
     }
 
-    public static boolean isSuEnable() {
-        File file = null;
-        String[] paths = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/", "/su/bin/"};
-        try {
-            for (String path : paths) {
-                file = new File(path + "su");
-                if (file.exists() && file.canExecute()) {
-                    return true;
-                }
-            }
-        } catch (Exception x) {
-            x.printStackTrace();
-        }
-        return false;
-    }
-
-    private boolean isShizukuActive() {
-        try {
-            return Shizuku.getBinder() != null;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     private void initShizuku() {
         Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
-        if (isShizukuActive()) {
+        if (FreezeUtil.isShizukuActive()) {
             tvShizukuStatus.setText(getResources().getString(R.string.main_shizuku_server_active));
             tvShizukuStartServer.setVisibility(View.VISIBLE);
         } else {
@@ -115,7 +91,7 @@ public class DaemonStartActivity extends BaseActivity {
     }
 
     private void initRoot() {
-        if (isSuEnable()) {
+        if (FreezeUtil.isSuEnable()) {
             tvRootStatus.setText(getResources().getString(R.string.main_root_server_active));
             tvRootStartServer.setVisibility(View.VISIBLE);
         } else {
@@ -142,8 +118,6 @@ public class DaemonStartActivity extends BaseActivity {
         if (isDaemonActive()) {
             finish();
         }
-
-        removeHideLoading();
         hideLoading();
     }
 
@@ -156,50 +130,18 @@ public class DaemonStartActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        removeHideLoading();
         Shizuku.removeRequestPermissionResultListener(onRequestPermissionResultListener);
-    }
-
-    private boolean checkShizukuPermission() {
-        if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
     }
 
     private void toRealShizuku() {
         showLoading();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String[] arrays = {"sh"};
-                ShizukuRemoteProcess shizukuRemoteProcess = Shizuku.newProcess(arrays, null, null);
-                DataOutputStream os = null;
-                try {
-                    os = new DataOutputStream(shizukuRemoteProcess.getOutputStream());
-                    os.write(FreezeUtil.getStartShell(DaemonStartActivity.this).getBytes());
-                    os.writeBytes("\n");
-                    os.flush();
-                    os.writeBytes("exit\n");
-                    os.flush();
-                    boolean result = DaemonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    try {
-                        os.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
+        FreezeAppManager.execShizuku(this, null);
     }
 
 
     public void toShizuku(View v) {
         Log.d("song", "");
-        if (!checkShizukuPermission()) {
+        if (!FreezeUtil.checkShizukuPermission()) {
             Shizuku.requestPermission(REQUEST_CODE);
         } else {
             toRealShizuku();
@@ -208,30 +150,12 @@ public class DaemonStartActivity extends BaseActivity {
 
     public void toRoot(View view) {
         showLoading();
-        delayHideLoading();
+        hideLoading(2000);
         DaemonShellUtils.execCommand(FreezeUtil.getStartShell(this), true, new DaemonShellUtils.ShellCommandResultCallback() {
             @Override
             public void callback(DaemonShellUtils.ShellCommandResult commandResult) {
 
             }
         });
-    }
-
-
-    private Handler mHandler = new Handler(Looper.getMainLooper());
-
-    private Runnable mHideLoadingRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hideLoading();
-        }
-    };
-
-    private void delayHideLoading() {
-        mHandler.postDelayed(mHideLoadingRunnable, 2000);
-    }
-
-    private void removeHideLoading() {
-        mHandler.removeCallbacks(mHideLoadingRunnable);
     }
 }

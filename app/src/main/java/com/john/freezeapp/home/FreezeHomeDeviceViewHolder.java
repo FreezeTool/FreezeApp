@@ -57,7 +57,7 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
                 tvContent.setText(deviceInfo.content);
                 ViewGroup.MarginLayoutParams marginLayoutParams = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                 if (i != 0) {
-                    marginLayoutParams.topMargin = ScreenUtils.dp2px(getContext(), 8);
+                    marginLayoutParams.topMargin = ScreenUtils.dp2px(getContext(), 12);
                 }
                 linearLayout.addView(deviceView, marginLayoutParams);
             }

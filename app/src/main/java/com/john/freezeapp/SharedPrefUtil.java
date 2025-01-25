@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 public class SharedPrefUtil {
 
     private static final String NAMESPACE = "FreezeApp";
-    public static final String KEY_KERNEL_VERSION = "key_kernel_version";
+    public static final String KEY_KERNEL_VERSION = "KEY_KERNEL_VERSION";
 
     private static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);

@@ -10,12 +10,15 @@ import android.content.pm.ParceledListSlice;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.text.TextUtils;
+import android.view.View;
 
 import com.google.gson.Gson;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.daemon.DaemonShellUtils;
 
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import rikka.shizuku.Shizuku;
+import rikka.shizuku.ShizukuRemoteProcess;
 
 public class FreezeAppManager {
 
@@ -492,6 +499,51 @@ public class FreezeAppManager {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    public static void execShizuku(Context context, Callback2 callback) {
+        ThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                String[] arrays = {"sh"};
+                ShizukuRemoteProcess shizukuRemoteProcess = Shizuku.newProcess(arrays, null, null);
+                DataOutputStream os = null;
+                try {
+                    os = new DataOutputStream(shizukuRemoteProcess.getOutputStream());
+                    os.write(FreezeUtil.getStartShell(context).getBytes());
+                    os.writeBytes("\n");
+                    os.flush();
+                    os.writeBytes("exit\n");
+                    os.flush();
+                    boolean result = DaemonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
+                    if (callback != null) {
+                        callback.success();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    if (callback != null) {
+                        callback.fail();
+                    }
+                } finally {
+                    try {
+                        os.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
+
+
+    public static void toRoot(Context context) {
+        DaemonShellUtils.execCommand(FreezeUtil.getStartShell(context), true, new DaemonShellUtils.ShellCommandResultCallback() {
+            @Override
+            public void callback(DaemonShellUtils.ShellCommandResult commandResult) {
+
+            }
+        });
     }
 
 }

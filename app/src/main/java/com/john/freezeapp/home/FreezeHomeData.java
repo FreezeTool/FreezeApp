@@ -1,4 +1,6 @@
 package com.john.freezeapp.home;
 
-public abstract class FreezeHomeData {
+import com.john.freezeapp.recyclerview.CardData;
+
+public abstract class FreezeHomeData extends CardData {
 }

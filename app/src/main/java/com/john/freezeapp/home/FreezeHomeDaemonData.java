@@ -2,13 +2,14 @@ package com.john.freezeapp.home;
 
 import android.view.View;
 
-public class FreezeHomeDaemonData extends FreezeHomeData{
-    public boolean isActive;
-    public View.OnClickListener onClickStartDaemon;
+public class FreezeHomeDaemonData extends FreezeHomeData {
+    public String title;
+    public String subTitle;
+    public String content;
+    public View.OnClickListener onClickListener;
+    public String btnText;
+    public int btnLeftDrawable;
+    public boolean showBtn = false;
+    public int icon;
 
-
-    public FreezeHomeDaemonData(boolean daemonActive, View.OnClickListener onClickStartDaemon) {
-        this.isActive = daemonActive;
-        this.onClickStartDaemon = onClickStartDaemon;
-    }
 }

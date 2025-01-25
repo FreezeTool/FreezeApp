@@ -1,141 +1,135 @@
 package com.john.freezeapp;
 
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.RemoteException;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.TextUtils;
-import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.lifecycle.Lifecycle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
+import com.google.android.material.tabs.TabLayout;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
-import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.freeze.ManagerActivity;
+import com.john.freezeapp.home.FreezeHomeBillboardData;
 import com.john.freezeapp.home.FreezeHomeDaemonData;
 import com.john.freezeapp.home.FreezeHomeData;
 import com.john.freezeapp.home.FreezeHomeDeviceData;
 import com.john.freezeapp.home.FreezeHomeAdapter;
 import com.john.freezeapp.home.FreezeHomeFuncData;
 import com.john.freezeapp.home.FreezeHomeFuncHelper;
+import com.john.freezeapp.home.FuncFragment;
+import com.john.freezeapp.home.HomeFragment;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+
+import rikka.shizuku.Shizuku;
 
 
 public class MainActivity extends BaseActivity {
 
-
-    RecyclerView recyclerView;
     Toolbar toolbar;
 
-    FreezeHomeAdapter homeAdapter = new FreezeHomeAdapter();
+    ViewPager viewPager;
 
+    private final List<Tab> tabs = new ArrayList<>();
+
+    public static class Tab {
+        public int menuId;
+        public Fragment fragment;
+
+        public Tab(int menuId, Fragment fragment) {
+            this.fragment = fragment;
+            this.menuId = menuId;
+        }
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar);
+        FreezeUtil.generateShell(this);
         setSupportActionBar(toolbar);
-        recyclerView = findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(homeAdapter);
-        generateShell();
-        updateData();
-        requestKernelVersion();
-    }
-
-    private void requestKernelVersion() {
-        if (isDaemonActive()) {
-            // 内核
-            String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
-            if (kernelVersion == null) {
-                ClientRemoteShell.execCommand("uname -r", new ClientRemoteShell.RemoteShellCommandResultCallback() {
-                    @Override
-                    public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                        if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
-                            SharedPrefUtil.setString(SharedPrefUtil.KEY_KERNEL_VERSION, commandResult.successMsg.replace("\n", ""));
-                        }
-                    }
-                });
-            }
-        }
-    }
-
-
-    private void updateData() {
-        ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
-        List<FreezeHomeData> list = new ArrayList<>();
-        FreezeHomeDaemonData freezeDaemonData = new FreezeHomeDaemonData(isDaemonActive(), new View.OnClickListener() {
+        tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));
+        tabs.add(new Tab(R.id.navigation_func, new FuncFragment()));
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        viewPager = findViewById(R.id.viewPager);
+        viewPager.setAdapter(new MainAdapter(tabs, getSupportFragmentManager()));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, DaemonStartActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                bottomNavigationView.getMenu().getItem(position).setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
-        list.add(freezeDaemonData);
-
-        list.add(getDeviceData());
-
-        if (isDaemonActive()) {
-            List<FreezeHomeFuncData> freezeHomeFuncData = FreezeHomeFuncHelper.getFreezeHomeFuncData(this);
-            if (freezeHomeFuncData != null) {
-                list.addAll(freezeHomeFuncData);
+        bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                for (int i = 0; i < tabs.size(); i++) {
+                    if (tabs.get(i).menuId == item.getItemId()) {
+                        viewPager.setCurrentItem(i);
+                        return true;
+                    }
+                }
+                return false;
             }
+        });
+    }
+
+    public static class MainAdapter extends FragmentPagerAdapter {
+        List<Tab> fragments;
+
+        public MainAdapter(List<Tab> tabs, @NonNull FragmentManager fm) {
+            super(fm);
+            this.fragments = tabs;
         }
 
-        homeAdapter.updateData(list);
-    }
-
-    private FreezeHomeDeviceData getDeviceData() {
-        FreezeHomeDeviceData freezeDeviceData = new FreezeHomeDeviceData();
-        // 设备
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("设备", FreezeUtil.getDevice()));
-        // 版本
-        String androidVersion = Build.VERSION.PREVIEW_SDK_INT != 0 ? Build.VERSION.CODENAME : Build.VERSION.RELEASE;
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("版本", String.format("Android %s (%s)", androidVersion, Build.VERSION.SDK_INT)));
-        // 架构
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("架构", Build.SUPPORTED_ABIS[0]));
-        // User
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("USER", Build.USER));
-        // Build号
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("Build号", Build.ID));
-        // 内核
-        String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
-        if (!TextUtils.isEmpty(kernelVersion)) {
-            freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("内核", kernelVersion));
+        @NonNull
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position).fragment;
         }
 
-        return freezeDeviceData;
-    }
-
-    @Override
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        super.bindDaemon(daemonBinderContainer);
-        updateData();
-        requestKernelVersion();
-    }
-
-
-    @Override
-    protected void unbindDaemon() {
-        super.unbindDaemon();
-        updateData();
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
     }
 
     @Override
@@ -161,34 +155,26 @@ public class MainActivity extends BaseActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void stopDaemon() {
-        if (ClientBinderManager.isActive()) {
-            try {
-                ClientBinderManager.getDaemonBinderContainer().closeDeamon();
-            } catch (RemoteException e) {
-                throw new RuntimeException(e);
+    @Override
+    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
+        super.bindDaemon(daemonBinderContainer);
+        postUI(new Runnable() {
+            @Override
+            public void run() {
+                viewPager.setCurrentItem(1);
             }
-        }
+        });
     }
 
-    private void generateShell() {
-        String shellFilePath = FreezeUtil.getShellFilePath(this);
-        PrintWriter printWriter = null;
-        try {
-            printWriter = new PrintWriter(shellFilePath);
-            printWriter.println(FreezeUtil.getStartShell(this));
-            printWriter.println("echo success");
-            printWriter.close();
-            DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
-        } catch (Throwable th) {
-            try {
-                if (printWriter != null) {
-                    printWriter.close();
-                }
-            } catch (Throwable th2) {
-                th.addSuppressed(th2);
+    @Override
+    protected void unbindDaemon() {
+        super.unbindDaemon();
+        postUI(new Runnable() {
+            @Override
+            public void run() {
+                viewPager.setCurrentItem(0);
             }
-        }
+        });
     }
 
     private void showStopDaemonDialog() {
@@ -197,7 +183,7 @@ public class MainActivity extends BaseActivity {
                 .setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        stopDaemon();
+                        FreezeUtil.stopDaemon();
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {

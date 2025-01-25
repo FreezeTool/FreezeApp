@@ -8,8 +8,10 @@ import java.util.List;
 public class FreezeHomeAdapter extends CardRecyclerViewAdapter<ClassCreatorPool> {
     public FreezeHomeAdapter() {
         getCreatorPool().putRule(FreezeHomeFuncData.class, FreezeHomeFuncViewHolder.CREATOR);
-        getCreatorPool().putRule(FreezeHomeDaemonData.class, FreezeHomeDaemonViewHolder.CREATOR);
+        getCreatorPool().putRule(FreezeHomeBillboardData.class, FreezeHomeBillboardViewHolder.CREATOR);
         getCreatorPool().putRule(FreezeHomeDeviceData.class, FreezeHomeDeviceViewHolder.CREATOR);
+        getCreatorPool().putRule(FreezeHomeDaemonData.class, FreezeHomeDaemonViewHolder.CREATOR);
+        getCreatorPool().putRule(CommonEmptyData.class, CommonEmptyViewHolder.CREATOR);
         setHasStableIds(true);
     }
 

@@ -29,6 +29,7 @@ import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.freeze.ManagerActivity;
+import com.john.freezeapp.usagestats.UsageStatsActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,40 +44,67 @@ public class FreezeHomeFuncHelper {
         }
 
         List<FreezeHomeFuncData> list = new ArrayList<>();
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_manager_app), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, ManagerActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-        }));
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app), new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, CommandActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-            }
-        }));
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_manager_app),
+                R.drawable.ic_vector_apps,
+                0xffF2C8F8,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, ManagerActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }));
+
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_usage),
+                R.drawable.ic_vector_usage_stats,
+                0xffACD4EB,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, UsageStatsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }));
+
         IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
         if (batteryStats != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage), new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, BatteryUsageActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                }
-            }));
+            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage),
+                    R.drawable.ic_vector_battery,
+                    0xffB5EBDA,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(context, BatteryUsageActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
+                        }
+                    }));
         }
+
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
+                R.drawable.ic_vector_window,
+                0xffF4E1B9,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, CommandActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }));
+
         if (BuildConfig.DEBUG) {
-            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test), new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    toTest2(context);
-                }
-            }));
+            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test),
+                    R.drawable.ic_vector_window,
+                    0xffD0ACA3,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            toTest2(context);
+                        }
+                    }));
         }
 
         return list;
@@ -92,22 +120,14 @@ public class FreezeHomeFuncHelper {
             ISmartspaceManager smartspaceManager = ClientBinderManager.getSmartspaceManager();
             if (smartspaceManager != null) {
                 UserHandle userHandle = UserHandle.getUserHandleForUid(Process.myUid());
-                SmartspaceSessionId sessionId = new SmartspaceSessionId(
-                        context.getPackageName() + ":" + UUID.randomUUID().toString(), userHandle);
+                SmartspaceSessionId sessionId = new SmartspaceSessionId(context.getPackageName() + ":" + UUID.randomUUID().toString(), userHandle);
                 SmartspaceConfig smartspaceConfig = new SmartspaceConfig.Builder(context, "lockscreen").build();
 
                 smartspaceManager.createSmartspaceSession(smartspaceConfig, sessionId, new Binder());
 
-                BaseTemplateData baseTemplateData = new BaseTemplateData.Builder(SmartspaceTarget.UI_TEMPLATE_SUB_CARD)
-                        .setSubtitleItem(new BaseTemplateData.SubItemInfo.Builder()
-                                .setText(new Text.Builder("John").build())
-                                .build())
-                        .build();
-                SmartspaceTarget smartspaceTarget = new SmartspaceTarget.Builder(BuildConfig.APPLICATION_ID, new ComponentName(BuildConfig.APPLICATION_ID, MainActivity.class.getName()), userHandle)
-                        .setTemplateData(baseTemplateData)
-                        .build();
-                SmartspaceTargetEvent smartspaceTargetEvent = new SmartspaceTargetEvent.Builder(SmartspaceTargetEvent.EVENT_UI_SURFACE_SHOWN)
-                        .setSmartspaceTarget(smartspaceTarget).build();
+                BaseTemplateData baseTemplateData = new BaseTemplateData.Builder(SmartspaceTarget.UI_TEMPLATE_SUB_CARD).setSubtitleItem(new BaseTemplateData.SubItemInfo.Builder().setText(new Text.Builder("John").build()).build()).build();
+                SmartspaceTarget smartspaceTarget = new SmartspaceTarget.Builder(BuildConfig.APPLICATION_ID, new ComponentName(BuildConfig.APPLICATION_ID, MainActivity.class.getName()), userHandle).setTemplateData(baseTemplateData).build();
+                SmartspaceTargetEvent smartspaceTargetEvent = new SmartspaceTargetEvent.Builder(SmartspaceTargetEvent.EVENT_UI_SURFACE_SHOWN).setSmartspaceTarget(smartspaceTarget).build();
 
                 smartspaceManager.notifySmartspaceEvent(sessionId, smartspaceTargetEvent);
             }
@@ -122,27 +142,6 @@ public class FreezeHomeFuncHelper {
      * @param context
      */
     private static void toTest(Context context) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        Date time = calendar.getTime();
-        try {
-            ParceledListSlice<UsageStats> parceledListSlice = ClientBinderManager.getUsageStatsManager().queryUsageStats(UsageStatsManager.INTERVAL_DAILY, calendar.getTimeInMillis(), System.currentTimeMillis(), null, 0);
-            List<UsageStats> list = parceledListSlice.getList();
 
-            for (UsageStats usageStats : list) {
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append(usageStats.getPackageName());
-                stringBuilder.append(",");
-//                stringBuilder.append(usageStats.mLaunchCount);
-
-                ClientLog.log(stringBuilder.toString());
-            }
-
-
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

@@ -1,6 +1,8 @@
 package com.john.freezeapp;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -20,11 +22,36 @@ public abstract class BaseActivity extends AppCompatActivity {
     private RelativeLayout mLoadingView;
     private AtomicInteger mLoadingInteger = new AtomicInteger(0);
 
+    private boolean isDestroy = false;
+
+    ClientBinderManager.IDaemonBinderContainerListener iDaemonBinderContainerListener = new ClientBinderManager.IDaemonBinderContainerListener() {
+        @Override
+        public void bind(IDaemonBinderContainer daemonBinderContainer) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    toBindDaemon(daemonBinderContainer);
+                }
+            });
+        }
+
+        @Override
+        public void unbind() {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    toUnbindDaemon();
+                }
+            });
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isDestroy = false;
         daemonBinderContainer = ClientBinderManager.getDaemonBinderContainer();
-        initBinderContainerListener();
+        ClientBinderManager.registerDaemonBinderContainerListener(iDaemonBinderContainerListener);
         mContentView = getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
@@ -34,6 +61,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void showLoading() {
+        if (isDestroy()) {
+            return;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -56,6 +86,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     protected void hideLoading() {
+        if (isDestroy()) {
+            return;
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -69,6 +102,32 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
     }
 
+    protected void forceHideLoading() {
+        if (isDestroy()) {
+            return;
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mLoadingInteger.set(0);
+                if (mLoadingView != null && mLoadingView.getParent() != null) {
+                    getLoadingContainer().removeView(mLoadingView);
+                }
+            }
+        });
+    }
+
+    protected boolean isDestroy() {
+        return isDestroy;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ClientBinderManager.unregisterDaemonBinderContainerListener(iDaemonBinderContainerListener);
+        removeDelayHideLoading();
+        isDestroy = true;
+    }
 
     protected boolean isDaemonActive() {
         return ClientBinderManager.isActive();
@@ -89,35 +148,42 @@ public abstract class BaseActivity extends AppCompatActivity {
     private void toBindDaemon(IDaemonBinderContainer daemonBinderContainer) {
         this.daemonBinderContainer = daemonBinderContainer;
         bindDaemon(daemonBinderContainer);
+        removeDelayHideLoading();
     }
 
     private void toUnbindDaemon() {
         unbindDaemon();
+        removeDelayHideLoading();
     }
 
 
     private void initBinderContainerListener() {
-        ClientBinderManager.registerDaemonBinderContainerListener(new ClientBinderManager.IDaemonBinderContainerListener() {
-            @Override
-            public void bind(IDaemonBinderContainer daemonBinderContainer) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        toBindDaemon(daemonBinderContainer);
-                    }
-                });
-            }
 
-            @Override
-            public void unbind() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        toUnbindDaemon();
-                    }
-                });
-            }
-        });
+    }
+
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private final Runnable mHideLoadingRunnable = new Runnable() {
+        @Override
+        public void run() {
+            hideLoading();
+        }
+    };
+
+    protected void hideLoading(long delay) {
+        if (isDestroy()) {
+            return;
+        }
+        mHandler.postDelayed(mHideLoadingRunnable, delay);
+    }
+
+    private void removeDelayHideLoading() {
+        mHandler.removeCallbacks(mHideLoadingRunnable);
+    }
+
+    protected void postUI(Runnable runnable) {
+        mHandler.post(runnable);
     }
 
 }

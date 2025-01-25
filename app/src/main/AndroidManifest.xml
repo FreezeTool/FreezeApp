@@ -43,6 +43,8 @@
 
         <activity android:name=".DaemonStartActivity"></activity>
 
+        <activity android:name=".usagestats.UsageStatsActivity"></activity>
+
 
         <provider
             android:name="rikka.shizuku.ShizukuProvider"

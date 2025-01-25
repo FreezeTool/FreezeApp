@@ -1,12 +1,17 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.FreezeApp" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/daemon</item>
+        <!-- PrimaryColor：主题颜色。app的主要颜色，即整个屏幕和所有控件的主要颜色，首选颜色。 -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--状态栏颜色-->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="backgroundColor">@color/white</item>
-
+        <item name="android:windowBackground">@color/white</item>
+        <!--底部navigationBar颜色-->
+        <item name="android:navigationBarColor">@color/white</item>
         <!-- Customize your theme here. -->
     </style>
 </resources>

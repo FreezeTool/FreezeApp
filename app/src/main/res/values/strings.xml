@@ -4,25 +4,35 @@
     <string name="command_name">ExecuteCommand</string>
     <string name="battery_usage_name">BatteryUsage</string>
     <string name="daemon_start_name">DaemonStart</string>
+    <string name="usage_stats_name">UsageStats</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
-    <string name="main_manager_app">管理APP</string>
-    <string name="main_battery_usage">电池使用记录</string>
-    <string name="main_command_app">执行Command</string>
+    <string name="main_manager_app">APP管理</string>
+    <string name="main_battery_usage">APP电池记录</string>
+    <string name="main_command_app">ADB</string>
+    <string name="main_app_usage">App使用记录</string>
     <string name="main_test">TEST</string>
-    <string name="main_adb_start_server_title">通过adb开启</string>
 
-    <string name="main_shizuku_start_server_title">通过Shizuku开启</string>
+    <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
+    <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动FreezeApp服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>
+    <string name="main_shizuku_start_server_title">Shizuku启动（%1$s）</string>
+    <string name="main_shizuku_start_server_content">如果您已经启动了Shizuku服务，则可以直接调用Shizuku来启动FreezeApp服务（Shizuku服务需要从Google Play 或者 Github下载）。</string>
+    <string name="main_root_start_server_title">root启动（%1$s）</string>
+    <string name="main_root_start_server_content">如果您已经将手机root，可以直接使用root权限来启动FreezeApp服务。（root方式可以使用Magisk、KernelSU、APatch）</string>
     <string name="main_shizuku_server_active">Shizuku服务正在运行</string>
     <string name="main_shizuku_server_not_active">Shizuku服务未启动</string>
 
 
-    <string name="main_root_start_server_title">通过Root开启</string>
-    <string name="main_root_server_active">检测到当前手机已Root</string>
+    <string name="main_server_active">正在运行</string>
+    <string name="main_server_not_active">未启动</string>
+
+
+    <string name="main_root_server_active">检测到已Root</string>
     <string name="main_root_server_not_active">未检测到Root</string>
 
     <string name="main_start_app_process">启动</string>
+    <string name="main_start_watch_cmd">查看指令</string>
 
     <string name="manager_running_app_title">运行中APP</string>
     <string name="manager_freeze_app_title">可冻结APP</string>
@@ -33,9 +43,13 @@
     <string name="manager_btn_defrost">解冻</string>
 
     <string name="btn_submit">确定</string>
+    <string name="btn_copy">复制</string>
     <string name="btn_cancel">取消</string>
 
     <string name="command_btn_execute">执行</string>
 
     <string name="freeze_stop_daemon_title">Freeze服务将被停止</string>
+
+    <string name="main_home_menu">首页</string>
+    <string name="main_home_func">功能</string>
 </resources>
