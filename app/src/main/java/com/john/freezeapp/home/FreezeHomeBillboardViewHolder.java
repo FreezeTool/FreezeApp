@@ -1,5 +1,6 @@
 package com.john.freezeapp.home;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,7 @@ import com.john.freezeapp.recyclerview.CardViewHolder;
 
 public class FreezeHomeBillboardViewHolder extends CardViewHolder<FreezeHomeBillboardData> {
 
-    TextView tvTitle, tvSubtitle;
+    TextView tvTitle, tvSubtitle, tvContent;
     AppCompatButton btnStart;
     ImageView ivIcon;
 
@@ -31,6 +32,7 @@ public class FreezeHomeBillboardViewHolder extends CardViewHolder<FreezeHomeBill
         tvTitle = itemView.findViewById(R.id.tv_title);
         tvSubtitle = itemView.findViewById(R.id.tv_subtitle);
         ivIcon = itemView.findViewById(R.id.iv_icon);
+        tvContent = itemView.findViewById(R.id.tv_content);
 
     }
 
@@ -39,6 +41,7 @@ public class FreezeHomeBillboardViewHolder extends CardViewHolder<FreezeHomeBill
         super.onBind();
         FreezeHomeBillboardData data = getData();
         btnStart.setVisibility(View.GONE);
+        tvContent.setVisibility(View.GONE);
         if (!data.isActive) {
             tvTitle.setVisibility(View.VISIBLE);
             tvTitle.setText(R.string.main_app_server_not_active);
@@ -47,9 +50,19 @@ public class FreezeHomeBillboardViewHolder extends CardViewHolder<FreezeHomeBill
         } else {
             tvTitle.setVisibility(View.VISIBLE);
             tvTitle.setText(R.string.main_app_server_active);
-            tvSubtitle.setText(String.format("版本 %s , adb", BuildConfig.VERSION_NAME));
+            tvSubtitle.setText(String.format("版本 %s , adb", data.version));
             tvSubtitle.setVisibility(View.VISIBLE);
             ivIcon.setImageResource(R.mipmap.ic_success);
+            if (!TextUtils.isEmpty(data.tip)) {
+                tvContent.setVisibility(View.VISIBLE);
+                tvContent.setText(data.tip);
+            }
+            if (!TextUtils.isEmpty(data.btn)) {
+                btnStart.setText(data.btn);
+                btnStart.setVisibility(View.VISIBLE);
+                btnStart.setCompoundDrawablesRelativeWithIntrinsicBounds(getContext().getDrawable(R.drawable.ic_vector_start), null, null, null);
+            }
         }
+        btnStart.setOnClickListener(data.onClickStartDaemon);
     }
 }

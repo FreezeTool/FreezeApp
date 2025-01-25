@@ -7,6 +7,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
 import com.john.freezeapp.daemon.process.RemoteProcess;
@@ -53,9 +54,14 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     }
 
     @Override
-    public String getName() throws RemoteException {
-        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call getName");
-        return "daemon binder";
+    public String getConfig(String key) throws RemoteException {
+        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call getConfig key=" + key);
+        switch (key) {
+            case DaemonHelper.KEY_DAEMON_VERSION:
+                return BuildConfig.VERSION_NAME;
+//                return "1.0";
+        }
+        return "";
     }
 
     @Override

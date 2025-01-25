@@ -44,7 +44,9 @@ public class ClientRemoteShell {
             public void run() {
                 boolean result = false;
                 if (commands == null || commands.length == 0) {
-                    callback.callback(new RemoteShellCommandResult(result, null, null));
+                    if(callback != null) {
+                        callback.callback(new RemoteShellCommandResult(result, null, null));
+                    }
                     return;
                 }
                 CountDownLatch countDownLatch = new CountDownLatch(2);
@@ -136,7 +138,9 @@ public class ClientRemoteShell {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                callback.callback(new RemoteShellCommandResult(result, successMsg == null ? null : successMsg.toString(), errorMsg == null ? null : errorMsg.toString()));
+                if(callback != null) {
+                    callback.callback(new RemoteShellCommandResult(result, successMsg == null ? null : successMsg.toString(), errorMsg == null ? null : errorMsg.toString()));
+                }
             }
         });
     }

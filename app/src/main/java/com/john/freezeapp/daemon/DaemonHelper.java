@@ -13,5 +13,6 @@ public class DaemonHelper {
     public static final String ACTION_APP_PROCESS_START = "action.freeze.app.process.start";
     public static final String ACTION_APP_PROCESS_STOP = "action.freeze.app.process.stop";
     public static final String DAEMON_NICKNAME = "FreezeApp_" + BuildConfig.APPLICATION_ID;
+    public static final String KEY_DAEMON_VERSION = "key_daemon_version";
 
 }

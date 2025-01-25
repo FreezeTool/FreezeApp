@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseFragment;
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.DaemonStartActivity;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.FreezeUtil;
@@ -28,6 +30,7 @@ import com.john.freezeapp.SharedPrefUtil;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.daemon.DaemonHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -102,14 +105,33 @@ public class HomeFragment extends BaseFragment {
     private void updateData(Context context) {
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
         List<FreezeHomeData> list = new ArrayList<>();
-        FreezeHomeBillboardData freezeDaemonData = new FreezeHomeBillboardData(isDaemonActive(), new View.OnClickListener() {
+        String version = "";
+        String tip = "";
+        String btn = "";
+        if (isDaemonActive()) {
+
+            try {
+                String daemonVersion = getDaemonBinder().getConfig(DaemonHelper.KEY_DAEMON_VERSION);
+                version = daemonVersion + "（" + BuildConfig.VERSION_NAME + "）";
+                if (!TextUtils.equals(daemonVersion, BuildConfig.VERSION_NAME)) {
+                    tip = context.getString(R.string.main_home_daemon_tip);
+                    btn = context.getString(R.string.main_restart_app_process);
+                }
+            } catch (RemoteException e) {
+                version = BuildConfig.VERSION_NAME;
+            }
+        }
+        FreezeHomeBillboardData freezeDaemonData = new FreezeHomeBillboardData();
+        freezeDaemonData.isActive = isDaemonActive();
+        freezeDaemonData.version = version;
+        freezeDaemonData.tip = tip;
+        freezeDaemonData.btn = btn;
+        freezeDaemonData.onClickStartDaemon = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), DaemonStartActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                restartDaemon();
             }
-        });
+        };
         list.add(freezeDaemonData);
 
         list.add(getDeviceData());
@@ -165,6 +187,17 @@ public class HomeFragment extends BaseFragment {
         list.add(rootDaemonData);
 
         homeAdapter.updateData(list);
+    }
+
+    private void restartDaemon() {
+        showLoading();
+        String cmd = "sh " + FreezeUtil.getShellFilePath(getContext());
+        ClientRemoteShell.execCommand(cmd, new ClientRemoteShell.RemoteShellCommandResultCallback() {
+            @Override
+            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
+                hideLoading();
+            }
+        });
     }
 
     private void toRoot(View v) {
