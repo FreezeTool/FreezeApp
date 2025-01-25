@@ -26,8 +26,6 @@ import java.util.List;
 
 public class MainActivity extends BaseActivity {
 
-    Toolbar toolbar;
-
     ViewPager viewPager;
 
     private final List<Tab> tabs = new ArrayList<>();
@@ -46,8 +44,9 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.toolbar);
+
         FreezeUtil.generateShell(this);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));

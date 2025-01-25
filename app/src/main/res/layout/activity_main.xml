@@ -15,7 +15,7 @@
         app:itemRippleColor="@android:color/transparent"
         app:itemTextColor="@color/bottom_navigation_color"
         app:itemIconTint="@color/bottom_navigation_color"
-        android:background="@color/colorPrimary"
+        android:background="@color/white"
         app:menu="@menu/bottom_nav_menu" />
 
 

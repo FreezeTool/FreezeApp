@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.DaemonStartActivity;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
@@ -253,12 +252,12 @@ public class HomeFragment extends BaseFragment {
     private void showWatchCommandDialog() {
         String command = String.format("adb shell sh %s", FreezeUtil.getShellFilePath(getContext()));
         new AlertDialog.Builder(getContext())
-                .setMessage(command)
+                .setMessage("$ " + command)
                 .setPositiveButton(R.string.btn_copy, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                        clipboardManager.setText("$ " + command);
+                        clipboardManager.setText(command);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
