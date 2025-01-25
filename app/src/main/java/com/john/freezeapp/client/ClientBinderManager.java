@@ -11,8 +11,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.android.internal.app.IBatteryStats;
-import com.john.freezeapp.IDaemonBinderContainer;
-import com.john.freezeapp.Singleton;
+import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
 
 import java.util.ArrayList;
@@ -20,68 +19,88 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 public class ClientBinderManager {
-    public interface IDaemonBinderContainerListener {
-        void bind(IDaemonBinderContainer daemonBinderContainer);
+    public interface IDaemonBinderListener {
+        void bind(IDaemonBinder daemonBinder);
 
         void unbind();
     }
 
-    private static IDaemonBinderContainer sDaemonBinderContainer;
+    private static IDaemonBinder sDaemonBinder;
 
 
-    private static final List<IDaemonBinderContainerListener> sDaemonBinderContainerListeners = new ArrayList<>();
+    private static final List<IDaemonBinderListener> sDaemonBinderListeners = new ArrayList<>();
 
-    public static void registerDaemonBinderContainerListener(IDaemonBinderContainerListener iDaemonBinderContainerListener) {
-        if (!sDaemonBinderContainerListeners.contains(iDaemonBinderContainerListener)) {
-            sDaemonBinderContainerListeners.add(iDaemonBinderContainerListener);
+    public static void registerDaemonBinderListener(IDaemonBinderListener iDaemonBinderListener) {
+        if (!sDaemonBinderListeners.contains(iDaemonBinderListener)) {
+            sDaemonBinderListeners.add(iDaemonBinderListener);
         }
     }
 
-    public static void unregisterDaemonBinderContainerListener(IDaemonBinderContainerListener iDaemonBinderContainerListener) {
-        sDaemonBinderContainerListeners.remove(iDaemonBinderContainerListener);
+    public static void unregisterDaemonBinderListener(IDaemonBinderListener iDaemonBinderListener) {
+        sDaemonBinderListeners.remove(iDaemonBinderListener);
     }
 
-    private static void notifyBindDaemonBinderContainerListener(IDaemonBinderContainer binderContainer) {
-        for (IDaemonBinderContainerListener sDaemonBinderContainerListener : sDaemonBinderContainerListeners) {
-            sDaemonBinderContainerListener.bind(binderContainer);
+    private static void notifyBindDaemonBinderListener(IDaemonBinder binderContainer) {
+        for (IDaemonBinderListener sDaemonBinderListener : sDaemonBinderListeners) {
+            sDaemonBinderListener.bind(binderContainer);
         }
     }
 
-    private static void notifyUnbindDaemonBinderContainerListener() {
-        for (IDaemonBinderContainerListener sDaemonBinderContainerListener : sDaemonBinderContainerListeners) {
-            sDaemonBinderContainerListener.unbind();
+    private static void notifyUnbindDaemonBinderListener() {
+        for (IDaemonBinderListener sDaemonBinderListener : sDaemonBinderListeners) {
+            sDaemonBinderListener.unbind();
         }
     }
 
-    static synchronized void setDaemonBinderContainer(IDaemonBinderContainer binderContainer) {
-        ClientLog.log("setDaemonBinderContainer=" + binderContainer);
-        sDaemonBinderContainer = binderContainer;
-        notifyBindDaemonBinderContainerListener(binderContainer);
+    static synchronized void setDaemonBinder(IDaemonBinder binderContainer) {
+        ClientLog.log("setDaemonBinder=" + binderContainer);
+        sDaemonBinder = binderContainer;
+        notifyBindDaemonBinderListener(binderContainer);
         try {
             binderContainer.asBinder().linkToDeath(() -> {
-                deathDaemonBinderContainer(binderContainer);
+                deathDaemonBinder(binderContainer);
             }, 0);
         } catch (Throwable e) {
             ClientLog.e(e, "ClientBinder binderDied");
         }
     }
 
-    private synchronized static void deathDaemonBinderContainer(IDaemonBinderContainer binderContainer) {
-        ClientLog.log("deathDaemonBinderContainer sDaemonBinderContainer=" + sDaemonBinderContainer + ",binderContainer=" + binderContainer);
-        if (sDaemonBinderContainer == binderContainer) {
-            sDaemonBinderContainer = null;
-            notifyUnbindDaemonBinderContainerListener();
+    private synchronized static void deathDaemonBinder(IDaemonBinder binderContainer) {
+        ClientLog.log("deathDaemonBinder sDaemonBinder=" + sDaemonBinder + ",binderContainer=" + binderContainer);
+        if (sDaemonBinder == binderContainer) {
+            sDaemonBinder = null;
+            notifyUnbindDaemonBinderListener();
         }
-        deathServerBinder();
     }
 
 
     public static boolean isActive() {
-        return sDaemonBinderContainer != null;
+        return sDaemonBinder != null;
     }
 
-    public static IDaemonBinderContainer getDaemonBinderContainer() {
-        return sDaemonBinderContainer;
+    public static IDaemonBinder getDaemonBinder() {
+        return sDaemonBinder;
+    }
+
+
+    public static void registerClientBinder(IBinder iBinder) {
+        if (isActive()) {
+            try {
+                sDaemonBinder.registerClientBinder(iBinder);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public static void unregisterClientBinder(IBinder iBinder) {
+        if (isActive()) {
+            try {
+                sDaemonBinder.unregisterClientBinder(iBinder);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 
@@ -98,11 +117,7 @@ public class ClientBinderManager {
         String[] cmdarray = new String[st.countTokens()];
         for (int i = 0; st.hasMoreTokens(); i++)
             cmdarray[i] = st.nextToken();
-        return new ClientRemoteProcess(getDaemonBinderContainer().newProcess(cmdarray, envp, dir));
-    }
-
-    private static void deathServerBinder() {
-
+        return new ClientRemoteProcess(getDaemonBinder().newProcess(cmdarray, envp, dir));
     }
 
 

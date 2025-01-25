@@ -13,15 +13,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
+import com.john.freezeapp.client.ClientLogBinderManager;
 import com.john.freezeapp.recyclerview.CardData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FuncFragment extends BaseFragment {
-
+public class LogFragment extends BaseFragment {
     FreezeHomeAdapter homeAdapter = new FreezeHomeAdapter();
     RecyclerView recyclerView;
+
+    ClientLogBinderManager.ClientLogCallback callback = new ClientLogBinderManager.ClientLogCallback() {
+        @Override
+        public void log(String msg) {
+            addMsg(msg);
+        }
+    };
 
     @Nullable
     @Override
@@ -37,10 +44,23 @@ public class FuncFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView.post(new Runnable() {
+        ClientLogBinderManager.registerClientLogCallback(callback);
+        updateData();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        ClientLogBinderManager.unregisterClientLogCallback(callback);
+    }
+
+    private void addMsg(String msg) {
+        postUI(new Runnable() {
             @Override
             public void run() {
-                updateData();
+                if (isDaemonActive()) {
+                    homeAdapter.addData(new FreezeHomeLogData(msg));
+                }
             }
         });
     }
@@ -58,17 +78,19 @@ public class FuncFragment extends BaseFragment {
     }
 
     private void updateData() {
-        List<CardData> list = new ArrayList<>();
-        if (isDaemonActive()) {
-            List<FreezeHomeFuncData> freezeHomeFuncData = FreezeHomeFuncHelper.getFreezeHomeFuncData(getContext());
-            if (freezeHomeFuncData != null) {
-                list.addAll(freezeHomeFuncData);
+        postUI(new Runnable() {
+            @Override
+            public void run() {
+                List<CardData> list = new ArrayList<>();
+                if (isDaemonActive()) {
+                    for (ClientLogBinderManager.LogData logData : ClientLogBinderManager.getLogData()) {
+                        list.add(new FreezeHomeLogData(logData.msg));
+                    }
+                } else {
+                    list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
+                }
+                homeAdapter.updateData(list);
             }
-        } else {
-            list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
-        }
-        homeAdapter.updateData(list);
+        });
     }
-
-
 }

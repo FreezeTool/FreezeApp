@@ -1,6 +1,7 @@
 package com.john.freezeapp;
 
 import android.os.Bundle;
+import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +14,10 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.daemon.DaemonBinderManager;
 
 public class CommandActivity extends BaseActivity {
     Toolbar toolbar;
@@ -28,7 +31,7 @@ public class CommandActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_command);
 
-        if(!isDaemonActive()) {
+        if (!isDaemonActive()) {
             finish();
             return;
         }
@@ -50,6 +53,11 @@ public class CommandActivity extends BaseActivity {
             }
         });
         tvCommandResult = findViewById(R.id.command_result);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override

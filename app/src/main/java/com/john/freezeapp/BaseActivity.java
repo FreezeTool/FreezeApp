@@ -3,7 +3,6 @@ package com.john.freezeapp;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -17,20 +16,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class BaseActivity extends AppCompatActivity {
 
-    private IDaemonBinderContainer daemonBinderContainer;
+    private IDaemonBinder daemonBinder;
     private ViewGroup mContentView;
     private RelativeLayout mLoadingView;
-    private AtomicInteger mLoadingInteger = new AtomicInteger(0);
+    private final AtomicInteger mLoadingInteger = new AtomicInteger(0);
 
     private boolean isDestroy = false;
 
-    ClientBinderManager.IDaemonBinderContainerListener iDaemonBinderContainerListener = new ClientBinderManager.IDaemonBinderContainerListener() {
+    ClientBinderManager.IDaemonBinderListener iDaemonBinderListener = new ClientBinderManager.IDaemonBinderListener() {
         @Override
-        public void bind(IDaemonBinderContainer daemonBinderContainer) {
+        public void bind(IDaemonBinder daemonBinder) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toBindDaemon(daemonBinderContainer);
+                    toBindDaemon(daemonBinder);
                 }
             });
         }
@@ -50,8 +49,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isDestroy = false;
-        daemonBinderContainer = ClientBinderManager.getDaemonBinderContainer();
-        ClientBinderManager.registerDaemonBinderContainerListener(iDaemonBinderContainerListener);
+        daemonBinder = ClientBinderManager.getDaemonBinder();
+        ClientBinderManager.registerDaemonBinderListener(iDaemonBinderListener);
         mContentView = getWindow().getDecorView().findViewById(android.R.id.content);
     }
 
@@ -124,7 +123,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ClientBinderManager.unregisterDaemonBinderContainerListener(iDaemonBinderContainerListener);
+        ClientBinderManager.unregisterDaemonBinderListener(iDaemonBinderListener);
         removeDelayHideLoading();
         isDestroy = true;
     }
@@ -133,7 +132,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return ClientBinderManager.isActive();
     }
 
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
+    protected void bindDaemon(IDaemonBinder daemonBinder) {
 
     }
 
@@ -141,13 +140,13 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    public IDaemonBinderContainer getDaemonBinderContainer() {
-        return daemonBinderContainer;
+    public IDaemonBinder getDaemonBinder() {
+        return daemonBinder;
     }
 
-    private void toBindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        this.daemonBinderContainer = daemonBinderContainer;
-        bindDaemon(daemonBinderContainer);
+    private void toBindDaemon(IDaemonBinder daemonBinder) {
+        this.daemonBinder = daemonBinder;
+        bindDaemon(daemonBinder);
         removeDelayHideLoading();
     }
 

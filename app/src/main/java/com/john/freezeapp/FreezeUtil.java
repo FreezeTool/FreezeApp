@@ -3,7 +3,6 @@ package com.john.freezeapp;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
@@ -63,7 +62,7 @@ public class FreezeUtil {
     public static void stopDaemon() {
         if (ClientBinderManager.isActive()) {
             try {
-                ClientBinderManager.getDaemonBinderContainer().closeDeamon();
+                ClientBinderManager.getDaemonBinder().closeDaemon();
             } catch (Throwable e) {
                 //
             }

@@ -20,13 +20,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.IDaemonBinderContainer;
+import com.john.freezeapp.IDaemonBinder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DaemonBinder {
+public class DaemonBinderManager {
 
-    private static final IDaemonBinderContainer sBinderContainer = new DaemonBinderContainer();
+    private static final IDaemonBinder sBinderContainer = new DaemonBinderStub();
     private static final IProcessObserver.Stub iProcessObserverStub = new IProcessObserver.Stub() {
 
         private final List<Integer> PID_LIST = new ArrayList<>();

@@ -57,8 +57,8 @@ public class Daemon {
         mHandler = new Handler(Looper.getMainLooper());
         mActivityThread = ActivityThread.systemMain();
 //        new DaemonSocketServer(Daemon.this);
-        DaemonBinder.register(mActivityThread.getSystemContext());
-        DaemonBinder.sendBinderContainer();
+        DaemonBinderManager.register(mActivityThread.getSystemContext());
+        DaemonBinderManager.sendBinderContainer();
         test();
     }
 

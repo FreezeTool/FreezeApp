@@ -11,7 +11,8 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import com.john.freezeapp.IDaemonBinderContainer;
+
+import com.john.freezeapp.IDaemonBinder;
 
 public class ClientProvider extends ContentProvider {
     @Override
@@ -53,9 +54,10 @@ public class ClientProvider extends ContentProvider {
     public Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras) {
         if (TextUtils.equals("sendBinder", method)) {
             IBinder binder = extras.getBinder("binder");
-            IDaemonBinderContainer binderContainer = IDaemonBinderContainer.Stub.asInterface(binder); //BinderProxy
+            IDaemonBinder binderContainer = IDaemonBinder.Stub.asInterface(binder); //BinderProxy
             ClientLog.log("sendBinder");
-            ClientBinderManager.setDaemonBinderContainer(binderContainer);
+            ClientBinderManager.setDaemonBinder(binderContainer);
+            ClientLogBinderManager.registerClientLogBinder();
         }
         return super.call(method, arg, extras);
     }

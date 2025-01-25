@@ -12,6 +12,7 @@ public class FreezeHomeAdapter extends CardRecyclerViewAdapter<ClassCreatorPool>
         getCreatorPool().putRule(FreezeHomeDeviceData.class, FreezeHomeDeviceViewHolder.CREATOR);
         getCreatorPool().putRule(FreezeHomeDaemonData.class, FreezeHomeDaemonViewHolder.CREATOR);
         getCreatorPool().putRule(CommonEmptyData.class, CommonEmptyViewHolder.CREATOR);
+        getCreatorPool().putRule(FreezeHomeLogData.class, FreezeHomeLogViewHolder.CREATOR);
         setHasStableIds(true);
     }
 
@@ -28,6 +29,11 @@ public class FreezeHomeAdapter extends CardRecyclerViewAdapter<ClassCreatorPool>
     public void updateData(List list) {
         getItems().clear();
         getItems().addAll(list);
+        notifyDataSetChanged();
+    }
+
+    public void addData(Object o) {
+        getItems().add(o);
         notifyDataSetChanged();
     }
 }

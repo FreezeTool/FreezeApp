@@ -9,7 +9,7 @@ import android.os.RemoteException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.john.freezeapp.IDaemonBinderContainer;
+import com.john.freezeapp.IDaemonBinder;
 
 import java.io.FileDescriptor;
 import java.util.Objects;
@@ -27,12 +27,12 @@ public class ClientSystemBinderWrapper implements IBinder {
 
         Parcel newData = Parcel.obtain();
         try {
-            newData.writeInterfaceToken(IDaemonBinderContainer.DESCRIPTOR);
+            newData.writeInterfaceToken(IDaemonBinder.DESCRIPTOR);
             newData.writeStrongBinder(original);
             newData.writeInt(code);
             newData.writeInt(flags);
             newData.appendFrom(data, 0, data.dataSize());
-            ClientBinderManager.getDaemonBinderContainer().asBinder().transact(Binder.FIRST_CALL_TRANSACTION + 1, newData, reply, 0);
+            ClientBinderManager.getDaemonBinder().asBinder().transact(Binder.FIRST_CALL_TRANSACTION + 1, newData, reply, 0);
         } finally {
             newData.recycle();
         }

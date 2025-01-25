@@ -113,8 +113,8 @@ public class DaemonStartActivity extends BaseActivity {
     }
 
     @Override
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        super.bindDaemon(daemonBinderContainer);
+    protected void bindDaemon(IDaemonBinder daemonBinder) {
+        super.bindDaemon(daemonBinder);
         if (isDaemonActive()) {
             finish();
         }

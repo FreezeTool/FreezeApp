@@ -17,18 +17,18 @@ import com.john.freezeapp.client.ClientBinderManager;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BaseFragment extends Fragment {
-    private IDaemonBinderContainer daemonBinderContainer;
+    private IDaemonBinder daemonBinder;
     private ViewGroup mContentView;
     private RelativeLayout mLoadingView;
     private final AtomicInteger mLoadingInteger = new AtomicInteger(0);
 
-    ClientBinderManager.IDaemonBinderContainerListener iDaemonBinderContainerListener = new ClientBinderManager.IDaemonBinderContainerListener() {
+    ClientBinderManager.IDaemonBinderListener iDaemonBinderListener = new ClientBinderManager.IDaemonBinderListener() {
         @Override
-        public void bind(IDaemonBinderContainer daemonBinderContainer) {
+        public void bind(IDaemonBinder daemonBinder) {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    toBindDaemon(daemonBinderContainer);
+                    toBindDaemon(daemonBinder);
                 }
             });
         }
@@ -57,8 +57,8 @@ public class BaseFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        daemonBinderContainer = ClientBinderManager.getDaemonBinderContainer();
-        initBinderContainerListener();
+        daemonBinder = ClientBinderManager.getDaemonBinder();
+        ClientBinderManager.registerDaemonBinderListener(iDaemonBinderListener);
     }
 
     protected ViewGroup getLoadingContainer() {
@@ -131,7 +131,7 @@ public class BaseFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         removeDelayHideLoading();
-        ClientBinderManager.unregisterDaemonBinderContainerListener(iDaemonBinderContainerListener);
+        ClientBinderManager.unregisterDaemonBinderListener(iDaemonBinderListener);
         isDestroy = true;
     }
 
@@ -139,7 +139,7 @@ public class BaseFragment extends Fragment {
         return ClientBinderManager.isActive();
     }
 
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
+    protected void bindDaemon(IDaemonBinder daemonBinder) {
 
     }
 
@@ -147,13 +147,13 @@ public class BaseFragment extends Fragment {
 
     }
 
-    public IDaemonBinderContainer getDaemonBinderContainer() {
-        return daemonBinderContainer;
+    public IDaemonBinder getDaemonBinder() {
+        return daemonBinder;
     }
 
-    private void toBindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        this.daemonBinderContainer = daemonBinderContainer;
-        bindDaemon(daemonBinderContainer);
+    private void toBindDaemon(IDaemonBinder daemonBinder) {
+        this.daemonBinder = daemonBinder;
+        bindDaemon(daemonBinder);
         removeDelayHideLoading();
     }
 
@@ -162,10 +162,6 @@ public class BaseFragment extends Fragment {
         removeDelayHideLoading();
     }
 
-
-    private void initBinderContainerListener() {
-        ClientBinderManager.registerDaemonBinderContainerListener(iDaemonBinderContainerListener);
-    }
 
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());

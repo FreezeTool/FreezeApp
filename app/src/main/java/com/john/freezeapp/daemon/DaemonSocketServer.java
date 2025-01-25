@@ -223,7 +223,7 @@ public class DaemonSocketServer {
             }
             serverSocket = null;
         }
-        DaemonBinder.unregister();
+        DaemonBinderManager.unregister();
         sExecutorService.shutdown();
         sCommandExecutorService.shutdown();
         if (stopDaemon) {

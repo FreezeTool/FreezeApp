@@ -1,55 +1,27 @@
 package com.john.freezeapp;
 
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.tabs.TabLayout;
-import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientLog;
-import com.john.freezeapp.client.ClientRemoteShell;
-import com.john.freezeapp.freeze.ManagerActivity;
-import com.john.freezeapp.home.FreezeHomeBillboardData;
-import com.john.freezeapp.home.FreezeHomeDaemonData;
-import com.john.freezeapp.home.FreezeHomeData;
-import com.john.freezeapp.home.FreezeHomeDeviceData;
-import com.john.freezeapp.home.FreezeHomeAdapter;
-import com.john.freezeapp.home.FreezeHomeFuncData;
-import com.john.freezeapp.home.FreezeHomeFuncHelper;
 import com.john.freezeapp.home.FuncFragment;
 import com.john.freezeapp.home.HomeFragment;
+import com.john.freezeapp.home.LogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import rikka.shizuku.Shizuku;
 
 
 public class MainActivity extends BaseActivity {
@@ -77,8 +49,11 @@ public class MainActivity extends BaseActivity {
         toolbar = findViewById(R.id.toolbar);
         FreezeUtil.generateShell(this);
         setSupportActionBar(toolbar);
+
         tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));
         tabs.add(new Tab(R.id.navigation_func, new FuncFragment()));
+        tabs.add(new Tab(R.id.navigation_log, new LogFragment()));
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPager = findViewById(R.id.viewPager);
         viewPager.setAdapter(new MainAdapter(tabs, getSupportFragmentManager()));
@@ -156,8 +131,8 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        super.bindDaemon(daemonBinderContainer);
+    protected void bindDaemon(IDaemonBinder daemonBinder) {
+        super.bindDaemon(daemonBinder);
         postUI(new Runnable() {
             @Override
             public void run() {

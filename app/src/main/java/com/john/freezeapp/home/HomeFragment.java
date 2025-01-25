@@ -22,7 +22,7 @@ import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.DaemonStartActivity;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.FreezeUtil;
-import com.john.freezeapp.IDaemonBinderContainer;
+import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
 import com.john.freezeapp.SharedPrefUtil;
 import com.john.freezeapp.client.ClientBinderManager;
@@ -196,8 +196,8 @@ public class HomeFragment extends BaseFragment {
     }
 
     @Override
-    protected void bindDaemon(IDaemonBinderContainer daemonBinderContainer) {
-        super.bindDaemon(daemonBinderContainer);
+    protected void bindDaemon(IDaemonBinder daemonBinder) {
+        super.bindDaemon(daemonBinder);
         forceHideLoading();
         updateData(getContext());
         requestKernelVersion();

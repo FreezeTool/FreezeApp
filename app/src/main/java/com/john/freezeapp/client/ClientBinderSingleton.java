@@ -1,6 +1,6 @@
 package com.john.freezeapp.client;
 
-import com.john.freezeapp.IDaemonBinderContainer;
+import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.Singleton;
 
 public abstract class ClientBinderSingleton<T> extends Singleton<T> {
@@ -17,9 +17,9 @@ public abstract class ClientBinderSingleton<T> extends Singleton<T> {
     protected abstract T createBinder();
 
     public ClientBinderSingleton() {
-        ClientBinderManager.registerDaemonBinderContainerListener(new ClientBinderManager.IDaemonBinderContainerListener() {
+        ClientBinderManager.registerDaemonBinderListener(new ClientBinderManager.IDaemonBinderListener() {
             @Override
-            public void bind(IDaemonBinderContainer daemonBinderContainer) {
+            public void bind(IDaemonBinder daemonBinder) {
 
             }
 
