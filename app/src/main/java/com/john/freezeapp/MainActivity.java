@@ -56,6 +56,7 @@ public class MainActivity extends BaseActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPager = findViewById(R.id.viewPager);
+        viewPager.setOffscreenPageLimit(tabs.size());
         viewPager.setAdapter(new MainAdapter(tabs, getSupportFragmentManager()));
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
