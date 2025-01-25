@@ -62,6 +62,7 @@ public class ManagerActivity extends BaseActivity {
 
         tabLayout = findViewById(R.id.tablayout);
         viewPager = findViewById(R.id.viewpage);
+        viewPager.setOffscreenPageLimit(tabs.size());
 
         for (FreezeAppAdapter commonAdapter : commonAdapters) {
             RecyclerView recyclerView = new RecyclerView(this);
