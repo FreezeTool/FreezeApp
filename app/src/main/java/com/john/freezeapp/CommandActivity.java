@@ -1,11 +1,14 @@
 package com.john.freezeapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -49,10 +52,26 @@ public class CommandActivity extends BaseActivity {
                 if (TextUtils.isEmpty(command)) {
                     return;
                 }
+                hideSoftInput();
                 executeCommand2(command);
             }
         });
         tvCommandResult = findViewById(R.id.command_result);
+        tvCommandResult.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    hideSoftInput();
+                }
+                return false;
+            }
+        });
+    }
+
+
+    public void hideSoftInput() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(etCommand.getWindowToken(), 0);
     }
 
     @Override

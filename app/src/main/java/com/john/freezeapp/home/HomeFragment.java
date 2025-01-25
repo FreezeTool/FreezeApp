@@ -251,14 +251,14 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void showWatchCommandDialog() {
-        String command = String.format("$ adb shell sh %s", FreezeUtil.getShellFilePath(getContext()));
+        String command = String.format("adb shell sh %s", FreezeUtil.getShellFilePath(getContext()));
         new AlertDialog.Builder(getContext())
                 .setMessage(command)
                 .setPositiveButton(R.string.btn_copy, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                        clipboardManager.setText(command);
+                        clipboardManager.setText("$ " + command);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
