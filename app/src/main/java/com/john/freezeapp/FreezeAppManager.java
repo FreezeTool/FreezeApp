@@ -120,25 +120,18 @@ public class FreezeAppManager {
 
 
     public static void requestForceStopApp(String packageName, Callback2 callback) {
-
-//        ClientRemoteShell.execCommand(String.format("am force-stop %s", packageName), new ClientRemoteShell.RemoteShellCommandResultCallback() {
-//            @Override
-//            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-//                if (commandResult.result) {
-//                    callback.success();
-//                } else {
-//                    callback.fail();
-//                }
-//            }
-//        });
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
                     ClientBinderManager.getActivityManager().forceStopPackage(packageName, 0);
-                    callback.success();
+                    if (callback != null) {
+                        callback.success();
+                    }
                 } catch (RemoteException e) {
-                    callback.fail();
+                    if (callback != null) {
+                        callback.fail();
+                    }
                 }
             }
         });
@@ -147,7 +140,6 @@ public class FreezeAppManager {
 
 
     public static void requestDefrostApp(String packageName, Callback2 callback) {
-//        requestCommand(String.format("pm enable %s", packageName), callback);
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -165,7 +157,6 @@ public class FreezeAppManager {
 
 
     public static void requestFreezeApp(String packageName, Callback2 callback) {
-//        requestCommand(String.format("pm disable-user %s", packageName), callback);
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -194,17 +185,19 @@ public class FreezeAppManager {
     }
 
     public static void requestEnableApp(Context context, Callback callback) {
-//        requestAppList(context, "pm list packages -3 -e", callback);
-        requestAppList(context, TYPE_NORMAL_APP, STATUS_ENABLE_APP, callback);
+        requestAppList(context, TYPE_NORMAL_APP, STATUS_ENABLE_APP, true, callback);
     }
 
 
     public static void requestDisableApp(Context context, Callback callback) {
-//        requestAppList(context, "pm list packages -3 -d", callback);
-        requestAppList(context, TYPE_NORMAL_APP, STATUS_DISABLE_APP, callback);
+        requestAppList(context, TYPE_NORMAL_APP, STATUS_DISABLE_APP, true, callback);
     }
 
-    private static void requestAppList(Context context, int appType, int appStatus, Callback callback) {
+    public static void requestAllUserApp(Context context, Callback callback) {
+        requestAppList(context, TYPE_NORMAL_APP, STATUS_ALL, false, callback);
+    }
+
+    private static void requestAppList(Context context, int appType, int appStatus, boolean ignoreFreezeApp, Callback callback) {
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -212,10 +205,11 @@ public class FreezeAppManager {
                 if (packageInfos != null) {
                     List<AppModel> list = new ArrayList<>();
                     for (PackageInfo packageInfo : packageInfos) {
-                        if (!TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID)) {
-                            CacheAppModel cacheAppModel = getAppModel(context, packageInfo);
-                            list.add(new AppModel(cacheAppModel));
+                        if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
+                            continue;
                         }
+                        CacheAppModel cacheAppModel = getAppModel(context, packageInfo);
+                        list.add(new AppModel(cacheAppModel));
                     }
                     callback.success(list);
                 } else {
@@ -262,7 +256,7 @@ public class FreezeAppManager {
             requestRunningProcess2(context, callback);
         } else {
 
-            requestAppList(context, TYPE_NORMAL_APP, STATUS_ENABLE_APP, new Callback() {
+            requestAppList(context, TYPE_NORMAL_APP, STATUS_ENABLE_APP, true, new Callback() {
                 @Override
                 public void success(List<AppModel> list) {
                     sAllAppMap.clear();
@@ -458,6 +452,9 @@ public class FreezeAppManager {
         return appModel;
     }
 
+    public static List<PackageInfo> getInstallUserApp() {
+        return getInstallApp(TYPE_NORMAL_APP, STATUS_ALL);
+    }
 
     public static List<PackageInfo> getInstallApp(int appType, int appStatus) {
         try {

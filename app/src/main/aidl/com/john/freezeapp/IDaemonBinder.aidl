@@ -10,7 +10,7 @@ interface IDaemonBinder {
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
      */
-    String getConfig(String key) = 2;
+    String getConfig(String module, String key) = 2;
 
     IRemoteProcess newProcess(in String[] cmd, in String[] env, in String dir) = 3;
 

@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!--    <uses-permission-->
+    <!--        android:name="android.permission.DUMP"-->
+    <!--        tools:ignore="ProtectedPermissions" />-->
 
     <application
         android:name=".App"
@@ -12,12 +15,14 @@
         android:icon="@mipmap/ic_app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_app_icon"
+
         android:supportsRtl="true"
         android:theme="@style/Theme.FreezeApp"
         tools:targetApi="31">
 
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|screenLayout|screenSize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -35,15 +40,41 @@
         </activity>
 
 
-        <activity android:name=".freeze.ManagerActivity"></activity>
+        <activity
+            android:name=".freeze.ManagerActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
 
-        <activity android:name=".battery.BatteryUsageActivity"></activity>
+        </activity>
 
-        <activity android:name=".CommandActivity"></activity>
+        <activity
+            android:name=".battery.BatteryUsageActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
 
-        <activity android:name=".DaemonStartActivity"></activity>
+        </activity>
 
-        <activity android:name=".usagestats.UsageStatsActivity"></activity>
+        <activity
+            android:name=".CommandActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
+
+        </activity>
+
+        <activity
+            android:name=".DaemonStartActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
+
+        </activity>
+
+        <activity
+            android:name=".usagestats.UsageStatsActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
+
+        </activity>
+
+        <activity
+            android:name=".hyper.MiMixFlipSettingActivity"
+            android:configChanges="orientation|screenLayout|screenSize">
+
+        </activity>
 
 
         <provider

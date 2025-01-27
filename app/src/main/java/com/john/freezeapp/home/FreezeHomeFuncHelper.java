@@ -7,33 +7,31 @@ import android.app.smartspace.SmartspaceTarget;
 import android.app.smartspace.SmartspaceTargetEvent;
 import android.app.smartspace.uitemplatedata.BaseTemplateData;
 import android.app.smartspace.uitemplatedata.Text;
-import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ParceledListSlice;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.text.TextUtils;
 import android.view.View;
 
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.CommandActivity;
 import com.john.freezeapp.MainActivity;
+import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.hyper.MixFlipUtil;
 import com.john.freezeapp.R;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.freeze.ManagerActivity;
+import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -94,6 +92,21 @@ public class FreezeHomeFuncHelper {
                         context.startActivity(intent);
                     }
                 }));
+        if (ClientBinderManager.isActive()) {
+            if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
+                list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
+                        R.drawable.ic_vector_display,
+                        0xff9986A4,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, MiMixFlipSettingActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent);
+                            }
+                        }));
+            }
+        }
 
         if (BuildConfig.DEBUG) {
             list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test),
@@ -102,12 +115,17 @@ public class FreezeHomeFuncHelper {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            toTest2(context);
+                            toTest3(context);
                         }
                     }));
         }
 
         return list;
+    }
+
+
+    private static void toTest3(Context context) {
+        MixFlipUtil.configAppScale2();
     }
 
     /**
@@ -135,6 +153,7 @@ public class FreezeHomeFuncHelper {
             e.printStackTrace();
         }
     }
+
 
     /**
      * usagestats

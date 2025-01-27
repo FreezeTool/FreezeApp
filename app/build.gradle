@@ -56,6 +56,6 @@ dependencies {
     implementation libs.shisuku.api
     implementation libs.shisuku.provider
     compileOnly project(':hidden-api-stub')
-    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3' // bypass hidden api restriction, https://github.com/LSPosed/AndroidHiddenApiBypass
-
+    implementation libs.hiddenapibypass
+    implementation libs.wheelpicker
 }

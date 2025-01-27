@@ -41,6 +41,9 @@ public class HomeFragment extends BaseFragment {
 
     FreezeHomeAdapter homeAdapter = new FreezeHomeAdapter();
 
+    private boolean isRoot = false;
+    private boolean isShizuku = false;
+
 
     static final int REQUEST_CODE = 124;
 
@@ -74,7 +77,21 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        isRoot = FreezeUtil.isSuEnable();
+        isShizuku = FreezeUtil.isShizukuActive();
         updateData(getContext());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        boolean isRoot = FreezeUtil.isSuEnable();
+        boolean isShizuku = FreezeUtil.isShizukuActive();
+
+        if (this.isRoot != isRoot || this.isShizuku != isShizuku) {
+            updateData(getContext());
+        }
+
     }
 
     private void requestKernelVersion() {
@@ -104,13 +121,47 @@ public class HomeFragment extends BaseFragment {
     private void updateData(Context context) {
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
         List<FreezeHomeData> list = new ArrayList<>();
+
+
+        FreezeHomeBillboardData freezeDaemonData = getFreezeHomeBillboardData(context);
+        list.add(freezeDaemonData);
+
+        list.add(getDeviceData());
+
+        FreezeHomeDaemonData adbDaemonData = getFreezeHomeDaemonData(context);
+        FreezeHomeDaemonData shizukuDaemonData = getHomeDaemonData(context);
+        FreezeHomeDaemonData rootDaemonData = getDaemonData(context);
+
+        List<FreezeHomeData> startDaemonData = new ArrayList<>();
+        startDaemonData.add(adbDaemonData);
+        startDaemonData.add(shizukuDaemonData);
+        startDaemonData.add(rootDaemonData);
+
+        if (this.isRoot) {
+            list.add(rootDaemonData);
+            startDaemonData.remove(rootDaemonData);
+        }
+
+        if (this.isShizuku) {
+            list.add(shizukuDaemonData);
+            startDaemonData.remove(shizukuDaemonData);
+        }
+
+        list.addAll(startDaemonData);
+
+
+        homeAdapter.updateData(list);
+    }
+
+    private @NonNull FreezeHomeBillboardData getFreezeHomeBillboardData(Context context) {
+        FreezeHomeBillboardData freezeDaemonData = new FreezeHomeBillboardData();
         String version = "";
         String tip = "";
         String btn = "";
         if (isDaemonActive()) {
 
             try {
-                String daemonVersion = getDaemonBinder().getConfig(DaemonHelper.KEY_DAEMON_VERSION);
+                String daemonVersion = getDaemonBinder().getConfig(DaemonHelper.KEY_DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_VERSION);
                 version = daemonVersion + "（" + BuildConfig.VERSION_NAME + "）";
                 if (!TextUtils.equals(daemonVersion, BuildConfig.VERSION_NAME)) {
                     tip = context.getString(R.string.main_home_daemon_tip);
@@ -120,7 +171,6 @@ public class HomeFragment extends BaseFragment {
                 version = BuildConfig.VERSION_NAME;
             }
         }
-        FreezeHomeBillboardData freezeDaemonData = new FreezeHomeBillboardData();
         freezeDaemonData.isActive = isDaemonActive();
         freezeDaemonData.version = version;
         freezeDaemonData.tip = tip;
@@ -131,10 +181,46 @@ public class HomeFragment extends BaseFragment {
                 restartDaemon();
             }
         };
-        list.add(freezeDaemonData);
+        return freezeDaemonData;
+    }
 
-        list.add(getDeviceData());
+    private @NonNull FreezeHomeDaemonData getDaemonData(Context context) {
+        FreezeHomeDaemonData rootDaemonData = new FreezeHomeDaemonData();
+        boolean suEnable = FreezeUtil.isSuEnable();
+        rootDaemonData.title = context.getString(R.string.main_root_start_server_title, context.getString(suEnable ? R.string.main_root_server_active : R.string.main_root_server_not_active));
+        rootDaemonData.content = context.getString(R.string.main_root_start_server_content);
+        rootDaemonData.icon = R.mipmap.ic_root;
+        rootDaemonData.btnText = context.getString(R.string.main_start_app_process);
+        rootDaemonData.showBtn = !isDaemonActive() && suEnable;
+        rootDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
+        rootDaemonData.onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toRoot(v);
+            }
+        };
+        return rootDaemonData;
+    }
 
+    private @NonNull FreezeHomeDaemonData getHomeDaemonData(Context context) {
+        FreezeHomeDaemonData shizukuDaemonData = new FreezeHomeDaemonData();
+        boolean shizukuActive = FreezeUtil.isShizukuActive();
+        shizukuDaemonData.title = context.getString(R.string.main_shizuku_start_server_title, context.getString(shizukuActive ? R.string.main_server_active : R.string.main_server_not_active));
+        shizukuDaemonData.content = context.getString(R.string.main_shizuku_start_server_content);
+        shizukuDaemonData.icon = R.mipmap.ic_server;
+        shizukuDaemonData.btnText = context.getString(R.string.main_start_app_process);
+        shizukuDaemonData.showBtn = !isDaemonActive() && shizukuActive;
+        shizukuDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
+        shizukuDaemonData.onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toShizuku(v);
+            }
+        };
+        return shizukuDaemonData;
+    }
+
+    private @NonNull FreezeHomeDaemonData getFreezeHomeDaemonData(Context context) {
         FreezeHomeDaemonData adbDaemonData = new FreezeHomeDaemonData();
         adbDaemonData.title = context.getString(R.string.main_adb_start_server_title);
         StringBuilder content = new StringBuilder();
@@ -150,42 +236,7 @@ public class HomeFragment extends BaseFragment {
                 showWatchCommandDialog();
             }
         };
-
-        list.add(adbDaemonData);
-
-        FreezeHomeDaemonData shizukuDaemonData = new FreezeHomeDaemonData();
-        boolean shizukuActive = FreezeUtil.isShizukuActive();
-        shizukuDaemonData.title = context.getString(R.string.main_shizuku_start_server_title, context.getString(shizukuActive ? R.string.main_server_active : R.string.main_server_not_active));
-        shizukuDaemonData.content = context.getString(R.string.main_shizuku_start_server_content);
-        shizukuDaemonData.icon = R.mipmap.ic_server;
-        shizukuDaemonData.btnText = context.getString(R.string.main_start_app_process);
-        shizukuDaemonData.showBtn = !isDaemonActive() && shizukuActive;
-        shizukuDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
-        shizukuDaemonData.onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toShizuku(v);
-            }
-        };
-
-        list.add(shizukuDaemonData);
-        boolean suEnable = FreezeUtil.isSuEnable();
-        FreezeHomeDaemonData rootDaemonData = new FreezeHomeDaemonData();
-        rootDaemonData.title = context.getString(R.string.main_root_start_server_title, context.getString(suEnable ? R.string.main_root_server_active : R.string.main_root_server_not_active));
-        rootDaemonData.content = context.getString(R.string.main_root_start_server_content);
-        rootDaemonData.icon = R.mipmap.ic_root;
-        rootDaemonData.btnText = context.getString(R.string.main_start_app_process);
-        rootDaemonData.showBtn = !isDaemonActive() && suEnable;
-        rootDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
-        rootDaemonData.onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toRoot(v);
-            }
-        };
-        list.add(rootDaemonData);
-
-        homeAdapter.updateData(list);
+        return adbDaemonData;
     }
 
     private void restartDaemon() {

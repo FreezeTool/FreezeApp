@@ -9,16 +9,30 @@ import android.content.pm.IPackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.ResultReceiver;
+import android.os.ShellCallback;
+import android.view.IWindowManager;
 
 import com.android.internal.app.IBatteryStats;
+import com.john.freezeapp.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
 
+import java.io.FileDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 public class ClientBinderManager {
+    public static String getConfig(String module, String key) {
+        try {
+            return getDaemonBinder().getConfig(module, key);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
     public interface IDaemonBinderListener {
         void bind(IDaemonBinder daemonBinder);
 
@@ -185,6 +199,22 @@ public class ClientBinderManager {
         }
     };
 
+    private final static ClientBinderSingleton<IWindowManager> iWindowManager = new ClientBinderSingleton<IWindowManager>() {
+        @Override
+        protected IWindowManager createBinder() {
+
+            if (!isActive()) {
+                return null;
+            }
+
+            IBinder systemService = SystemServiceHelper.getSystemService("window");
+            if (systemService != null) {
+                return IWindowManager.Stub.asInterface(new ClientSystemBinderWrapper(systemService));
+            }
+            return null;
+        }
+    };
+
 
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();
@@ -204,6 +234,34 @@ public class ClientBinderManager {
 
     public static ISmartspaceManager getSmartspaceManager() {
         return iSmartspaceManager.get();
+    }
+
+    public static IWindowManager getWindowManager() {
+        return iWindowManager.get();
+    }
+
+    public static void dump(String serviceName, FileDescriptor fd, String[] args) throws RemoteException {
+        if (args == null) {
+            args = new String[0];
+        }
+        String[] dumpArgs = new String[args.length + 1];
+        dumpArgs[0] = serviceName;
+        System.arraycopy(args, 0, dumpArgs, 1, args.length);
+        getDaemonBinder().asBinder().dump(fd, dumpArgs);
+    }
+
+
+    public static void shellCommand(String serviceName, FileDescriptor in, FileDescriptor out,
+                                    FileDescriptor err,
+                                    String[] args, ShellCallback shellCallback,
+                                    ResultReceiver resultReceiver) throws Exception {
+        if (args == null) {
+            args = new String[0];
+        }
+        String[] dumpArgs = new String[args.length + 1];
+        dumpArgs[0] = serviceName;
+        System.arraycopy(args, 0, dumpArgs, 1, args.length);
+        FreezeUtil.shellCommand(getDaemonBinder().asBinder(), in, out, err, dumpArgs, shellCallback, resultReceiver);
     }
 
 

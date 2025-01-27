@@ -2,18 +2,37 @@ package com.john.freezeapp.daemon;
 
 import android.content.Context;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
+import android.os.ResultReceiver;
+import android.os.ServiceManager;
+import android.os.ShellCallback;
+import android.os.SystemProperties;
 import android.text.TextUtils;
+import android.util.proto.ProtoOutputStream;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
+import com.john.freezeapp.daemon.process.ParcelFileDescriptorUtil;
 import com.john.freezeapp.daemon.process.RemoteProcess;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class DaemonBinderStub extends IDaemonBinder.Stub {
@@ -54,12 +73,15 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     }
 
     @Override
-    public String getConfig(String key) throws RemoteException {
+    public String getConfig(String module, String key) throws RemoteException {
         DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call getConfig key=" + key);
-        switch (key) {
-            case DaemonHelper.KEY_DAEMON_VERSION:
-                return BuildConfig.VERSION_NAME;
-//                return "1.0";
+
+        if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_CUSTOM)) {
+            return Custom.getConfig(key);
+        } else if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_SYSTEM)) {
+            return System.getProperty(key);
+        } else if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES)) {
+            return SystemProperties.get(key);
         }
         return "";
     }
@@ -103,5 +125,100 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     @Override
     public void unregisterClientBinder(IBinder iClientBinder) throws RemoteException {
         DaemonClientBinderProxy.unregisterClientBinder(Binder.getCallingUid(), Binder.getCallingPid(), iClientBinder);
+    }
+
+
+    @Override
+    protected void dump(@NonNull FileDescriptor fd, @NonNull PrintWriter fout, @Nullable String[] args) {
+        super.dump(fd, fout, args);
+        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call dump args=" + Arrays.toString(args));
+
+        if (args == null || args.length == 0) {
+
+            dumpFail(fd, "dump args fail");
+            return;
+        }
+
+
+        IBinder service = null;
+        try {
+            service = ServiceManager.getService(args[0]);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        if (service == null) {
+            dumpFail(fd, "dump " + args[0] + " service not find");
+            return;
+        }
+
+        String[] serverArgs = null;
+        if (args.length > 1) {
+            serverArgs = Arrays.copyOfRange(args, 1, args.length);
+        }
+
+        try {
+            service.dump(fd, serverArgs);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            dumpFail(fd, "dump exception " + e.getMessage());
+        }
+    }
+
+    private void dumpFail(FileDescriptor fd, String msg) {
+        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), msg);
+        DaemonLog.log(msg);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(fd);
+        try {
+            fileOutputStream.write(msg.getBytes(StandardCharsets.UTF_8));
+            fileOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fileOutputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
+    public void shellCommand(FileDescriptor in, FileDescriptor out,
+                             FileDescriptor err,
+                             String[] args, ShellCallback shellCallback,
+                             ResultReceiver resultReceiver) {
+        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call shellCommand args=" + Arrays.toString(args));
+
+        if (args == null || args.length == 0) {
+            dumpFail(err, "shellCommand args fail");
+            return;
+        }
+
+
+        IBinder service = null;
+        try {
+            service = ServiceManager.getService(args[0]);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+        if (service == null) {
+            dumpFail(err, "shellCommand " + args[0] + " service not find");
+            return;
+        }
+
+        String[] serverArgs = null;
+        if (args.length > 1) {
+            serverArgs = Arrays.copyOfRange(args, 1, args.length);
+        }
+
+        try {
+            FreezeUtil.shellCommand(service, in, out, err, serverArgs, shellCallback, resultReceiver);
+        } catch (Exception e) {
+            e.printStackTrace();
+            dumpFail(err, "shellCommand exception " + e.getMessage());
+        }
     }
 }

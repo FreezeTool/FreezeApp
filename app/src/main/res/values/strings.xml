@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">FreezeApp</string>
-    <string name="manager_name">FreezeManager</string>
-    <string name="command_name">ExecuteCommand</string>
-    <string name="battery_usage_name">BatteryUsage</string>
-    <string name="daemon_start_name">DaemonStart</string>
-    <string name="usage_stats_name">UsageStats</string>
+    <string name="manager_name">Freeze Manager</string>
+    <string name="command_name">Execute Command</string>
+    <string name="battery_usage_name">Battery Usage</string>
+    <string name="daemon_start_name">Daemon Start</string>
+    <string name="usage_stats_name">Usage Stats</string>
+    <string name="mi_flip_setting">Mix Flip Setting</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -13,6 +14,7 @@
     <string name="main_command_app">ADB</string>
     <string name="main_app_usage">App使用记录</string>
     <string name="main_test">TEST</string>
+    <string name="main_mi_flip_setting">小米MixFlip外屏配置</string>
 
     <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
     <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动Freeze服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>
@@ -28,8 +30,8 @@
     <string name="main_server_not_active">未启动</string>
 
 
-    <string name="main_root_server_active">检测到已Root</string>
-    <string name="main_root_server_not_active">未检测到Root</string>
+    <string name="main_root_server_active">检测到已root</string>
+    <string name="main_root_server_not_active">未检测到root</string>
 
     <string name="main_start_app_process">启动</string>
     <string name="main_restart_app_process">重新启动</string>
@@ -46,6 +48,8 @@
     <string name="btn_submit">确定</string>
     <string name="btn_copy">复制</string>
     <string name="btn_cancel">取消</string>
+    <string name="btn_setting">设置</string>
+    <string name="btn_force_stop">强杀</string>
 
     <string name="command_btn_execute">执行</string>
 
@@ -58,4 +62,11 @@
     <string name="main_home_empty_content">"启动Freeze服务后使用～"</string>
 
     <string name="main_home_daemon_tip">"Freeze服务版本和Freeze管理器版本不一致，请重新启动Freeze服务～"</string>
+
+    <string name="mi_mix_flip_home_open">打开外屏应用</string>
+    <string name="mi_mix_flip_home_reset_scale">重置外屏缩放</string>
+    <string name="mi_mix_flip_home_allow_start">一键外屏生效</string>
+
+    <string name="mi_mix_flip_home_app">外屏应用</string>
+    <string name="mi_mix_flip_tip">首次请点击%s，即可在%s中显示全部应用。</string>
 </resources>
