@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.john.freezeapp.AppInfoLoader;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
@@ -43,12 +44,7 @@ public class FreezeAppViewHolder extends CardViewHolder<FreezeAppData> {
 
         FreezeAppData data = getData();
 
-        if (data.appModel.icon != null) {
-            ivIcon.setImageDrawable(data.appModel.icon);
-        }
-        if (data.appModel.name != null) {
-            tvName.setText(data.appModel.name);
-        }
+        AppInfoLoader.load(getContext(), data.appModel.packageName, ivIcon, tvName);
         tvOperate.setText(data.rightName);
         tvOperate.setOnClickListener(new View.OnClickListener() {
             @Override

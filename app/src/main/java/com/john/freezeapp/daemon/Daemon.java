@@ -26,7 +26,9 @@ public class Daemon {
         Looper.prepareMainLooper();
         sDaemon = new Daemon();
         Looper.loop();
+        DaemonLog.toClient("Daemon close");
         DaemonLog.log("Daemon finish");
+        System.exit(0);
     }
 
 
@@ -44,6 +46,7 @@ public class Daemon {
                     String[] pids = commandResult.successMsg.split("\\s+");
                     for (String pid : pids) {
                         if (!TextUtils.equals(pid, cPid + "")) {
+//                            android.os.Process.killProcess(pid);
                             DaemonShellUtils.execCommand("kill -9 " + pid, false, null);
                         }
                     }
@@ -56,29 +59,17 @@ public class Daemon {
         killOtherDaemon();
         mHandler = new Handler(Looper.getMainLooper());
         mActivityThread = ActivityThread.systemMain();
-//        new DaemonSocketServer(Daemon.this);
         DaemonBinderManager.register(mActivityThread.getSystemContext());
         DaemonBinderManager.sendBinderContainer();
-        test();
     }
 
-    private void test() {
-        Method[] declaredMethods = IActivityManager.Stub.class.getDeclaredMethods();
-        for (Method declaredMethod : declaredMethods) {
-            DaemonLog.log(declaredMethod.getName());
-        }
-    }
 
+    public Handler getHandler() {
+        return mHandler;
+    }
 
     public void stop() {
         System.exit(0);
-//        DaemonShellUtils.stop();
-//        mHandler.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                Looper.getMainLooper().quit();
-//            }
-//        });
     }
 
 }

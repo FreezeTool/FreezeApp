@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 
 import com.aigestudio.wheelpicker.WheelPicker;
+import com.john.freezeapp.AppInfoLoader;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.R;
@@ -48,12 +49,8 @@ public class MiMixFlipAppViewHolder extends CardViewHolder<MiMixFlipAppData> {
 
         MiMixFlipAppData data = getData();
 
-        if (data.appModel.icon != null) {
-            ivIcon.setImageDrawable(data.appModel.icon);
-        }
-        if (data.appModel.name != null) {
-            tvName.setText(data.appModel.name);
-        }
+        AppInfoLoader.load(getContext(), data.appModel.packageName, ivIcon, tvName);
+
         tvOperate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

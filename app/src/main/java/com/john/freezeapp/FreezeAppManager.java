@@ -54,19 +54,13 @@ public class FreezeAppManager {
 
     public static class AppModel {
         public String packageName;
-        public String name;
-        public Drawable icon;
 
-        public AppModel(CacheAppModel cacheAppModel) {
-            this.packageName = cacheAppModel.packageName;
-            this.name = cacheAppModel.name;
-            this.icon = cacheAppModel.icon;
+        public AppModel(String packageName) {
+            this.packageName = packageName;
         }
 
         public AppModel(AppModel appModel) {
             this.packageName = appModel.packageName;
-            this.name = appModel.name;
-            this.icon = appModel.icon;
         }
 
     }
@@ -208,36 +202,10 @@ public class FreezeAppManager {
                         if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
                             continue;
                         }
-                        CacheAppModel cacheAppModel = getAppModel(context, packageInfo);
-                        list.add(new AppModel(cacheAppModel));
+                        list.add(new AppModel(packageInfo.packageName));
                     }
                     callback.success(list);
                 } else {
-                    callback.fail();
-                }
-            }
-        });
-    }
-
-    private static void requestAppList(Context context, String command, Callback callback) {
-
-        ClientRemoteShell.execCommand(command, new ClientRemoteShell.RemoteShellCommandResultCallback() {
-            @Override
-            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                try {
-                    List<AppModel> list = new ArrayList<>();
-                    String[] split = commandResult.successMsg.split("\n");
-                    for (String s : split) {
-                        String[] split1 = s.split(":");
-                        if (split1.length == 2 && TextUtils.equals(split1[0], "package") && !TextUtils.equals(split1[1].trim(), context.getPackageName())) {
-                            String packageName = split1[1].trim();
-                            CacheAppModel cacheAppModel = getAppModel(context, packageName);
-                            AppModel appModel = new AppModel(cacheAppModel);
-                            list.add(appModel);
-                        }
-                    }
-                    callback.success(list);
-                } catch (Exception e) {
                     callback.fail();
                 }
             }
@@ -358,8 +326,6 @@ public class FreezeAppManager {
                                     if (appModel != null) {
                                         runningModel = new RunningModel(appModel);
                                         runningModel.packageName = appModel.packageName;
-                                        runningModel.name = appModel.name;
-                                        runningModel.icon = appModel.icon;
                                         runningModelMap.put(packageName, runningModel);
                                     }
                                 }
@@ -398,17 +364,9 @@ public class FreezeAppManager {
                 if (cacheAppModel == null) {
                     cacheAppModel = new CacheAppModel();
                     try {
-                        IPackageManager iPackageManager = ClientBinderManager.getPackageManager();
-                        ApplicationInfo applicationInfo = null;
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                            applicationInfo = iPackageManager.getApplicationInfo(packageName, 0L, 0);
-                        } else {
-                            applicationInfo = iPackageManager.getApplicationInfo(packageName, 0, 0);
-                        }
-
+                        ApplicationInfo applicationInfo = getApplicationInfo(packageName);
                         cacheAppModel.name = applicationInfo.loadLabel(context.getPackageManager()).toString();
                         cacheAppModel.icon = applicationInfo.loadIcon(context.getPackageManager());
-
                     } catch (Throwable e) {
                         e.printStackTrace();
                     }
@@ -423,33 +381,15 @@ public class FreezeAppManager {
         return appModel;
     }
 
-
-    public static CacheAppModel getAppModel(Context context, PackageInfo packageInfo) {
-        CacheAppModel appModel = new CacheAppModel();
-        appModel.packageName = packageInfo.packageName;
-
-        CacheAppModel cacheAppModel = sCacheAppModel.get(packageInfo.packageName);
-
-        if (cacheAppModel == null) {
-            synchronized (sCacheAppModel) {
-                cacheAppModel = sCacheAppModel.get(packageInfo.packageName);
-                if (cacheAppModel == null) {
-                    cacheAppModel = new CacheAppModel();
-                    try {
-                        cacheAppModel.name = packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString();
-                        cacheAppModel.icon = packageInfo.applicationInfo.loadIcon(context.getPackageManager());
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                    }
-                    sCacheAppModel.put(packageInfo.packageName, cacheAppModel);
-                }
-            }
+    private static ApplicationInfo getApplicationInfo(String packageName) throws RemoteException {
+        IPackageManager iPackageManager = ClientBinderManager.getPackageManager();
+        ApplicationInfo applicationInfo;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            applicationInfo = iPackageManager.getApplicationInfo(packageName, 0L, 0);
+        } else {
+            applicationInfo = iPackageManager.getApplicationInfo(packageName, 0, 0);
         }
-
-        appModel.name = cacheAppModel.name;
-        appModel.icon = cacheAppModel.icon;
-
-        return appModel;
+        return applicationInfo;
     }
 
     public static List<PackageInfo> getInstallUserApp() {
@@ -542,5 +482,6 @@ public class FreezeAppManager {
             }
         });
     }
+
 
 }

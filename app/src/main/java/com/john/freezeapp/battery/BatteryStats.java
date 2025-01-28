@@ -344,12 +344,6 @@ public class BatteryStats {
                                 continue;
                             }
 
-                            if (!TextUtils.isEmpty(batteryUsageAppData.packageName)) {
-                                FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(context, batteryUsageAppData.packageName);
-                                batteryUsageAppData.icon = appModel.icon;
-                                batteryUsageAppData.name = appModel.name;
-                            }
-
                             batteryUsageAppData.foregroundTime = uidBatteryConsumer.getTimeInStateMs(UidBatteryConsumer.STATE_FOREGROUND);
                             batteryUsageAppData.backgroundTime = uidBatteryConsumer.getTimeInStateMs(UidBatteryConsumer.STATE_BACKGROUND);
 

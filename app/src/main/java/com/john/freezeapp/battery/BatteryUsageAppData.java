@@ -13,8 +13,6 @@ public class BatteryUsageAppData extends BatteryUsageData{
     public String packageName;
     public long foregroundTime;
     public long backgroundTime;
-    public Drawable icon;
-    public String name;
     public LinearLayout cacheView;
     public boolean isExpand = false;
 

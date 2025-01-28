@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.john.freezeapp.AppInfoLoader;
+import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.R;
 import com.john.freezeapp.home.FreezeHomeFuncData;
 import com.john.freezeapp.recyclerview.CardViewHolder;
@@ -50,8 +52,6 @@ public class UsageStatsViewHolder extends CardViewHolder<UsageStatsData> {
     public void onBind() {
         super.onBind();
         UsageStatsData data = getData();
-        ivIcon.setBackground(data.icon != null ? data.icon : getContext().getDrawable(R.mipmap.ic_app_icon));
-        tvName.setText(!TextUtils.isEmpty(data.name) ? data.name : (!TextUtils.isEmpty(data.packageName) ? data.packageName : ""));
         tvTotalTimeVisible.setText(formatTime(data.totalTimeVisible));
         tvFirstTimeStamp.setText(sDateFormat.format(new Date(data.firstTimeStamp)));
         tvAppLaunchCount.setText(String.format("%s次", String.valueOf(data.appLaunchCount)));
@@ -64,6 +64,8 @@ public class UsageStatsViewHolder extends CardViewHolder<UsageStatsData> {
                 getAdapter().notifyDataSetChanged();
             }
         });
+
+        AppInfoLoader.load(getContext(), data.packageName, ivIcon, tvName);
 
     }
 

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.john.freezeapp.AppInfoLoader;
 import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ScreenUtils;
@@ -43,18 +44,11 @@ public class BatteryUsageAppViewHolder extends CardViewHolder<BatteryUsageAppDat
         super.onBind();
         BatteryUsageAppData data = getData();
 
+        ivIcon.setBackground(getContext().getDrawable(R.mipmap.ic_app_icon));
 
-        if (data.icon != null) {
-            ivIcon.setBackground(data.icon);
-        } else {
-            ivIcon.setBackground(getContext().getDrawable(R.mipmap.ic_app_icon));
-        }
+        tvName.setText("UID - " + data.uid);
 
-        if (!TextUtils.isEmpty(data.name)) {
-            tvName.setText(data.name);
-        } else {
-            tvName.setText("UID - " + data.uid);
-        }
+        AppInfoLoader.load(getContext(), data.packageName, ivIcon, tvName);
 
 
         if (data.cacheView == null) {

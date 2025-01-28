@@ -17,8 +17,6 @@ public class UsageStatsData implements Comparable<UsageStatsData> {
     public long totalTimeForegroundServiceUsed;
     public int launchCount;
     public int appLaunchCount;
-    public Drawable icon;
-    public String name;
     public boolean isExpand;
 
     @Override

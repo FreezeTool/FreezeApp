@@ -6,6 +6,8 @@
     <string name="daemon_start_name">Daemon Start</string>
     <string name="usage_stats_name">Usage Stats</string>
     <string name="mi_flip_setting">Mix Flip Setting</string>
+    <string name="adb_pair">Adb Pair</string>
+
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -25,6 +27,9 @@
     <string name="main_shizuku_server_active">Shizuku服务正在运行</string>
     <string name="main_shizuku_server_not_active">Shizuku服务未启动</string>
 
+    <string name="main_wireless_adb_start_server_title">无线调试启动</string>
+    <string name="main_wireless_adb_start_server_content">在Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动Freeze服务，无需连接到计算机。</string>
+
 
     <string name="main_server_active">正在运行</string>
     <string name="main_server_not_active">未启动</string>
@@ -36,6 +41,7 @@
     <string name="main_start_app_process">启动</string>
     <string name="main_restart_app_process">重新启动</string>
     <string name="main_start_watch_cmd">查看指令</string>
+    <string name="main_adb_pair">配对</string>
 
     <string name="manager_running_app_title">运行中APP</string>
     <string name="manager_freeze_app_title">可冻结APP</string>
@@ -69,4 +75,22 @@
 
     <string name="mi_mix_flip_home_app">外屏应用</string>
     <string name="mi_mix_flip_tip">首次请点击%s，即可在%s中显示全部应用。</string>
+
+    <string name="notification_channel_adb_pairing">无线调试配对</string>
+    <string name="notification_adb_pairing_input_paring_code">输入配对码</string>
+    <string name="notification_adb_pairing_searching_for_service_title">正在搜索配对服务</string>
+    <string name="notification_adb_pairing_service_found_title">已找到配对服务</string>
+    <string name="notification_adb_pairing_stop_searching">停止搜索</string>
+    <string name="notification_adb_pairing_working_title">正在进行配对</string>
+    <string name="notification_adb_pairing_succeed_title">配对成功</string>
+    <string name="notification_adb_pairing_succeed_text">您现在可以启动 Freeze 服务了。</string>
+    <string name="notification_adb_pairing_failed_title">配对失败</string>
+    <string name="notification_settings">通知设置</string>
+    <string name="notification_adb_pairing_retry">重试</string>
+    <string name="dialog_adb_pairing_paring_code">配对码</string>
+
+    <string name="paring_code_is_wrong">配对码错误。</string>
+    <string name="cannot_connect_port">无法连接至无线调试服务。</string>
+    <string name="adb_error_key_store">无法为无线调试生成密钥。\n这可能是因为此设备上的 KeyStore 机制已损坏。</string>
+
 </resources>

@@ -98,7 +98,7 @@ public class MiMixFlipSettingActivity extends BaseActivity {
                 postUI(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, data.appModel.name + "应用强杀成功~", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, data.name + "应用强杀成功~", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -146,7 +146,7 @@ public class MiMixFlipSettingActivity extends BaseActivity {
                         MiMixFlipStorage.setScale(data.appModel.packageName, scaleValue);
                         data.scale = scaleValue;
                         mAdapter.notifyDataSetChanged();
-                        updateScaleSetting(MiMixFlipSettingActivity.this, data.appModel.name, data.appModel.packageName, scaleValue);
+                        updateScaleSetting(MiMixFlipSettingActivity.this, data.name, data.appModel.packageName, scaleValue);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {

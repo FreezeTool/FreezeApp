@@ -40,11 +40,6 @@ public final class UsageStats {
                     for (android.app.usage.UsageStats usageStats : list) {
                         UsageStatsData usageStatsData = new UsageStatsData();
                         usageStatsData.packageName = usageStats.getPackageName();
-                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(context, usageStatsData.packageName);
-                        if (appModel != null) {
-                            usageStatsData.icon = appModel.icon;
-                            usageStatsData.name = appModel.name;
-                        }
                         usageStatsData.firstTimeStamp = usageStats.getFirstTimeStamp();
                         usageStatsData.lastTimeStamp = usageStats.getLastTimeStamp();
                         usageStatsData.lastTimeUsed = usageStats.getLastTimeUsed();

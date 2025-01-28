@@ -15,7 +15,7 @@ import com.john.freezeapp.recyclerview.CardViewHolder;
 public class FreezeHomeDaemonViewHolder extends CardViewHolder<FreezeHomeDaemonData> {
 
     TextView tvTitle, tvSubtitle, tvContent;
-    AppCompatButton btnStart;
+    AppCompatButton btnRight, btnLeft;
     ImageView ivIcon;
     public static CardViewHolder.Creator<FreezeHomeDaemonData> CREATOR = new CardViewHolder.Creator<FreezeHomeDaemonData>() {
         @Override
@@ -26,7 +26,8 @@ public class FreezeHomeDaemonViewHolder extends CardViewHolder<FreezeHomeDaemonD
 
     public FreezeHomeDaemonViewHolder(View itemView) {
         super(itemView);
-        btnStart = itemView.findViewById(R.id.btn_start);
+        btnRight = itemView.findViewById(R.id.btn_right);
+        btnLeft = itemView.findViewById(R.id.btn_left);
         tvTitle = itemView.findViewById(R.id.tv_title);
         tvSubtitle = itemView.findViewById(R.id.tv_subtitle);
         tvContent = itemView.findViewById(R.id.tv_content);
@@ -38,7 +39,14 @@ public class FreezeHomeDaemonViewHolder extends CardViewHolder<FreezeHomeDaemonD
     public void onBind() {
         super.onBind();
         FreezeHomeDaemonData data = getData();
-        tvTitle.setText(data.title != null ? data.title : "");
+        if (!TextUtils.isEmpty(data.title)) {
+            tvTitle.setVisibility(View.VISIBLE);
+            tvTitle.setText(data.title);
+        } else {
+            tvTitle.setVisibility(View.GONE);
+            tvTitle.setText("");
+        }
+
         if (!TextUtils.isEmpty(data.content)) {
             tvContent.setText(data.content);
             tvContent.setVisibility(View.VISIBLE);
@@ -48,9 +56,28 @@ public class FreezeHomeDaemonViewHolder extends CardViewHolder<FreezeHomeDaemonD
         if (data.icon != 0) {
             ivIcon.setImageResource(data.icon);
         }
-        btnStart.setText(!TextUtils.isEmpty(data.btnText) ? data.btnText : "");
-        btnStart.setOnClickListener(data.onClickListener);
-        btnStart.setVisibility(data.showBtn ? View.VISIBLE : View.GONE);
-        btnStart.setCompoundDrawablesRelativeWithIntrinsicBounds(getContext().getDrawable(data.btnLeftDrawable), null, null, null);
+
+        tvSubtitle.setVisibility(View.GONE);
+
+        FreezeHomeDaemonData.DaemonBtnData rightDaemonBtnData = data.rightDaemonBtnData;
+        if (rightDaemonBtnData != null && rightDaemonBtnData.show) {
+            btnRight.setText(!TextUtils.isEmpty(rightDaemonBtnData.text) ? rightDaemonBtnData.text : "");
+            btnRight.setOnClickListener(rightDaemonBtnData.onClickListener);
+            btnRight.setVisibility(View.VISIBLE);
+            btnRight.setCompoundDrawablesRelativeWithIntrinsicBounds(getContext().getDrawable(rightDaemonBtnData.icon), null, null, null);
+        } else {
+            btnRight.setVisibility(View.GONE);
+        }
+
+        FreezeHomeDaemonData.DaemonBtnData leftDaemonBtnData = data.leftDaemonBtnData;
+        if (leftDaemonBtnData != null && leftDaemonBtnData.show) {
+            btnLeft.setText(!TextUtils.isEmpty(leftDaemonBtnData.text) ? leftDaemonBtnData.text : "");
+            btnLeft.setOnClickListener(leftDaemonBtnData.onClickListener);
+            btnLeft.setVisibility(View.VISIBLE);
+            btnLeft.setCompoundDrawablesRelativeWithIntrinsicBounds(getContext().getDrawable(leftDaemonBtnData.icon), null, null, null);
+        } else {
+            btnLeft.setVisibility(View.GONE);
+        }
+
     }
 }

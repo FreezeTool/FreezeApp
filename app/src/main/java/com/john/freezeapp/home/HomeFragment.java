@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,10 +27,13 @@ import com.john.freezeapp.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
 import com.john.freezeapp.SharedPrefUtil;
+import com.john.freezeapp.adb.AdbPairActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.window.FloatWindow;
+import com.john.freezeapp.window.IFloatWindow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,8 +135,10 @@ public class HomeFragment extends BaseFragment {
         FreezeHomeDaemonData adbDaemonData = getFreezeHomeDaemonData(context);
         FreezeHomeDaemonData shizukuDaemonData = getHomeDaemonData(context);
         FreezeHomeDaemonData rootDaemonData = getDaemonData(context);
+        FreezeHomeDaemonData wirelessAdbDaemonData = getFreezeHomeWirelessAdbData(context);
 
         List<FreezeHomeData> startDaemonData = new ArrayList<>();
+        startDaemonData.add(wirelessAdbDaemonData);
         startDaemonData.add(adbDaemonData);
         startDaemonData.add(shizukuDaemonData);
         startDaemonData.add(rootDaemonData);
@@ -147,10 +153,68 @@ public class HomeFragment extends BaseFragment {
             startDaemonData.remove(shizukuDaemonData);
         }
 
+
         list.addAll(startDaemonData);
 
 
         homeAdapter.updateData(list);
+    }
+
+    IFloatWindow floatWindow = new FloatWindow();
+
+    private FreezeHomeDaemonData getFreezeHomeWirelessAdbData(Context context) {
+        FreezeHomeDaemonData adbDaemonData = new FreezeHomeDaemonData();
+        adbDaemonData.title = context.getString(R.string.main_wireless_adb_start_server_title);
+        StringBuilder content = new StringBuilder();
+        content.append(context.getString(R.string.main_wireless_adb_start_server_content));
+        adbDaemonData.content = content.toString();
+        adbDaemonData.icon = R.drawable.ic_vector_wifi;
+
+        FreezeHomeDaemonData.DaemonBtnData rightBtnData = new FreezeHomeDaemonData.DaemonBtnData();
+        rightBtnData.text = context.getString(R.string.main_start_app_process);
+        rightBtnData.show = !isDaemonActive();
+        rightBtnData.icon = R.drawable.ic_vector_start;
+        rightBtnData.onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isOverlayPermission()) {
+                    toOverlayPermission();
+                } else if (!floatWindow.isShowing()) {
+                    floatWindow.show();
+                } else {
+                    toDevelop();
+                }
+
+            }
+        };
+        adbDaemonData.rightDaemonBtnData = rightBtnData;
+
+        FreezeHomeDaemonData.DaemonBtnData leftBtnData = new FreezeHomeDaemonData.DaemonBtnData();
+        leftBtnData.text = context.getString(R.string.main_adb_pair);
+        leftBtnData.show = !isDaemonActive();
+        leftBtnData.icon = R.drawable.ic_vector_link;
+        leftBtnData.onClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toAdbPair(getContext());
+            }
+        };
+
+
+        adbDaemonData.leftDaemonBtnData = leftBtnData;
+        return adbDaemonData;
+    }
+
+    private void toAdbPair(Context context) {
+        Intent intent = new Intent(context, AdbPairActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    private void toDevelop() {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     private @NonNull FreezeHomeBillboardData getFreezeHomeBillboardData(Context context) {
@@ -186,37 +250,41 @@ public class HomeFragment extends BaseFragment {
 
     private @NonNull FreezeHomeDaemonData getDaemonData(Context context) {
         FreezeHomeDaemonData rootDaemonData = new FreezeHomeDaemonData();
-        boolean suEnable = FreezeUtil.isSuEnable();
-        rootDaemonData.title = context.getString(R.string.main_root_start_server_title, context.getString(suEnable ? R.string.main_root_server_active : R.string.main_root_server_not_active));
+        rootDaemonData.title = context.getString(R.string.main_root_start_server_title, context.getString(this.isRoot ? R.string.main_root_server_active : R.string.main_root_server_not_active));
         rootDaemonData.content = context.getString(R.string.main_root_start_server_content);
-        rootDaemonData.icon = R.mipmap.ic_root;
-        rootDaemonData.btnText = context.getString(R.string.main_start_app_process);
-        rootDaemonData.showBtn = !isDaemonActive() && suEnable;
-        rootDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
-        rootDaemonData.onClickListener = new View.OnClickListener() {
+        rootDaemonData.icon = this.isRoot ? R.drawable.ic_vector_unlock : R.drawable.ic_vector_lock;
+
+        FreezeHomeDaemonData.DaemonBtnData rightBtnData = new FreezeHomeDaemonData.DaemonBtnData();
+        rightBtnData.text = context.getString(R.string.main_start_app_process);
+        rightBtnData.show = !isDaemonActive() && this.isRoot;
+        rightBtnData.icon = R.drawable.ic_vector_start;
+        rightBtnData.onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toRoot(v);
             }
         };
+        rootDaemonData.rightDaemonBtnData = rightBtnData;
         return rootDaemonData;
     }
 
     private @NonNull FreezeHomeDaemonData getHomeDaemonData(Context context) {
         FreezeHomeDaemonData shizukuDaemonData = new FreezeHomeDaemonData();
-        boolean shizukuActive = FreezeUtil.isShizukuActive();
-        shizukuDaemonData.title = context.getString(R.string.main_shizuku_start_server_title, context.getString(shizukuActive ? R.string.main_server_active : R.string.main_server_not_active));
+        shizukuDaemonData.title = context.getString(R.string.main_shizuku_start_server_title, context.getString(this.isShizuku ? R.string.main_server_active : R.string.main_server_not_active));
         shizukuDaemonData.content = context.getString(R.string.main_shizuku_start_server_content);
-        shizukuDaemonData.icon = R.mipmap.ic_server;
-        shizukuDaemonData.btnText = context.getString(R.string.main_start_app_process);
-        shizukuDaemonData.showBtn = !isDaemonActive() && shizukuActive;
-        shizukuDaemonData.btnLeftDrawable = R.drawable.ic_vector_start;
-        shizukuDaemonData.onClickListener = new View.OnClickListener() {
+        shizukuDaemonData.icon = this.isShizuku ? R.drawable.ic_vector_domain : R.drawable.ic_vector_domain_disable;
+
+        FreezeHomeDaemonData.DaemonBtnData rightBtnData = new FreezeHomeDaemonData.DaemonBtnData();
+        rightBtnData.text = context.getString(R.string.main_start_app_process);
+        rightBtnData.show = !isDaemonActive() && this.isShizuku;
+        rightBtnData.icon = R.drawable.ic_vector_start;
+        rightBtnData.onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 toShizuku(v);
             }
         };
+        shizukuDaemonData.rightDaemonBtnData = rightBtnData;
         return shizukuDaemonData;
     }
 
@@ -226,16 +294,19 @@ public class HomeFragment extends BaseFragment {
         StringBuilder content = new StringBuilder();
         content.append(context.getString(R.string.main_adb_start_server_content));
         adbDaemonData.content = content.toString();
-        adbDaemonData.icon = R.mipmap.ic_terminal;
-        adbDaemonData.btnText = context.getString(R.string.main_start_watch_cmd);
-        adbDaemonData.showBtn = !isDaemonActive();
-        adbDaemonData.btnLeftDrawable = R.drawable.ic_vector_code;
-        adbDaemonData.onClickListener = new View.OnClickListener() {
+        adbDaemonData.icon = R.drawable.ic_vector_terminal;
+
+        FreezeHomeDaemonData.DaemonBtnData rightBtnData = new FreezeHomeDaemonData.DaemonBtnData();
+        rightBtnData.text = context.getString(R.string.main_start_watch_cmd);
+        rightBtnData.show = !isDaemonActive();
+        rightBtnData.icon = R.drawable.ic_vector_code;
+        rightBtnData.onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showWatchCommandDialog();
             }
         };
+        adbDaemonData.rightDaemonBtnData = rightBtnData;
         return adbDaemonData;
     }
 
@@ -332,5 +403,15 @@ public class HomeFragment extends BaseFragment {
     private void toRealShizuku() {
         showLoading();
         FreezeAppManager.execShizuku(getContext(), null);
+    }
+
+    public void toOverlayPermission() {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+        startActivity(intent);
+    }
+
+    public boolean isOverlayPermission() {
+        return Settings.canDrawOverlays(getContext());
     }
 }
