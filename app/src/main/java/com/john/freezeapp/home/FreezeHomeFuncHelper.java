@@ -30,6 +30,7 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
+import com.john.freezeapp.util.FreezeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class FreezeHomeFuncHelper {
                 }));
 
         IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
-        if (batteryStats != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (batteryStats != null && FreezeUtil.atLeast31()) {
             list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage),
                     R.drawable.ic_vector_battery,
                     0xffB5EBDA,

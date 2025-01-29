@@ -25,6 +25,7 @@ import com.john.freezeapp.home.FuncFragment;
 import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,17 +141,24 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void bindDaemon(IDaemonBinder daemonBinder) {
         super.bindDaemon(daemonBinder);
-        postUI(new Runnable() {
-            @Override
-            public void run() {
-                viewPager.setCurrentItem(1);
-            }
-        });
+        if (SharedPrefUtil.isFirstBindDaemon()) {
+            postUI(new Runnable() {
+                @Override
+                public void run() {
+                    viewPager.setCurrentItem(1);
+                }
+            });
+            SharedPrefUtil.setFirstBindDaemon();
+        }
+
     }
 
     @Override
     protected void unbindDaemon() {
         super.unbindDaemon();
+//        if (SharedPrefUtil.isFirstUnbindDaemon()) {
+//            SharedPrefUtil.setFirstUnbindDaemon();
+//        }
         postUI(new Runnable() {
             @Override
             public void run() {

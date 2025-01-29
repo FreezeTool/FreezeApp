@@ -16,6 +16,7 @@ import android.permission.IPermissionManager;
 import android.view.IWindowManager;
 
 import com.android.internal.app.IAppOpsService;
+import com.john.freezeapp.util.FreezeUtil;
 
 public class DaemonService {
     public static final IAppOpsService appOps;
@@ -34,7 +35,7 @@ public class DaemonService {
         appOps = IAppOpsService.Stub.asInterface(ServiceManager.getService("appops"));
 
         IBinder service = ServiceManager.getService("activity");
-        if (Build.VERSION.SDK_INT >= 26) {
+        if (FreezeUtil.atLeast26()) {
             activityManager = IActivityManager.Stub.asInterface(service);
         } else {
             activityManager = ActivityManagerNative.asInterface(service);
@@ -45,12 +46,12 @@ public class DaemonService {
         packageManager = IPackageManager.Stub.asInterface(ServiceManager.getService("package"));
 
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (FreezeUtil.atLeast30()) {
             permissionManager = IPermissionManager.Stub.asInterface(ServiceManager.getService("permissionmgr"));
         } else {
             permissionManager = null;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (FreezeUtil.atLeast30()) {
             deviceIdleController = IDeviceIdleController.Stub.asInterface(ServiceManager.getService("deviceidle"));
         } else {
             deviceIdleController = null;

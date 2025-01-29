@@ -3,6 +3,8 @@ package com.john.freezeapp;
 import android.app.Application;
 import android.os.Build;
 
+import com.john.freezeapp.util.FreezeUtil;
+
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 public class App extends Application {
@@ -12,7 +14,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (FreezeUtil.atLeast28()) {
             HiddenApiBypass.addHiddenApiExemptions("L");
         }
 

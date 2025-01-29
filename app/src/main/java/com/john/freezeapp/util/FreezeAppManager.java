@@ -380,7 +380,7 @@ public class FreezeAppManager {
     private static ApplicationInfo getApplicationInfo(String packageName) throws RemoteException {
         IPackageManager iPackageManager = ClientBinderManager.getPackageManager();
         ApplicationInfo applicationInfo;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        if (FreezeUtil.atLeast33()) {
             applicationInfo = iPackageManager.getApplicationInfo(packageName, 0L, 0);
         } else {
             applicationInfo = iPackageManager.getApplicationInfo(packageName, 0, 0);
@@ -396,7 +396,7 @@ public class FreezeAppManager {
         try {
             List<PackageInfo> packageInfos = new ArrayList<>();
             ParceledListSlice<PackageInfo> installedPackages = null;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (FreezeUtil.atLeast33()) {
                 installedPackages = ClientBinderManager.getPackageManager().getInstalledPackages(0L, 0);
             } else {
                 installedPackages = ClientBinderManager.getPackageManager().getInstalledPackages(0, 0);
@@ -404,7 +404,7 @@ public class FreezeAppManager {
             for (PackageInfo packageInfo : installedPackages.getList()) {
 
                 boolean isApex = false;
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                if (FreezeUtil.atLeast29()) {
                     isApex = packageInfo.isApex;
                 }
                 final boolean isSystem = !isApex

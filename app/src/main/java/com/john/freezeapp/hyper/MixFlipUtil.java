@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import kotlin.text.Charsets;
 
 public class MixFlipUtil {
+    /**
+     * adb shell dumpsys window -setForceDisplayCompatMode [packageName] allowstart [blocklist|allowstart|allowlist|restartlist|relaunchlist|relaunch|interceptlist|clear]
+     * adb shell dumpsys window -setForceDisplayCompatMode [packageName:packageName:...] [blocklist|allowstart|allowlist|restartlist|relaunchlist|relaunch|interceptlist|clear]
+     * @param packageName
+     */
     public static void allowStartApps(String packageName) {
         ClientRemoteShell.execCommand(String.format("dumpsys window -setForceDisplayCompatMode %s allowstart", packageName), new ClientRemoteShell.RemoteShellCommandResultCallback() {
             @Override
@@ -43,8 +48,8 @@ public class MixFlipUtil {
     }
 
     /**
-     * adb shell cmd MiuiSizeCompat update-rule  com.john.freezeapp enable::true
-     * adb shell cmd MiuiSizeCompat update-rule  com.john.freezeapp scale::0.5
+     * adb shell cmd MiuiSizeCompat update-rule [packageName] enable::true
+     * adb shell cmd MiuiSizeCompat update-rule [packageName] scale::0.5
      *
      * @return
      */
@@ -65,7 +70,7 @@ public class MixFlipUtil {
     }
 
     /**
-     * cmd MiuiSizeCompat reload-rule
+     * adb shell cmd MiuiSizeCompat reload-rule
      */
     public static void resetConfigAppScale() {
         ClientRemoteShell.execCommand(String.format("cmd MiuiSizeCompat reload-rule"), new ClientRemoteShell.RemoteShellCommandResultCallback() {

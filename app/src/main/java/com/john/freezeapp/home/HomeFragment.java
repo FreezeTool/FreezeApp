@@ -136,9 +136,14 @@ public class HomeFragment extends BaseFragment {
         FreezeHomeDaemonData wirelessAdbDaemonData = getFreezeHomeWirelessAdbData(context);
 
         List<FreezeHomeData> startDaemonData = new ArrayList<>();
-        startDaemonData.add(wirelessAdbDaemonData);
+        if (FreezeUtil.atLeast30()) {
+            startDaemonData.add(wirelessAdbDaemonData);
+        }
+
         startDaemonData.add(adbDaemonData);
-//        startDaemonData.add(shizukuDaemonData);
+        if (BuildConfig.DEBUG) {
+            startDaemonData.add(shizukuDaemonData);
+        }
         startDaemonData.add(rootDaemonData);
 
         if (this.isRoot && list.contains(rootDaemonData)) {

@@ -153,7 +153,7 @@ public class ClientBinderManager {
                 return null;
             }
             IBinder binder = new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService(Context.ACTIVITY_SERVICE));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (FreezeUtil.atLeast26()) {
                 return IActivityManager.Stub.asInterface(binder);
             } else {
                 return ActivityManagerNative.asInterface(binder);

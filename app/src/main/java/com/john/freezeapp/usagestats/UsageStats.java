@@ -6,6 +6,7 @@ import android.content.pm.ParceledListSlice;
 import android.os.Build;
 import android.os.RemoteException;
 
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
 
@@ -42,7 +43,7 @@ public final class UsageStats {
                         usageStatsData.lastTimeStamp = usageStats.getLastTimeStamp();
                         usageStatsData.lastTimeUsed = usageStats.getLastTimeUsed();
                         usageStatsData.totalTimeInForeground = usageStats.getTotalTimeInForeground();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        if (FreezeUtil.atLeast29()) {
                             usageStatsData.lastTimeVisible = usageStats.getLastTimeVisible();
                             usageStatsData.totalTimeVisible = usageStats.getTotalTimeVisible();
                             usageStatsData.lastTimeForegroundServiceUsed = usageStats.getLastTimeForegroundServiceUsed();

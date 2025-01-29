@@ -188,4 +188,29 @@ public class FreezeUtil {
         }
         return false;
     }
+
+
+
+    public static boolean atLeast26() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    public static boolean atLeast28() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
+    public static boolean atLeast29() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+    }
+    public static boolean atLeast30() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
+    }
+
+    public static boolean atLeast31() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
+    }
+
+    public static boolean atLeast33() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+    }
 }

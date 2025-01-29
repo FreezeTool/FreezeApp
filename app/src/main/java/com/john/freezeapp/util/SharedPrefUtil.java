@@ -9,6 +9,8 @@ public class SharedPrefUtil {
 
     private static final String NAMESPACE = "FreezeApp";
     public static final String KEY_KERNEL_VERSION = "KEY_KERNEL_VERSION";
+    public static final String KEY_FIRST_BIND_DAEMON = "KEY_FIRST_BIND_DAEMON";
+    public static final String KEY_FIRST_UNBIND_DAEMON = "KEY_FIRST_UNBIND_DAEMON";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);
@@ -22,5 +24,33 @@ public class SharedPrefUtil {
         SharedPreferences.Editor edit = getSharedPref().edit();
         edit.putString(key, def);
         edit.apply();
+    }
+
+    public static boolean getBoolean(String key, boolean def) {
+        return getSharedPref().getBoolean(key, def);
+    }
+
+    public static void setBoolean(String key, boolean value) {
+        SharedPreferences.Editor edit = getSharedPref().edit();
+        edit.putBoolean(key, value);
+        edit.apply();
+    }
+
+
+    public static boolean isFirstBindDaemon() {
+        return getBoolean(KEY_FIRST_BIND_DAEMON, true);
+    }
+
+    public static void setFirstBindDaemon() {
+        setBoolean(KEY_FIRST_BIND_DAEMON, false);
+    }
+
+
+    public static boolean isFirstUnbindDaemon() {
+        return getBoolean(KEY_FIRST_UNBIND_DAEMON, true);
+    }
+
+    public static void setFirstUnbindDaemon() {
+        setBoolean(KEY_FIRST_UNBIND_DAEMON, false);
     }
 }

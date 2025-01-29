@@ -21,6 +21,8 @@ import androidx.annotation.Nullable;
 
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.IDaemonBinder;
+import com.john.freezeapp.util.FreezeUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -117,7 +119,7 @@ public class DaemonBinderManager {
     private static IActivityManager getActivityManager() {
         IBinder iBinder = ServiceManager.getService(Context.ACTIVITY_SERVICE);
         IActivityManager am;
-        if (Build.VERSION.SDK_INT >= 26) {
+        if (FreezeUtil.atLeast26()) {
             am = IActivityManager.Stub.asInterface(iBinder);
         } else {
             am = ActivityManagerNative.asInterface(iBinder);
@@ -129,11 +131,11 @@ public class DaemonBinderManager {
         IActivityManager am = DaemonService.activityManager;
         ContentProviderHolder contentProviderHolder;
         IContentProvider provider;
-        if (Build.VERSION.SDK_INT >= 29) {
+        if (FreezeUtil.atLeast29()) {
             contentProviderHolder = am.getContentProviderExternal(name, userId, token, tag);
             provider = contentProviderHolder != null ? contentProviderHolder.provider : null;
             DaemonLog.log("contentProviderHolder=" + contentProviderHolder);
-        } else if (Build.VERSION.SDK_INT >= 26) {
+        } else if (FreezeUtil.atLeast26()) {
             contentProviderHolder = am.getContentProviderExternal(name, userId, token);
             provider = contentProviderHolder != null ? contentProviderHolder.provider : null;
         } else {
@@ -146,11 +148,11 @@ public class DaemonBinderManager {
 
     public static Bundle callCompat(@NonNull IContentProvider provider, @Nullable String callingPkg, @Nullable String authority, @Nullable String method, @Nullable String arg, @Nullable Bundle extras) throws RemoteException {
         Bundle result;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (FreezeUtil.atLeast31()) {
             result = provider.call((new AttributionSource.Builder(android.system.Os.getuid())).setPackageName(callingPkg).build(), authority, method, arg, extras);
-        } else if (Build.VERSION.SDK_INT >= 30) {
+        } else if (FreezeUtil.atLeast30()) {
             result = provider.call(callingPkg, (String) null, authority, method, arg, extras);
-        } else if (Build.VERSION.SDK_INT >= 29) {
+        } else if (FreezeUtil.atLeast29()) {
             result = provider.call(callingPkg, authority, method, arg, extras);
         } else {
             result = provider.call(callingPkg, method, arg, extras);
