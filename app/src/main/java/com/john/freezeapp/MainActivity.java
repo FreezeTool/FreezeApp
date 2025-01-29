@@ -1,6 +1,11 @@
 package com.john.freezeapp;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +24,7 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.john.freezeapp.home.FuncFragment;
 import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
+import com.john.freezeapp.util.FreezeUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +45,7 @@ public class MainActivity extends BaseActivity {
             this.menuId = menuId;
         }
     }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

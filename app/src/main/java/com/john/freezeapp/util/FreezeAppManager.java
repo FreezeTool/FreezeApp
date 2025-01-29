@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -10,11 +10,9 @@ import android.content.pm.ParceledListSlice;
 import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.text.TextUtils;
-import android.view.View;
 
-import com.google.gson.Gson;
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 
@@ -24,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import rikka.shizuku.Shizuku;

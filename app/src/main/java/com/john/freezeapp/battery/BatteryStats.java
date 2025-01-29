@@ -1,7 +1,6 @@
 package com.john.freezeapp.battery;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.BatteryConsumer;
 import android.os.BatteryUsageStats;
@@ -16,17 +15,14 @@ import androidx.annotation.RequiresApi;
 
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.FreezeAppManager;
-import com.john.freezeapp.ThreadPool;
+import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 

@@ -6,14 +6,12 @@ import android.content.pm.ParceledListSlice;
 import android.os.Build;
 import android.os.RemoteException;
 
-import com.john.freezeapp.FreezeAppManager;
-import com.john.freezeapp.ThreadPool;
+import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public final class UsageStats {

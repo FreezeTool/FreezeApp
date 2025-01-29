@@ -1,6 +1,6 @@
 package com.john.freezeapp.adb;
-
 import android.annotation.TargetApi;
+import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -10,19 +10,25 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.john.freezeapp.R;
+import com.john.freezeapp.util.SharedPrefUtil;
+import com.john.freezeapp.util.ThreadPool;
 
+import java.io.IOException;
 import java.net.ConnectException;
 
 @TargetApi(Build.VERSION_CODES.O)
 public class AdbPairService extends Service {
 
-    private String notificationChannelId = "adb_pairing";
+    public static final String notificationChannelId = "adb_pairing";
 
     private String tag = "AdbPairingService";
 
@@ -35,6 +41,10 @@ public class AdbPairService extends Service {
     private static final String replyAction = "reply";
     private static final String remoteInputResultKey = "paring_code";
     private static final String portKey = "paring_code";
+
+    private Handler handler = new Handler(Looper.getMainLooper());
+    private int port;
+    private AdbMdns adbMdns = null;
 
     @Nullable
     @Override
@@ -77,11 +87,24 @@ public class AdbPairService extends Service {
         String action = intent.getAction();
         switch (action) {
             case startAction:
-
+                startAction(intent);
                 break;
             case stopAction:
+                stopForeground(STOP_FOREGROUND_REMOVE);
                 break;
             case replyAction:
+                Bundle resultsFromIntent = RemoteInput.getResultsFromIntent(intent);
+                String code = "";
+                if (resultsFromIntent != null) {
+                    code = (String) resultsFromIntent.getCharSequence(remoteInputResultKey);
+                }
+                int port = intent.getIntExtra(portKey, -1);
+                if (port != -1) {
+                    onInput(code, port);
+                } else {
+                    startAction(intent);
+                }
+
                 break;
             default:
                 return START_NOT_STICKY;
@@ -89,6 +112,54 @@ public class AdbPairService extends Service {
 
         return START_REDELIVER_INTENT;
 
+    }
+
+    private void onInput(String code, final int port) {
+        ThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                String host = "127.0.0.1";
+
+                AdbKey2 key = null;
+                try {
+                    key = new AdbKey2(new PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp");
+                } catch (Throwable e){
+                    return;
+                }
+                AdbPairingClient client =  new AdbPairingClient(host, key, code, port);
+                try {
+                    boolean result = client.start();
+                    handleResult(result, null);
+                } catch (Exception e) {
+                   e.printStackTrace();
+                   handleResult(false, e);
+                }
+            }
+        });
+
+        startNotification(workingNotification());
+    }
+
+    public void startAction(Intent intent) {
+        startSearch();
+        startNotification(createSearchingNotification());
+    }
+
+
+    public void startNotification(Notification notification) {
+        if (notification != null) {
+            try {
+                startForeground(notificationId, notification);
+            } catch (Throwable e) {
+                Log.e(tag, "startForeground failed", e);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                        && e instanceof ForegroundServiceStartNotAllowedException) {
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.notify(notificationId, notification);
+                }
+            }
+        }
     }
 
 
@@ -125,11 +196,44 @@ public class AdbPairService extends Service {
     }
 
     private void stopSearch() {
-
+        if (!started) return;
+        started = false;
+        if (adbMdns != null) {
+            adbMdns.stop();
+        }
     }
 
-    private void startSearch() {
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopSearch();
+    }
 
+    private boolean started = false;
+
+    private void startSearch() {
+        if (started) return;
+        started = true;
+        adbMdns = new AdbMdns(this, port, AdbMdns.TLS_PAIRING, new AdbMdns.Callback() {
+            @Override
+            public void callback(int port) {
+                AdbPairService.this.port = port;
+                handler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        Log.i(tag, "Pairing service port: $port");
+
+                        // Since the service could be killed before user finishing input,
+                        // we need to put the port into Intent
+                        Notification notification = createInputNotification(port);
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.notify(notificationId, notification);
+                    }
+                });
+            }
+        });
+        adbMdns.start();
     }
 
 
@@ -160,7 +264,7 @@ public class AdbPairService extends Service {
     }
 
 
-    private Intent startIntent(Context context) {
+    public static Intent startIntent(Context context) {
         Intent intent = new Intent(context, AdbPairService.class);
         intent.setAction(startAction);
         return intent;

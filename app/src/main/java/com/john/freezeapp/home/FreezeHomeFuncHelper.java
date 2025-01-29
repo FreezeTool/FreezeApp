@@ -81,17 +81,6 @@ public class FreezeHomeFuncHelper {
                     }));
         }
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
-                R.drawable.ic_vector_window,
-                0xffF4E1B9,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, CommandActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
-                }));
         if (ClientBinderManager.isActive()) {
             if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
                 list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
@@ -108,6 +97,19 @@ public class FreezeHomeFuncHelper {
             }
         }
 
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
+                R.drawable.ic_vector_window,
+                0xffF4E1B9,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, CommandActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }));
+
+
         if (BuildConfig.DEBUG) {
             list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test),
                     R.drawable.ic_vector_window,
@@ -115,7 +117,7 @@ public class FreezeHomeFuncHelper {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            toTest3(context);
+
                         }
                     }));
         }

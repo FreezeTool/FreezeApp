@@ -1,15 +1,9 @@
 package com.john.freezeapp.freeze;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.john.freezeapp.BaseActivity;
-import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.R;
 
 import java.util.ArrayList;

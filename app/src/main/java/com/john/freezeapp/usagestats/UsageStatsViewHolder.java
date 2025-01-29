@@ -1,20 +1,16 @@
 package com.john.freezeapp.usagestats;
 
-import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.john.freezeapp.AppInfoLoader;
-import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.R;
-import com.john.freezeapp.home.FreezeHomeFuncData;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 
 import java.text.SimpleDateFormat;

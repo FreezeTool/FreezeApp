@@ -2,36 +2,28 @@ package com.john.freezeapp.daemon;
 
 import android.content.Context;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.os.Parcel;
-import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ServiceManager;
 import android.os.ShellCallback;
 import android.os.SystemProperties;
 import android.text.TextUtils;
-import android.util.proto.ProtoOutputStream;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.FreezeUtil;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
-import com.john.freezeapp.daemon.process.ParcelFileDescriptorUtil;
 import com.john.freezeapp.daemon.process.RemoteProcess;
-
-import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 

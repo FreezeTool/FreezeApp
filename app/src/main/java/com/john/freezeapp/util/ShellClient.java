@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import com.john.freezeapp.daemon.DaemonHelper;
 

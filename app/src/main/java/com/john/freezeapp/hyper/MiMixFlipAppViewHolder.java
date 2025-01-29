@@ -1,25 +1,16 @@
 package com.john.freezeapp.hyper;
 
-import android.content.DialogInterface;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
-
-import com.aigestudio.wheelpicker.WheelPicker;
-import com.john.freezeapp.AppInfoLoader;
+import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.FreezeAppManager;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class MiMixFlipAppViewHolder extends CardViewHolder<MiMixFlipAppData> {
 

@@ -4,7 +4,7 @@ import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.john.freezeapp.SharedPrefUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 import java.util.HashMap;
 import java.util.Map;

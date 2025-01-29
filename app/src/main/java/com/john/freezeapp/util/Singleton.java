@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 public abstract class Singleton<T> {
 

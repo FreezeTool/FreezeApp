@@ -1,7 +1,7 @@
 package com.john.freezeapp.client;
 
 import com.john.freezeapp.IDaemonBinder;
-import com.john.freezeapp.Singleton;
+import com.john.freezeapp.util.Singleton;
 
 public abstract class ClientBinderSingleton<T> extends Singleton<T> {
 

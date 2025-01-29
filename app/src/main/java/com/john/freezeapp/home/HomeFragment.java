@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.FreezeAppManager;
-import com.john.freezeapp.FreezeUtil;
+import com.john.freezeapp.adb.AdbStartDialog;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
-import com.john.freezeapp.SharedPrefUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 import com.john.freezeapp.adb.AdbPairActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
-import com.john.freezeapp.window.FloatWindow;
-import com.john.freezeapp.window.IFloatWindow;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,23 +130,23 @@ public class HomeFragment extends BaseFragment {
 
         list.add(getDeviceData());
 
-        FreezeHomeDaemonData adbDaemonData = getFreezeHomeDaemonData(context);
-        FreezeHomeDaemonData shizukuDaemonData = getHomeDaemonData(context);
-        FreezeHomeDaemonData rootDaemonData = getDaemonData(context);
+        FreezeHomeDaemonData adbDaemonData = getFreezeHomeAdbData(context);
+        FreezeHomeDaemonData shizukuDaemonData = getFreezeHomeShizukuData(context);
+        FreezeHomeDaemonData rootDaemonData = getFreezeHomeRootData(context);
         FreezeHomeDaemonData wirelessAdbDaemonData = getFreezeHomeWirelessAdbData(context);
 
         List<FreezeHomeData> startDaemonData = new ArrayList<>();
         startDaemonData.add(wirelessAdbDaemonData);
         startDaemonData.add(adbDaemonData);
-        startDaemonData.add(shizukuDaemonData);
+//        startDaemonData.add(shizukuDaemonData);
         startDaemonData.add(rootDaemonData);
 
-        if (this.isRoot) {
+        if (this.isRoot && list.contains(rootDaemonData)) {
             list.add(rootDaemonData);
             startDaemonData.remove(rootDaemonData);
         }
 
-        if (this.isShizuku) {
+        if (this.isShizuku && list.contains(shizukuDaemonData)) {
             list.add(shizukuDaemonData);
             startDaemonData.remove(shizukuDaemonData);
         }
@@ -159,8 +157,6 @@ public class HomeFragment extends BaseFragment {
 
         homeAdapter.updateData(list);
     }
-
-    IFloatWindow floatWindow = new FloatWindow();
 
     private FreezeHomeDaemonData getFreezeHomeWirelessAdbData(Context context) {
         FreezeHomeDaemonData adbDaemonData = new FreezeHomeDaemonData();
@@ -177,14 +173,7 @@ public class HomeFragment extends BaseFragment {
         rightBtnData.onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!isOverlayPermission()) {
-                    toOverlayPermission();
-                } else if (!floatWindow.isShowing()) {
-                    floatWindow.show();
-                } else {
-                    toDevelop();
-                }
-
+                wirelessAdb();
             }
         };
         adbDaemonData.rightDaemonBtnData = rightBtnData;
@@ -205,16 +194,15 @@ public class HomeFragment extends BaseFragment {
         return adbDaemonData;
     }
 
+    private void wirelessAdb() {
+        AdbStartDialog adbStartDialog = new AdbStartDialog(getContext());
+        adbStartDialog.show();
+    }
+
     private void toAdbPair(Context context) {
         Intent intent = new Intent(context, AdbPairActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
-    }
-
-    private void toDevelop() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     private @NonNull FreezeHomeBillboardData getFreezeHomeBillboardData(Context context) {
@@ -248,7 +236,7 @@ public class HomeFragment extends BaseFragment {
         return freezeDaemonData;
     }
 
-    private @NonNull FreezeHomeDaemonData getDaemonData(Context context) {
+    private @NonNull FreezeHomeDaemonData getFreezeHomeRootData(Context context) {
         FreezeHomeDaemonData rootDaemonData = new FreezeHomeDaemonData();
         rootDaemonData.title = context.getString(R.string.main_root_start_server_title, context.getString(this.isRoot ? R.string.main_root_server_active : R.string.main_root_server_not_active));
         rootDaemonData.content = context.getString(R.string.main_root_start_server_content);
@@ -268,7 +256,7 @@ public class HomeFragment extends BaseFragment {
         return rootDaemonData;
     }
 
-    private @NonNull FreezeHomeDaemonData getHomeDaemonData(Context context) {
+    private @NonNull FreezeHomeDaemonData getFreezeHomeShizukuData(Context context) {
         FreezeHomeDaemonData shizukuDaemonData = new FreezeHomeDaemonData();
         shizukuDaemonData.title = context.getString(R.string.main_shizuku_start_server_title, context.getString(this.isShizuku ? R.string.main_server_active : R.string.main_server_not_active));
         shizukuDaemonData.content = context.getString(R.string.main_shizuku_start_server_content);
@@ -288,7 +276,7 @@ public class HomeFragment extends BaseFragment {
         return shizukuDaemonData;
     }
 
-    private @NonNull FreezeHomeDaemonData getFreezeHomeDaemonData(Context context) {
+    private @NonNull FreezeHomeDaemonData getFreezeHomeAdbData(Context context) {
         FreezeHomeDaemonData adbDaemonData = new FreezeHomeDaemonData();
         adbDaemonData.title = context.getString(R.string.main_adb_start_server_title);
         StringBuilder content = new StringBuilder();
@@ -403,15 +391,5 @@ public class HomeFragment extends BaseFragment {
     private void toRealShizuku() {
         showLoading();
         FreezeAppManager.execShizuku(getContext(), null);
-    }
-
-    public void toOverlayPermission() {
-        Intent intent = new Intent();
-        intent.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        startActivity(intent);
-    }
-
-    public boolean isOverlayPermission() {
-        return Settings.canDrawOverlays(getContext());
     }
 }

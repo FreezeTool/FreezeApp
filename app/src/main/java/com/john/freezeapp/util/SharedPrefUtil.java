@@ -1,14 +1,16 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import com.john.freezeapp.App;
 
 public class SharedPrefUtil {
 
     private static final String NAMESPACE = "FreezeApp";
     public static final String KEY_KERNEL_VERSION = "KEY_KERNEL_VERSION";
 
-    private static SharedPreferences getSharedPref() {
+    public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);
     }
 

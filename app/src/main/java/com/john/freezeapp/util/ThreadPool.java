@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

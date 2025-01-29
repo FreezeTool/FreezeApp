@@ -1,6 +1,6 @@
 package com.john.freezeapp.freeze;
 
-import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.recyclerview.CardRecyclerViewAdapter;
 import com.john.freezeapp.recyclerview.ClassCreatorPool;
 

@@ -1,9 +1,11 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import android.content.Context;
 import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.john.freezeapp.R;
 
 public class AppInfoLoader {
 

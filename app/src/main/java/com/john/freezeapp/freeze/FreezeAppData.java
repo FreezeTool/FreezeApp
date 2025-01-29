@@ -2,7 +2,7 @@ package com.john.freezeapp.freeze;
 
 import android.widget.LinearLayout;
 
-import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.util.FreezeAppManager;
 
 public class FreezeAppData {
     public FreezeAppManager.AppModel appModel;

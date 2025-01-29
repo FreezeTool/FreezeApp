@@ -4,12 +4,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +13,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 
 import com.john.freezeapp.daemon.DaemonShellUtils;
-
-import java.io.DataOutputStream;
-import java.io.File;
-import java.util.concurrent.TimeUnit;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
 
 import rikka.shizuku.Shizuku;
-import rikka.shizuku.ShizukuRemoteProcess;
 
 public class DaemonStartActivity extends BaseActivity {
     Toolbar toolbar;

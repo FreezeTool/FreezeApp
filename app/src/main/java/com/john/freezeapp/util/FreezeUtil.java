@@ -1,13 +1,20 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
+import android.provider.Settings;
 import android.text.TextUtils;
 
+import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.adb.AdbPairActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
@@ -19,7 +26,6 @@ import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.List;
 
 import rikka.shizuku.Shizuku;
@@ -55,6 +61,7 @@ public class FreezeUtil {
         try {
             printWriter = new PrintWriter(shellFilePath);
             printWriter.println(FreezeUtil.getStartShell(context));
+            printWriter.println("sleep 1");
             printWriter.println("echo success");
             printWriter.close();
             DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
@@ -141,4 +148,44 @@ public class FreezeUtil {
         return TextUtils.equals(packageName, BuildConfig.APPLICATION_ID);
     }
 
+
+
+    public static void toDevelopPage(Context context) {
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
+    }
+
+    public static void toNotificationPage(Context context) {
+        Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+        intent.putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());
+        try {
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            //
+        }
+    }
+
+    public static void toOverlayPermissionPage(Context context) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+        context.startActivity(intent);
+    }
+
+    public static boolean isOverlayPermission(Context context) {
+        return Settings.canDrawOverlays(context);
+    }
+
+    public static void toWifiSettingPage(Context context) {
+        Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
+        context.startActivity(intent);
+    }
+
+    public static boolean isMIUI() {
+        String manufacturer = Build.MANUFACTURER;
+        if ("xiaomi".equalsIgnoreCase(manufacturer)) {
+            return true;
+        }
+        return false;
+    }
 }

@@ -1,7 +1,6 @@
 package com.john.freezeapp.battery;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +10,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.john.freezeapp.AppInfoLoader;
-import com.john.freezeapp.FreezeAppManager;
+import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.R;
-import com.john.freezeapp.ScreenUtils;
+import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 
 public class BatteryUsageAppViewHolder extends CardViewHolder<BatteryUsageAppData> {

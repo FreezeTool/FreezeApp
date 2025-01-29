@@ -3,7 +3,7 @@ package com.john.freezeapp.client;
 import android.util.Log;
 
 public class ClientLog {
-    private static final String TAG = "freeze-client";
+    public static final String TAG = "freeze-client";
     public static void log(String msg) {
         Log.d(TAG, msg);
     }

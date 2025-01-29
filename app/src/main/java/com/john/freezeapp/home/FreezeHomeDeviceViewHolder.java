@@ -1,9 +1,5 @@
 package com.john.freezeapp.home;
 
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.john.freezeapp.R;
-import com.john.freezeapp.ScreenUtils;
+import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 
 public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceData> {

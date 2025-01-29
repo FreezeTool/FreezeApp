@@ -1,4 +1,4 @@
-package com.john.freezeapp;
+package com.john.freezeapp.util;
 
 import android.content.Context;
 import android.util.DisplayMetrics;

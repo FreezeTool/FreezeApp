@@ -14,7 +14,7 @@ import android.os.ShellCallback;
 import android.view.IWindowManager;
 
 import com.android.internal.app.IBatteryStats;
-import com.john.freezeapp.FreezeUtil;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
 

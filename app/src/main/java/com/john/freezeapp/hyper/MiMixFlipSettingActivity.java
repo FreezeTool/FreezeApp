@@ -26,8 +26,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
 import com.john.freezeapp.BaseActivity;
-import com.john.freezeapp.FreezeAppManager;
-import com.john.freezeapp.FreezeUtil;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.usagestats.UsageStats;

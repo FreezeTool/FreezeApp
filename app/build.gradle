@@ -12,7 +12,11 @@ android {
         targetSdk 33
         versionCode 1
         versionName "1.0"
-
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=none'
+            }
+        }
     }
 
     signingConfigs {
@@ -30,6 +34,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.sky
         }
+        debug {
+            signingConfig signingConfigs.sky
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -39,12 +46,19 @@ android {
     buildFeatures {
         buildConfig true
         aidl true
+        prefab true
     }
 
     lintOptions {
         checkReleaseBuilds false
         // 或者禁用所有警告
         checkAllWarnings false
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
     }
 }
 
@@ -58,4 +72,7 @@ dependencies {
     compileOnly project(':hidden-api-stub')
     implementation libs.hiddenapibypass
     implementation libs.wheelpicker
+    implementation libs.bcpkix.jdk15on
+    implementation libs.boringssl
+    implementation 'dev.rikka.ndk.thirdparty:cxx:1.2.0'
 }
