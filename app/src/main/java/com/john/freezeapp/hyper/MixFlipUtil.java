@@ -15,12 +15,11 @@ import com.john.freezeapp.client.ClientRemoteShell;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-
-import kotlin.text.Charsets;
 
 public class MixFlipUtil {
     /**
@@ -113,7 +112,7 @@ public class MixFlipUtil {
 
                     while (true) {
                         index = inputStream.read(bytes);
-                        stringBuilder.append(new String(bytes, 0, index, Charsets.UTF_8));
+                        stringBuilder.append(new String(bytes, 0, index, StandardCharsets.UTF_8));
                         if (index == -1 || index < 1024) {
                             break;
                         }
@@ -164,7 +163,7 @@ public class MixFlipUtil {
                     try {
                         while (true) {
                             index = inputStream.read(bytes);
-                            stringBuilder.append(new String(bytes, 0, index, Charsets.UTF_8));
+                            stringBuilder.append(new String(bytes, 0, index, StandardCharsets.UTF_8));
                             Thread.sleep(500);
                             ClientLog.log("configAppScale - index-" + index);
                             if (index == -1) {

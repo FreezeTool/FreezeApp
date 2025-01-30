@@ -7,9 +7,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-
-import kotlin.text.Charsets;
 
 public class AdbMessage {
     private int command;
@@ -32,7 +31,7 @@ public class AdbMessage {
     }
 
     public AdbMessage(int command, int arg0, int arg1, @NotNull String data) {
-        this(command, arg0, arg1, (data + '\u0000').getBytes(Charsets.UTF_8));
+        this(command, arg0, arg1, (data + '\u0000').getBytes(StandardCharsets.UTF_8));
     }
 
     public AdbMessage(int command, int arg0, int arg1, @Nullable byte[] data) {

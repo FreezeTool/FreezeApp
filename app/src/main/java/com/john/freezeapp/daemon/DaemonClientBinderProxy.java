@@ -124,7 +124,7 @@ public class DaemonClientBinderProxy {
             try {
                 iClientLogBinder.log(msg);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
     }

@@ -11,6 +11,7 @@ public class SharedPrefUtil {
     public static final String KEY_KERNEL_VERSION = "KEY_KERNEL_VERSION";
     public static final String KEY_FIRST_BIND_DAEMON = "KEY_FIRST_BIND_DAEMON";
     public static final String KEY_FIRST_UNBIND_DAEMON = "KEY_FIRST_UNBIND_DAEMON";
+    public static final String KEY_APP_MONITOR_SWITCHER = "key_app_monitor_switcher";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);

@@ -12,6 +12,11 @@ public class UIExecutor {
     }
 
 
+    public static void postDelay(Runnable runnable, long delay) {
+        mHandler.postDelayed(runnable, delay);
+    }
+
+
     public static void postUI(Runnable runnable) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             runnable.run();
@@ -19,4 +24,5 @@ public class UIExecutor {
             post(runnable);
         }
     }
+
 }

@@ -60,7 +60,7 @@ public class FuncFragment extends BaseFragment {
     private void updateData() {
         List<CardData> list = new ArrayList<>();
         if (isDaemonActive()) {
-            List<FreezeHomeFuncData> freezeHomeFuncData = FreezeHomeFuncHelper.getFreezeHomeFuncData(getContext());
+            List<FreezeHomeFuncData> freezeHomeFuncData = FreezeHomeToolHelper.getFreezeHomeFuncData(getContext());
             if (freezeHomeFuncData != null) {
                 list.addAll(freezeHomeFuncData);
             }

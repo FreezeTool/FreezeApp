@@ -1,4 +1,5 @@
 package com.john.freezeapp.adb;
+
 import android.annotation.TargetApi;
 import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
@@ -22,7 +23,6 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.util.SharedPrefUtil;
 import com.john.freezeapp.util.ThreadPool;
 
-import java.io.IOException;
 import java.net.ConnectException;
 
 @TargetApi(Build.VERSION_CODES.O)
@@ -120,9 +120,9 @@ public class AdbPairService extends Service {
             public void run() {
                 String host = "127.0.0.1";
 
-                AdbKey2 key = null;
+                AdbKey key = null;
                 try {
-                    key = new AdbKey2(new PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp");
+                    key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp3");
                 } catch (Throwable e){
                     return;
                 }

@@ -57,7 +57,6 @@ public class ClientProvider extends ContentProvider {
             IDaemonBinder binderContainer = IDaemonBinder.Stub.asInterface(binder); //BinderProxy
             ClientLog.log("sendBinder");
             ClientBinderManager.setDaemonBinder(binderContainer);
-            ClientLogBinderManager.registerClientLogBinder();
         }
         return super.call(method, arg, extras);
     }

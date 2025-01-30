@@ -77,6 +77,7 @@ public class ClientBinderManager {
         } catch (Throwable e) {
             ClientLog.e(e, "ClientBinder binderDied");
         }
+        GlobalServiceManager.onDaemonBind(binderContainer);
     }
 
     private synchronized static void deathDaemonBinder(IDaemonBinder binderContainer) {
@@ -84,6 +85,7 @@ public class ClientBinderManager {
         if (sDaemonBinder == binderContainer) {
             sDaemonBinder = null;
             notifyUnbindDaemonBinderListener();
+            GlobalServiceManager.onDaemonUnbind();
         }
     }
 

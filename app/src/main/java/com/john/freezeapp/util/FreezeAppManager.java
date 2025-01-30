@@ -401,30 +401,32 @@ public class FreezeAppManager {
             } else {
                 installedPackages = ClientBinderManager.getPackageManager().getInstalledPackages(0, 0);
             }
-            for (PackageInfo packageInfo : installedPackages.getList()) {
+            if (installedPackages != null) {
+                for (PackageInfo packageInfo : installedPackages.getList()) {
 
-                boolean isApex = false;
-                if (FreezeUtil.atLeast29()) {
-                    isApex = packageInfo.isApex;
-                }
-                final boolean isSystem = !isApex
-                        && (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-                final boolean isEnabled = !isApex && packageInfo.applicationInfo.enabled;
-
-                if (appType != TYPE_ALL) {
-                    if ((appType == TYPE_SYSTEM_APP && !isSystem) || (appType == TYPE_NORMAL_APP && isSystem)) {
-                        continue;
+                    boolean isApex = false;
+                    if (FreezeUtil.atLeast29()) {
+                        isApex = packageInfo.isApex;
                     }
-                }
+                    final boolean isSystem = !isApex
+                            && (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+                    final boolean isEnabled = !isApex && packageInfo.applicationInfo.enabled;
 
-                if (appStatus != STATUS_ALL) {
-                    if ((appStatus == STATUS_DISABLE_APP && isEnabled) || (appStatus == STATUS_ENABLE_APP && !isEnabled)) {
-                        continue;
+                    if (appType != TYPE_ALL) {
+                        if ((appType == TYPE_SYSTEM_APP && !isSystem) || (appType == TYPE_NORMAL_APP && isSystem)) {
+                            continue;
+                        }
                     }
+
+                    if (appStatus != STATUS_ALL) {
+                        if ((appStatus == STATUS_DISABLE_APP && isEnabled) || (appStatus == STATUS_ENABLE_APP && !isEnabled)) {
+                            continue;
+                        }
+                    }
+
+
+                    packageInfos.add(packageInfo);
                 }
-
-
-                packageInfos.add(packageInfo);
             }
 
             return packageInfos;

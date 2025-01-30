@@ -9,17 +9,24 @@ import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
 import java.security.SecureRandom;
@@ -28,7 +35,6 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 import java.security.spec.RSAPublicKeySpec;
@@ -37,7 +43,6 @@ import java.util.Locale;
 
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
@@ -46,15 +51,6 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedKeyManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
-import org.bouncycastle.asn1.x500.X500Name;
-import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
-import org.bouncycastle.cert.X509CertificateHolder;
-import org.bouncycastle.cert.X509v3CertificateBuilder;
-import org.bouncycastle.operator.ContentSigner;
-import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-
-import kotlin.Lazy;
-import kotlin.text.Charsets;
 
 public class AdbKey {
     private final String name;
@@ -252,7 +248,7 @@ public class AdbKey {
         RSAPrivateKey privateKey = null;
 
 
-        byte[] bytes = "adbkey".getBytes(Charsets.UTF_8);
+        byte[] bytes = "adbkey".getBytes(StandardCharsets.UTF_8);
         ByteBuffer allocate = ByteBuffer.allocate(16);
         allocate.put(bytes);
         byte[] aad = allocate.array();
@@ -369,7 +365,7 @@ public class AdbKey {
         buffer.putInt(publicKey.getPublicExponent().intValue());
 
         byte[] base64Bytes = Base64.encode(buffer.array(), Base64.NO_WRAP);
-        byte[] nameBytes = (name + '\u0000').getBytes(Charsets.UTF_8);
+        byte[] nameBytes = (' ' + name + '\u0000').getBytes(StandardCharsets.UTF_8);
         ByteBuffer byteBuffer = ByteBuffer.allocate(base64Bytes.length + nameBytes.length);
         byteBuffer.put(base64Bytes);
         byteBuffer.put(nameBytes);
@@ -397,7 +393,7 @@ public class AdbKey {
 
         @Override
         public void put(byte[] bytes) {
-            preference.edit().putString(preferenceKey, new String(Base64.encode(bytes, Base64.NO_WRAP), Charsets.UTF_8)).apply();
+            preference.edit().putString(preferenceKey, new String(Base64.encode(bytes, Base64.NO_WRAP), StandardCharsets.UTF_8)).apply();
         }
 
         @Override

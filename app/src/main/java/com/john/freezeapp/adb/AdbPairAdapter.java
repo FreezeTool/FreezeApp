@@ -2,8 +2,6 @@ package com.john.freezeapp.adb;
 
 import com.john.freezeapp.recyclerview.CardRecyclerViewAdapter;
 import com.john.freezeapp.recyclerview.ClassCreatorPool;
-import com.john.freezeapp.usagestats.UsageStatsData;
-import com.john.freezeapp.usagestats.UsageStatsViewHolder;
 
 import java.util.List;
 

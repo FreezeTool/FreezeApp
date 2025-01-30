@@ -1,21 +1,15 @@
 package com.john.freezeapp.adb;
 
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
-import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -109,7 +103,7 @@ public class AdbStartDialog extends AlertDialog {
         }
         updateTitle("正在连接中", true);
         String host = "127.0.0.1";
-        AdbKey2 key = new AdbKey2(new PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp");
+        AdbKey key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp3");
 
         executorService.execute(() -> {
             adbClient = new AdbClient(host, port, key);

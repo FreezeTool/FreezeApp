@@ -1,5 +1,6 @@
 package com.john.freezeapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -187,6 +188,11 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     protected void postDelayUI(Runnable runnable, long delay) {
         mHandler.postDelayed(runnable, delay);
+    }
+
+
+    protected Context getContext() {
+        return this;
     }
 
 }

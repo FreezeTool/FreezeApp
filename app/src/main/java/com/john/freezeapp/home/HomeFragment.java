@@ -146,12 +146,12 @@ public class HomeFragment extends BaseFragment {
         }
         startDaemonData.add(rootDaemonData);
 
-        if (this.isRoot && list.contains(rootDaemonData)) {
+        if (this.isRoot && startDaemonData.contains(rootDaemonData)) {
             list.add(rootDaemonData);
             startDaemonData.remove(rootDaemonData);
         }
 
-        if (this.isShizuku && list.contains(shizukuDaemonData)) {
+        if (this.isShizuku && startDaemonData.contains(shizukuDaemonData)) {
             list.add(shizukuDaemonData);
             startDaemonData.remove(shizukuDaemonData);
         }

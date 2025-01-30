@@ -1,6 +1,7 @@
 package com.john.freezeapp.adb;
 
 import android.view.View;
+
 import com.john.freezeapp.recyclerview.CardData;
 
 public class AdbPairData extends CardData {

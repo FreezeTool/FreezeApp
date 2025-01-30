@@ -12,13 +12,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
-
-import kotlin.text.Charsets;
 
 @TargetApi(android.os.Build.VERSION_CODES.Q)
 public class AdbPairingClient implements Closeable {
@@ -40,7 +38,7 @@ public class AdbPairingClient implements Closeable {
     private final String host;
     private final int port;
     private final String pairCode;
-    private final AdbKey2 key;
+    private final AdbKey key;
 
 
     private Socket socket;
@@ -52,7 +50,7 @@ public class AdbPairingClient implements Closeable {
     private PairingContext pairingContext;
     private State state = State.Ready;
 
-    public AdbPairingClient(String host, AdbKey2 key, String pairCode, int port) {
+    public AdbPairingClient(String host, AdbKey key, String pairCode, int port) {
         this.host = host;
         this.key = key;
         this.pairCode = pairCode;
@@ -99,7 +97,7 @@ public class AdbPairingClient implements Closeable {
         inputStream = new DataInputStream(sslSocket.getInputStream());
         outputStream = new DataOutputStream(sslSocket.getOutputStream());
 
-        byte[] pairCodeBytes = pairCode.getBytes(Charsets.UTF_8);
+        byte[] pairCodeBytes = pairCode.getBytes(StandardCharsets.UTF_8);
         byte[] keyMaterial = null;
 
         keyMaterial = Conscrypt.exportKeyingMaterial(sslSocket, kExportedKeyLabel, null, kExportedKeySize);

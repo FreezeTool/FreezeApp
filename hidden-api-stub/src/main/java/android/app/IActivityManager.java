@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.LocusId;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.IPackageDataObserver;
 import android.content.pm.ParceledListSlice;
 import android.content.pm.UserInfo;
 import android.content.res.Configuration;
@@ -18,12 +19,15 @@ import android.os.Bundle;
 import android.os.Debug;
 import android.os.IBinder;
 import android.os.IInterface;
+import android.os.IProgressListener;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteCallback;
 import android.os.RemoteException;
 import android.os.WorkSource;
 
 import androidx.annotation.RequiresApi;
+
+import com.android.internal.os.IResultReceiver;
 
 import java.util.List;
 
@@ -240,10 +244,10 @@ public interface IActivityManager extends IInterface {
 
     void setAlwaysFinish(boolean enabled);
 
-//    boolean startInstrumentation(ComponentName className, String profileFile,
-//                                 int flags, Bundle arguments, IInstrumentationWatcher watcher,
-//                                 IUiAutomationConnection connection, int userId,
-//                                 String abiOverride);
+    boolean startInstrumentation(ComponentName className, String profileFile,
+                                 int flags, Bundle arguments, IInstrumentationWatcher watcher,
+                                 IUiAutomationConnection connection, int userId,
+                                 String abiOverride);
 
     void addInstrumentationResults(IApplicationThread target, Bundle results);
 
@@ -276,7 +280,7 @@ public interface IActivityManager extends IInterface {
     void revokeUriPermission(IApplicationThread caller, String targetPkg, Uri uri,
                              int mode, int userId);
 
-//    void setActivityController(IActivityController watcher, boolean imAMonkey);
+    void setActivityController(IActivityController watcher, boolean imAMonkey);
 
     void showWaitingForDebugger(IApplicationThread who, boolean waiting);
 
@@ -305,10 +309,10 @@ public interface IActivityManager extends IInterface {
 
 //    ActivityManager.PendingIntentInfo getInfoForIntentSender(IIntentSender sender);
 
-//    boolean registerIntentSenderCancelListenerEx(IIntentSender sender,
-//                                                 IResultReceiver receiver);
+    boolean registerIntentSenderCancelListenerEx(IIntentSender sender,
+                                                 IResultReceiver receiver);
 
-//    void unregisterIntentSenderCancelListener(IIntentSender sender, IResultReceiver receiver);
+    void unregisterIntentSenderCancelListener(IIntentSender sender, IResultReceiver receiver);
 
     void enterSafeMode();
 
@@ -339,15 +343,15 @@ public interface IActivityManager extends IInterface {
 
     List<ActivityManager.ProcessErrorStateInfo> getProcessesInErrorState();
 
-//    boolean clearApplicationUserData(String packageName, boolean keepState,
-//                                     IPackageDataObserver observer, int userId);
+    boolean clearApplicationUserData(String packageName, boolean keepState,
+                                     IPackageDataObserver observer, int userId);
 
     void stopAppForUser(String packageName, int userId);
 
     /**
      * Returns {@code false} if the callback could not be registered, {@true} otherwise.
      */
-//    boolean registerForegroundServiceObserver(IForegroundServiceObserver callback);
+    boolean registerForegroundServiceObserver(IForegroundServiceObserver callback);
 
     boolean killPids(int[] pids, String reason, boolean secure);
 
@@ -475,13 +479,15 @@ public interface IActivityManager extends IInterface {
                                        IBinder resultTo, String resultWho, int requestCode, int flags,
                                        ProfilerInfo profilerInfo, Bundle options, int userId);
 
-//    int stopUser(int userid, boolean force, IStopUserCallback callback);
+    int stopUser(int userid, boolean force, IStopUserCallback callback);
 
-//    int stopUserWithDelayedLocking(int userid, boolean force, IStopUserCallback callback);
+    int stopUserWithDelayedLocking(int userid, boolean force, IStopUserCallback callback);
 
 
-    //    void registerUserSwitchObserver(IUserSwitchObserver observer, String name);
-//    void unregisterUserSwitchObserver(IUserSwitchObserver observer);
+    void registerUserSwitchObserver(IUserSwitchObserver observer, String name);
+
+    void unregisterUserSwitchObserver(IUserSwitchObserver observer);
+
     int[] getRunningUserIds();
 
     // Request a heap dump for the system server.
@@ -492,27 +498,8 @@ public interface IActivityManager extends IInterface {
     void requestBugReportWithDescription(String shareTitle,
                                          String shareDescription, int bugreportType);
 
-    /**
-     * Takes a telephony bug report and notifies the user with the title and description
-     * that are passed to this API as parameters
-     *
-     * @param shareTitle       should be a valid legible string less than 50 chars long
-     * @param shareDescription should be less than 150 chars long
-     * @throws IllegalArgumentException if shareTitle or shareDescription is too big or if the
-     *                                  paremeters cannot be encoding to an UTF-8 charset.
-     */
     void requestTelephonyBugReport(String shareTitle, String shareDescription);
 
-    /**
-     * This method is only used by Wifi.
-     * <p>
-     * Takes a minimal bugreport of Wifi-related state.
-     *
-     * @param shareTitle       should be a valid legible string less than 50 chars long
-     * @param shareDescription should be less than 150 chars long
-     * @throws IllegalArgumentException if shareTitle or shareDescription is too big or if the
-     *                                  parameters cannot be encoding to an UTF-8 charset.
-     */
     void requestWifiBugReport(String shareTitle, String shareDescription);
 
     void requestInteractiveBugReportWithDescription(String shareTitle,
@@ -603,8 +590,9 @@ public interface IActivityManager extends IInterface {
 
     void suppressResizeConfigChanges(boolean suppress);
 
-    //    boolean unlockUser(int userid, byte[] token, byte[] secret,
-//                       IProgressListener listener);
+    boolean unlockUser(int userid, byte[] token, byte[] secret,
+                       IProgressListener listener);
+
     void killPackageDependents(String packageName, int userId);
 
     void makePackageIdle(String packageName, int userId);
@@ -663,7 +651,7 @@ public interface IActivityManager extends IInterface {
      * Similar to {@link #startUserInBackground(int userId), but with a listener to report
      * user unlock progress.
      */
-//    boolean startUserInBackgroundWithListener(int userid, IProgressListener unlockProgressListener);
+    boolean startUserInBackgroundWithListener(int userid, IProgressListener unlockProgressListener);
 
 
     ParcelFileDescriptor getLifeMonitor();
@@ -672,7 +660,7 @@ public interface IActivityManager extends IInterface {
      * Start user, if it us not already running, and bring it to foreground.
      * unlockProgressListener can be null if monitoring progress is not necessary.
      */
-//    boolean startUserInForegroundWithListener(int userid, IProgressListener unlockProgressListener);
+    boolean startUserInForegroundWithListener(int userid, IProgressListener unlockProgressListener);
 
     /**
      * Method for the app to tell system that it's wedged and would like to trigger an ANR.

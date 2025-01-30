@@ -34,9 +34,9 @@ import javax.net.ssl.SSLSocket;
 public class AdbClient implements Closeable {
     private String host;
     private int port;
-    private AdbKey2 key;
+    private AdbKey key;
 
-    public AdbClient(String host, int port, AdbKey2 key) {
+    public AdbClient(String host, int port, AdbKey key) {
         this.host = host;
         this.key = key;
         this.port = port;

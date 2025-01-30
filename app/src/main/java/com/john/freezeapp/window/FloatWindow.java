@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import com.john.freezeapp.App;
 import com.john.freezeapp.R;
@@ -23,11 +24,13 @@ public class FloatWindow implements IFloatWindow {
     private float mTouchInViewX;
     private float mTouchInViewY;
     private WindowManager mWindowManager;
+    private TextView textView;
     int statusBarHeight;
     private boolean isShow = false;
 
     public FloatWindow() {
         mRootView = LayoutInflater.from(App.getApp()).inflate(R.layout.wm_float_view, null);
+        textView = mRootView.findViewById(R.id.tv_app_monitor);
         mRootView.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
@@ -63,7 +66,7 @@ public class FloatWindow implements IFloatWindow {
         mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         mRootViewY = mScreenHeight / 2;
-        mRootViewX = mScreenWidth;
+        mRootViewX = 0;
         mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
         mLayoutParams.x = (int) mRootViewX;
@@ -127,5 +130,9 @@ public class FloatWindow implements IFloatWindow {
             }
         }
         return statusBarHeight;
+    }
+
+    public void setText(String className) {
+        textView.setText(className);
     }
 }
