@@ -1,5 +1,6 @@
 package com.john.freezeapp;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -25,6 +26,7 @@ public class BaseFragment extends Fragment {
     ClientBinderManager.IDaemonBinderListener iDaemonBinderListener = new ClientBinderManager.IDaemonBinderListener() {
         @Override
         public void bind(IDaemonBinder daemonBinder) {
+            BaseFragment.this.daemonBinder = daemonBinder;
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -126,6 +128,12 @@ public class BaseFragment extends Fragment {
         return isDestroy;
     }
 
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+    }
 
     @Override
     public void onDestroy() {

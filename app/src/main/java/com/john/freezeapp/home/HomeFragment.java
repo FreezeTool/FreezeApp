@@ -32,6 +32,7 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +46,6 @@ public class HomeFragment extends BaseFragment {
 
     private boolean isRoot = false;
     private boolean isShizuku = false;
-
-
     static final int REQUEST_CODE = 124;
 
     private final Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
@@ -70,7 +69,7 @@ public class HomeFragment extends BaseFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         RecyclerView recyclerView = view.findViewById(R.id.recycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(recyclerView.getContext()));
         recyclerView.setAdapter(homeAdapter);
 
         return view;
@@ -81,7 +80,7 @@ public class HomeFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         isRoot = FreezeUtil.isSuEnable();
         isShizuku = FreezeUtil.isShizukuActive();
-        updateData(getContext());
+        updateData(view.getContext());
     }
 
     @Override
@@ -121,6 +120,12 @@ public class HomeFragment extends BaseFragment {
 
 
     private void updateData(Context context) {
+
+        if (!isAdded()) {
+            return;
+        }
+
+
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
         List<FreezeHomeData> list = new ArrayList<>();
 

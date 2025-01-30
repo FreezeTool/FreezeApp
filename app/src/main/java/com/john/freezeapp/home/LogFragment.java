@@ -78,6 +78,9 @@ public class LogFragment extends BaseFragment {
     }
 
     private void updateData() {
+        if (!isAdded()) {
+            return;
+        }
         postUI(new Runnable() {
             @Override
             public void run() {

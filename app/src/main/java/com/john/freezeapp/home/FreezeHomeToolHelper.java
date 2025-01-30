@@ -100,7 +100,7 @@ public class FreezeHomeToolHelper {
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_monitor),
                 R.drawable.ic_vector_window,
-                0xffF4E1B9,
+                0xffEFAAB1,
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
