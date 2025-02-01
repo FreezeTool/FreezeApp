@@ -11,12 +11,16 @@ import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 
 import java.io.DataOutputStream;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +38,25 @@ public class FreezeAppManager {
 
     private static final Map<String, CacheAppModel> sCacheAppModel = new ConcurrentHashMap<>();
 
+
+    @IntDef(value = {
+            TYPE_ALL,
+            TYPE_SYSTEM_APP,
+            TYPE_NORMAL_APP
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TYPE {
+    }
+
+    @IntDef(value = {
+            STATUS_ALL,
+            STATUS_ENABLE_APP,
+            STATUS_DISABLE_APP,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface STATUS {
+    }
+
     public static final int TYPE_ALL = 0;
     public static final int TYPE_SYSTEM_APP = 1;
     public static final int TYPE_NORMAL_APP = 2;
@@ -50,6 +73,10 @@ public class FreezeAppManager {
 
     public static class AppModel {
         public String packageName;
+        public long lastUpdateTime;
+        public long firstInstallTime;
+        public String versionName;
+        public int versionCode;
 
         public AppModel(String packageName) {
             this.packageName = packageName;
@@ -57,6 +84,10 @@ public class FreezeAppManager {
 
         public AppModel(AppModel appModel) {
             this.packageName = appModel.packageName;
+            this.lastUpdateTime = appModel.lastUpdateTime;
+            this.firstInstallTime = appModel.firstInstallTime;
+            this.versionName = appModel.versionName;
+            this.versionCode = appModel.versionCode;
         }
 
     }
@@ -187,7 +218,7 @@ public class FreezeAppManager {
         requestAppList(context, TYPE_NORMAL_APP, STATUS_ALL, false, callback);
     }
 
-    private static void requestAppList(Context context, int appType, int appStatus, boolean ignoreFreezeApp, Callback callback) {
+    public static void requestAppList(Context context, @TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp, Callback callback) {
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
@@ -198,7 +229,12 @@ public class FreezeAppManager {
                         if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
                             continue;
                         }
-                        list.add(new AppModel(packageInfo.packageName));
+                        AppModel appModel = new AppModel(packageInfo.packageName);
+                        appModel.lastUpdateTime = packageInfo.lastUpdateTime;
+                        appModel.firstInstallTime = packageInfo.firstInstallTime;
+                        appModel.versionName = packageInfo.versionName;
+                        appModel.versionCode = packageInfo.versionCode;
+                        list.add(appModel);
                     }
                     callback.success(list);
                 } else {
@@ -392,7 +428,7 @@ public class FreezeAppManager {
         return getInstallApp(TYPE_NORMAL_APP, STATUS_ALL);
     }
 
-    public static List<PackageInfo> getInstallApp(int appType, int appStatus) {
+    public static List<PackageInfo> getInstallApp(@TYPE int appType, @STATUS int appStatus) {
         try {
             List<PackageInfo> packageInfos = new ArrayList<>();
             ParceledListSlice<PackageInfo> installedPackages = null;

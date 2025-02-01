@@ -1,5 +1,5 @@
 plugins {
-    alias(libs.plugins.android.library)
+    id("com.android.library")
 }
 
 android {
@@ -27,4 +27,6 @@ android {
 
 dependencies {
     implementation 'androidx.annotation:annotation:1.3.0'
+    implementation project(':replace-annotation')
+    annotationProcessor project(':processor')
 }

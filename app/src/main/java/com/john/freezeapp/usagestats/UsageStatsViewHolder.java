@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.FreezeUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -48,7 +49,7 @@ public class UsageStatsViewHolder extends CardViewHolder<UsageStatsData> {
     public void onBind() {
         super.onBind();
         UsageStatsData data = getData();
-        tvTotalTimeVisible.setText(formatTime(data.totalTimeVisible));
+        tvTotalTimeVisible.setText(FreezeUtil.formatTime(data.totalTimeVisible));
         tvFirstTimeStamp.setText(sDateFormat.format(new Date(data.firstTimeStamp)));
         tvAppLaunchCount.setText(String.format("%s次", String.valueOf(data.appLaunchCount)));
         tvLaunchCount.setText(String.format("%s次", String.valueOf(data.launchCount)));
@@ -63,39 +64,5 @@ public class UsageStatsViewHolder extends CardViewHolder<UsageStatsData> {
 
         AppInfoLoader.load(getContext(), data.packageName, ivIcon, tvName);
 
-    }
-
-
-    private String formatTime(long time) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (time > DateUtils.DAY_IN_MILLIS) {
-            int day = (int) (time / DateUtils.DAY_IN_MILLIS);
-            stringBuilder.append(day).append("天");
-            time = time % DateUtils.DAY_IN_MILLIS;
-        }
-
-        if (time > DateUtils.HOUR_IN_MILLIS) {
-            int hour = (int) (time / DateUtils.HOUR_IN_MILLIS);
-            stringBuilder.append(hour).append("小时");
-            time = time % DateUtils.HOUR_IN_MILLIS;
-        }
-
-        if (time > DateUtils.MINUTE_IN_MILLIS) {
-            int minute = (int) (time / DateUtils.MINUTE_IN_MILLIS);
-            stringBuilder.append(minute).append("分");
-            time = time % DateUtils.MINUTE_IN_MILLIS;
-        }
-
-        if (time > DateUtils.SECOND_IN_MILLIS) {
-            int second = (int) (time / DateUtils.SECOND_IN_MILLIS);
-            stringBuilder.append(second).append("秒");
-            time = time % DateUtils.SECOND_IN_MILLIS;
-        }
-
-        if (stringBuilder.toString().isEmpty()) {
-            stringBuilder.append(time).append("毫秒");
-        }
-        return stringBuilder.toString();
     }
 }

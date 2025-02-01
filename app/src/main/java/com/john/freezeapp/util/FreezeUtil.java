@@ -1,5 +1,7 @@
 package com.john.freezeapp.util;
 
+import android.app.AppOpsManager;
+import android.app.AppOpsManagerHidden;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -8,10 +10,13 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Process;
+import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.adb.AdbPairActivity;
@@ -25,6 +30,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -149,7 +155,6 @@ public class FreezeUtil {
     }
 
 
-
     public static void toDevelopPage(Context context) {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -166,6 +171,14 @@ public class FreezeUtil {
         }
     }
 
+    public static void allowSystemAlertWindow() {
+        try {
+            ClientBinderManager.getAppOpsService().setMode(AppOpsManagerHidden.OP_SYSTEM_ALERT_WINDOW, Process.myUid(), BuildConfig.APPLICATION_ID, AppOpsManager.MODE_ALLOWED);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void toOverlayPermissionPage(Context context) {
         Intent intent = new Intent();
         intent.setAction(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
@@ -173,6 +186,9 @@ public class FreezeUtil {
     }
 
     public static boolean isOverlayPermission(Context context) {
+        if (!atLeast26()) {
+            return true;
+        }
         return Settings.canDrawOverlays(context);
     }
 
@@ -190,9 +206,12 @@ public class FreezeUtil {
     }
 
 
-
     public static boolean atLeast26() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
+    }
+
+    public static boolean atLeast24() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
     }
 
     public static boolean atLeast28() {
@@ -202,6 +221,7 @@ public class FreezeUtil {
     public static boolean atLeast29() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }
+
     public static boolean atLeast30() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
     }
@@ -212,5 +232,39 @@ public class FreezeUtil {
 
     public static boolean atLeast33() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+    }
+
+
+    public static String formatTime(long time) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (time > DateUtils.DAY_IN_MILLIS) {
+            int day = (int) (time / DateUtils.DAY_IN_MILLIS);
+            stringBuilder.append(day).append("天");
+            time = time % DateUtils.DAY_IN_MILLIS;
+        }
+
+        if (time > DateUtils.HOUR_IN_MILLIS) {
+            int hour = (int) (time / DateUtils.HOUR_IN_MILLIS);
+            stringBuilder.append(hour).append("小时");
+            time = time % DateUtils.HOUR_IN_MILLIS;
+        }
+
+        if (time > DateUtils.MINUTE_IN_MILLIS) {
+            int minute = (int) (time / DateUtils.MINUTE_IN_MILLIS);
+            stringBuilder.append(minute).append("分");
+            time = time % DateUtils.MINUTE_IN_MILLIS;
+        }
+
+        if (time > DateUtils.SECOND_IN_MILLIS) {
+            int second = (int) (time / DateUtils.SECOND_IN_MILLIS);
+            stringBuilder.append(second).append("秒");
+            time = time % DateUtils.SECOND_IN_MILLIS;
+        }
+
+        if (stringBuilder.toString().isEmpty()) {
+            stringBuilder.append(time).append("毫秒");
+        }
+        return stringBuilder.toString();
     }
 }

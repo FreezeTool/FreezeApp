@@ -18,6 +18,15 @@ public class AppMonitorActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_monitor);
+
+        if(!isDaemonActive()) {
+            finish();
+            return;
+        }
+
+        if (!FreezeUtil.isOverlayPermission(AppMonitorActivity.this)) {
+            FreezeUtil.allowSystemAlertWindow();
+        }
         initToolbar();
         SwitchCompat switchCompat = findViewById(R.id.switcher);
         switchCompat.setChecked(AppMonitorManager.isAppMonitor() && FreezeUtil.isOverlayPermission(AppMonitorActivity.this));

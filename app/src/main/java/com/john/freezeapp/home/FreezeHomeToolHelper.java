@@ -1,5 +1,7 @@
 package com.john.freezeapp.home;
 
+import android.app.AppOpsManager;
+import android.app.IActivityTaskManager;
 import android.app.smartspace.ISmartspaceManager;
 import android.app.smartspace.SmartspaceConfig;
 import android.app.smartspace.SmartspaceSessionId;
@@ -11,6 +13,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
@@ -21,6 +24,7 @@ import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.CommandActivity;
 import com.john.freezeapp.MainActivity;
+import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.hyper.MixFlipUtil;
@@ -32,6 +36,9 @@ import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.util.FreezeUtil;
 
+import org.lsposed.hiddenapibypass.HiddenApiBypass;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -97,6 +104,18 @@ public class FreezeHomeToolHelper {
                         }));
             }
         }
+
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_ops_name),
+                R.drawable.ic_vector_key,
+                0xffC1B790,
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, AppOpsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }
+                }));
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_monitor),
                 R.drawable.ic_vector_window,

@@ -1,7 +1,10 @@
 [versions]
 appcompat = "1.6.1"
+asm-commons = "9.6"
+auto-service = "1.1.1"
 bcpkix-jdk15on = "1.70"
 boringssl = "2.1"
+cxx = "1.2.0"
 gson = "2.10.1"
 hiddenapibypass = "4.3"
 recyclerview="1.3.2"
@@ -12,8 +15,12 @@ wheelpicker = "1.1.3"
 
 [libraries]
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+asm-commons = { module = "org.ow2.asm:asm-commons", version.ref = "asm-commons" }
+auto-service = { module = "com.google.auto.service:auto-service", version.ref = "auto-service" }
+auto-service-annotation = { module = "com.google.auto.service:auto-service-annotations", version.ref = "auto-service" }
 bcpkix-jdk15on = { module = "org.bouncycastle:bcpkix-jdk15on", version.ref = "bcpkix-jdk15on" }
 boringssl = { module = "io.github.vvb2060.ndk:boringssl", version.ref = "boringssl" }
+cxx = { module = "dev.rikka.ndk.thirdparty:cxx", version.ref = "cxx" }
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 hiddenapibypass = { module = "org.lsposed.hiddenapibypass:hiddenapibypass", version.ref = "hiddenapibypass" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
@@ -21,7 +28,10 @@ material = { group = "com.google.android.material", name = "material", version.r
 shisuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shisuku-version" }
 shisuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shisuku-version" }
 wheelpicker = { module = "cn.aigestudio.wheelpicker:WheelPicker", version.ref = "wheelpicker" }
+agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }
+android-application = { id = "com.android.application", version.ref = "agp" }
 
 

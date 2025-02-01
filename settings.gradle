@@ -1,4 +1,7 @@
+
+
 pluginManagement {
+
     repositories {
         maven { url 'https://maven.aliyun.com/repository/public' }
         mavenCentral()
@@ -7,6 +10,7 @@ pluginManagement {
         google()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -15,8 +19,15 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
         google()
     }
+
 }
 
 rootProject.name = "FreezeApp"
+
 include ':app'
 include ':hidden-api-stub'
+include ':processor'
+project(':processor').projectDir = new File('./hidden-api-processor')
+include ':replace-annotation'
+project(':replace-annotation').projectDir = new File('./hidden-api-annotation')
+includeBuild('hidden-api-plugin')

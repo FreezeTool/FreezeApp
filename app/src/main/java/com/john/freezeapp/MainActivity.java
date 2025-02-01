@@ -1,11 +1,13 @@
 package com.john.freezeapp;
 
+import android.app.AppOpsManagerHidden;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,11 +23,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.home.FuncFragment;
 import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
+import com.john.hidden.api.Replace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +97,8 @@ public class MainActivity extends BaseActivity {
                 return false;
             }
         });
+
+
     }
 
     public static class MainAdapter extends FragmentPagerAdapter {

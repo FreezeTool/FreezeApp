@@ -6,6 +6,7 @@ import android.app.smartspace.ISmartspaceManager;
 import android.app.usage.IUsageStatsManager;
 import android.content.Context;
 import android.content.pm.IPackageManager;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -13,6 +14,7 @@ import android.os.ResultReceiver;
 import android.os.ShellCallback;
 import android.view.IWindowManager;
 
+import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
@@ -137,6 +139,31 @@ public class ClientBinderManager {
     }
 
 
+    public static void dump(String serviceName, FileDescriptor fd, String[] args) throws RemoteException {
+        if (args == null) {
+            args = new String[0];
+        }
+        String[] dumpArgs = new String[args.length + 1];
+        dumpArgs[0] = serviceName;
+        System.arraycopy(args, 0, dumpArgs, 1, args.length);
+        getDaemonBinder().asBinder().dump(fd, dumpArgs);
+    }
+
+
+    public static void shellCommand(String serviceName, FileDescriptor in, FileDescriptor out,
+                                    FileDescriptor err,
+                                    String[] args, ShellCallback shellCallback,
+                                    ResultReceiver resultReceiver) throws Exception {
+        if (args == null) {
+            args = new String[0];
+        }
+        String[] dumpArgs = new String[args.length + 1];
+        dumpArgs[0] = serviceName;
+        System.arraycopy(args, 0, dumpArgs, 1, args.length);
+        FreezeUtil.shellCommand(getDaemonBinder().asBinder(), in, out, err, dumpArgs, shellCallback, resultReceiver);
+    }
+
+
     private final static ClientBinderSingleton<IPackageManager> iPackageManager = new ClientBinderSingleton<IPackageManager>() {
         @Override
         protected IPackageManager createBinder() {
@@ -218,6 +245,18 @@ public class ClientBinderManager {
     };
 
 
+    private final static ClientBinderSingleton<IAppOpsService> iAppOpsService = new ClientBinderSingleton<IAppOpsService>() {
+        @Override
+        protected IAppOpsService createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            return IAppOpsService.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService(Context.APP_OPS_SERVICE)));
+        }
+    };
+
+
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();
     }
@@ -242,29 +281,8 @@ public class ClientBinderManager {
         return iWindowManager.get();
     }
 
-    public static void dump(String serviceName, FileDescriptor fd, String[] args) throws RemoteException {
-        if (args == null) {
-            args = new String[0];
-        }
-        String[] dumpArgs = new String[args.length + 1];
-        dumpArgs[0] = serviceName;
-        System.arraycopy(args, 0, dumpArgs, 1, args.length);
-        getDaemonBinder().asBinder().dump(fd, dumpArgs);
+    public static IAppOpsService getAppOpsService() {
+        return iAppOpsService.get();
     }
-
-
-    public static void shellCommand(String serviceName, FileDescriptor in, FileDescriptor out,
-                                    FileDescriptor err,
-                                    String[] args, ShellCallback shellCallback,
-                                    ResultReceiver resultReceiver) throws Exception {
-        if (args == null) {
-            args = new String[0];
-        }
-        String[] dumpArgs = new String[args.length + 1];
-        dumpArgs[0] = serviceName;
-        System.arraycopy(args, 0, dumpArgs, 1, args.length);
-        FreezeUtil.shellCommand(getDaemonBinder().asBinder(), in, out, err, dumpArgs, shellCallback, resultReceiver);
-    }
-
 
 }

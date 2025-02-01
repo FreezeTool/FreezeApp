@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.hidden.api.ReplaceRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,7 +140,7 @@ public class DaemonBinderManager {
             contentProviderHolder = am.getContentProviderExternal(name, userId, token);
             provider = contentProviderHolder != null ? contentProviderHolder.provider : null;
         } else {
-            provider = Refine.<IActivityManagerPre26>unsafeCast(am).getContentProviderExternal(name, userId, token).provider;
+            provider = ReplaceRef.<IActivityManagerPre26>unsafeCast(am).getContentProviderExternal(name, userId, token).provider;
         }
 
         return provider;

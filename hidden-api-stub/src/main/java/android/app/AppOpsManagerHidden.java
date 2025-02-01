@@ -7,14 +7,21 @@ import android.os.Parcelable;
 import android.util.ArraySet;
 import android.util.LongSparseArray;
 import android.util.LongSparseLongArray;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
+import com.john.hidden.api.Replace;
+
 import java.util.List;
 
+
+@Replace(AppOpsManager.class)
 public class AppOpsManagerHidden {
+
+    public static int OP_SYSTEM_ALERT_WINDOW;
 
     @RequiresApi(Build.VERSION_CODES.Q)
     public static String KEY_HISTORICAL_OPS;
@@ -339,15 +346,6 @@ public class AppOpsManagerHidden {
             throw new RuntimeException("STUB");
         }
 
-        /**
-         * AppPermissionUsage the ops to leave only the data we filter for.
-         *
-         * @param uid             Uid to filter for or {@link android.os.Process#INCIDENTD_UID} for all.
-         * @param packageName     Package to filter for or null for all.
-         * @param opNames         Ops to filter for or null for all.
-         * @param beginTimeMillis The begin time to filter for or {@link Long#MIN_VALUE} for all.
-         * @param endTimeMillis   The end time to filter for or {@link Long#MAX_VALUE} for all.
-         */
         public void filter(int uid, @Nullable String packageName, @Nullable String[] opNames,
                            long beginTimeMillis, long endTimeMillis) {
             throw new RuntimeException("STUB");

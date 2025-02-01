@@ -11,7 +11,7 @@ public class GlobalServiceManager {
         UIExecutor.postDelay(new Runnable() {
             @Override
             public void run() {
-                AppMonitorManager.registerTaskStackListener();
+                AppMonitorManager.registerListener();
             }
         }, 1000);
     }

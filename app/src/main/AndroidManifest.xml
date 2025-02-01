@@ -89,7 +89,17 @@
         <activity android:name=".monitor.AppMonitorActivity">
 
         </activity>
+
+        <activity android:name=".appops.AppOpsActivity">
+
+        </activity>
+
+        <activity android:name=".appops.AppOpsDetailActivity">
+
+        </activity>
+
         <service android:name=".monitor.AppMonitorService"/>
+
         <service
             android:name=".adb.AdbPairService"
             android:enabled="true"
