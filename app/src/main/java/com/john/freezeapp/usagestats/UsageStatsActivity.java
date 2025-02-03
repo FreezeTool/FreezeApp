@@ -1,6 +1,7 @@
 package com.john.freezeapp.usagestats;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
@@ -10,14 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarSearchActivity;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.ThreadPool;
+import com.john.freezeapp.util.UIExecutor;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-public class UsageStatsActivity extends BaseActivity {
+public class UsageStatsActivity extends ToolbarSearchActivity {
 
-    Toolbar toolbar;
     RecyclerView recyclerView;
     UsageStatsAdapter mAdapter = new UsageStatsAdapter();
 
@@ -30,26 +34,33 @@ public class UsageStatsActivity extends BaseActivity {
             finish();
             return;
         }
-
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         recyclerView = findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         requestUsageStats();
     }
 
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.usage_stats_name);
+    }
+
     private void updateData(List<UsageStatsData> usageStatsDataList) {
         usageStatsDataList.removeIf(next -> next.totalTimeVisible <= 0);
         Collections.sort(usageStatsDataList);
-        runOnUiThread(new Runnable() {
+
+        if (isDestroy()) {
+            return;
+        }
+        UIExecutor.post(new Runnable() {
             @Override
             public void run() {
                 mAdapter.updateData(usageStatsDataList);
             }
         });
     }
+
+    List<UsageStatsData> mUsageStatsList;
 
     private void requestUsageStats() {
         showLoading();
@@ -60,6 +71,7 @@ public class UsageStatsActivity extends BaseActivity {
                 if (isDestroy()) {
                     return;
                 }
+                mUsageStatsList = usageStatsDataList;
                 updateData(usageStatsDataList);
             }
 
@@ -71,20 +83,36 @@ public class UsageStatsActivity extends BaseActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    protected void unbindDaemon() {
+        super.unbindDaemon();
+        finish();
+    }
+
+    @Override
+    protected void onQueryTextChange(String query) {
+        super.onQueryTextChange(query);
+        if (mUsageStatsList != null) {
+            if (TextUtils.isEmpty(query)) {
+                updateData(mUsageStatsList);
+            } else {
+                List<UsageStatsData> list = new ArrayList<>(mUsageStatsList);
+                ThreadPool.execute(() -> {
+                    List<UsageStatsData> queryLists = new ArrayList<>();
+                    for (UsageStatsData usageStatsData : list) {
+                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), usageStatsData.packageName);
+                        if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                            queryLists.add(usageStatsData);
+                        }
+                    }
+                    updateData(queryLists);
+                });
+            }
         }
     }
 
     @Override
-    protected void unbindDaemon() {
-        super.unbindDaemon();
-        finish();
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateData(mUsageStatsList);
     }
 }

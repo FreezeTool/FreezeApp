@@ -16,6 +16,14 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/toolbar_search"
+        android:icon="@drawable/ic_vector_search"
+        android:title="@string/btn_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always" />
+
     <item
         android:id="@+id/mi_mix_flip_home_allow_start"
         android:title="@string/mi_mix_flip_home_allow_start" />

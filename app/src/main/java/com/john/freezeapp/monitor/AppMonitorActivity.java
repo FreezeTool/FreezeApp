@@ -46,14 +46,6 @@ public class AppMonitorActivity extends BaseActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int range = MAX_SEEKBAR - MIN_SEEKBAR;
-                // 0 - 20
-                // 0 - 100
-                // 20 / 100
-                // 4  / 20
-                // 20    4
-                // 100   20
-
                 int value = (int) ((float) progress / 100 * range) + MIN_SEEKBAR;
                 AppMonitorManager.setTextSize(value);
                 tvSeekbarValue.setText(getSeekbarText(value));

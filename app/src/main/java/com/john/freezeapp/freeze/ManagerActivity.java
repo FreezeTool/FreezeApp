@@ -1,36 +1,31 @@
 package com.john.freezeapp.freeze;
 
 import android.os.Bundle;
-import android.view.MenuItem;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.john.freezeapp.BaseActivity;
+import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.R;
+import com.john.freezeapp.util.ThreadPool;
+import com.john.freezeapp.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ManagerActivity extends BaseActivity {
+public class ManagerActivity extends ToolbarSearchActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
-    Toolbar toolbar;
-
-
     List<View> viewPageViews = new ArrayList<>();
-
     List<String> tabs = new ArrayList<>();
     List<FreezeAppAdapter> commonAdapters = new ArrayList<>();
 
@@ -66,7 +61,7 @@ public class ManagerActivity extends BaseActivity {
             viewPageViews.add(recyclerView);
         }
 
-        viewPager.setAdapter(new CommonPageAdapter(viewPageViews, tabs));
+        viewPager.setAdapter(new FreezeAppPageAdapter(viewPageViews, tabs));
 
         requestRunningApp();
         requestEnableApp();
@@ -74,10 +69,30 @@ public class ManagerActivity extends BaseActivity {
 
         tabLayout.setupWithViewPager(viewPager);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                closeToolbarSearch();
+            }
 
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if (state == ViewPager.SCROLL_STATE_DRAGGING) {
+//                    closeToolbarSearch();
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.manager_name);
     }
 
     @Override
@@ -115,31 +130,15 @@ public class ManagerActivity extends BaseActivity {
         commonAdapters.add(freezeAppAdapter);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     private void requestEnableApp() {
         showLoading();
         FreezeAppManager.requestEnableApp(this, new FreezeAppManager.Callback() {
             @Override
             public void success(List<FreezeAppManager.AppModel> list) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideLoading();
-                        defrostAppAdapter.updateData(getFreezeApps(getResources().getString(R.string.manager_btn_freeze), list));
-                    }
-                });
+                hideLoading();
+                mDefrostAppLists = getFreezeApps(getResources().getString(R.string.manager_btn_freeze), list);
+                updateDefrostApp();
             }
 
             @Override
@@ -147,6 +146,35 @@ public class ManagerActivity extends BaseActivity {
                 hideLoading();
             }
         });
+    }
+
+    private void updateDefrostApp() {
+        String query = getQuery();
+        if (TextUtils.isEmpty(query)) {
+            UIExecutor.post(new Runnable() {
+                @Override
+                public void run() {
+                    defrostAppAdapter.updateData(mDefrostAppLists);
+                }
+            });
+        } else {
+            List<FreezeAppData> list = new ArrayList<>(mDefrostAppLists);
+            ThreadPool.execute(() -> {
+                List<FreezeAppData> queryLists = new ArrayList<>();
+                for (FreezeAppData freezeAppData : list) {
+                    FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), freezeAppData.appModel.packageName);
+                    if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                        queryLists.add(freezeAppData);
+                    }
+                }
+                UIExecutor.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        defrostAppAdapter.updateData(queryLists);
+                    }
+                });
+            });
+        }
     }
 
     private void requestDisableApp() {
@@ -154,13 +182,9 @@ public class ManagerActivity extends BaseActivity {
         FreezeAppManager.requestDisableApp(this, new FreezeAppManager.Callback() {
             @Override
             public void success(List<FreezeAppManager.AppModel> list) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideLoading();
-                        freezeAppAdapter.updateData(getFreezeApps(getResources().getString(R.string.manager_btn_defrost), list));
-                    }
-                });
+                hideLoading();
+                mFreezeAppLists = getFreezeApps(getResources().getString(R.string.manager_btn_defrost), list);
+                updateFreezeApp();
             }
 
             @Override
@@ -169,6 +193,40 @@ public class ManagerActivity extends BaseActivity {
             }
         });
     }
+
+    private void updateFreezeApp() {
+        String query = getQuery();
+        if (TextUtils.isEmpty(query)) {
+            UIExecutor.post(new Runnable() {
+                @Override
+                public void run() {
+                    freezeAppAdapter.updateData(mFreezeAppLists);
+                }
+            });
+        } else {
+            List<FreezeAppData> list = new ArrayList<>(mFreezeAppLists);
+            ThreadPool.execute(() -> {
+                List<FreezeAppData> queryLists = new ArrayList<>();
+                for (FreezeAppData freezeAppData : list) {
+                    FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), freezeAppData.appModel.packageName);
+                    if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                        queryLists.add(freezeAppData);
+                    }
+                }
+                UIExecutor.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        freezeAppAdapter.updateData(queryLists);
+                    }
+                });
+            });
+        }
+    }
+
+    List<FreezeAppData> mDefrostAppLists;
+    List<FreezeAppData> mFreezeAppLists;
+    List<FreezeAppData> mFreezeRunningAppLists;
+
 
     private void requestFreezeApp(String packageName) {
         showLoading();
@@ -210,14 +268,10 @@ public class ManagerActivity extends BaseActivity {
         FreezeAppManager.requestRunningApp(this, new FreezeAppManager.Callback3() {
             @Override
             public void success(List<FreezeAppManager.RunningModel> list) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideLoading();
-                        List<FreezeAppData> uiList = runningAdapter.getItems();
-                        runningAdapter.updateData(getFreezeRunningApp(getResources().getString(R.string.manager_btn_stop),list, uiList));
-                    }
-                });
+                hideLoading();
+                List<FreezeAppData> uiList = runningAdapter.getItems();
+                mFreezeRunningAppLists = getFreezeRunningApp(getResources().getString(R.string.manager_btn_stop), list, uiList);
+                updateFreezeRunningApp();
             }
 
             @Override
@@ -225,6 +279,35 @@ public class ManagerActivity extends BaseActivity {
                 hideLoading();
             }
         });
+    }
+
+    private void updateFreezeRunningApp() {
+        String query = getQuery();
+        if (TextUtils.isEmpty(query)) {
+            UIExecutor.post(new Runnable() {
+                @Override
+                public void run() {
+                    runningAdapter.updateData(mFreezeRunningAppLists);
+                }
+            });
+        } else {
+            List<FreezeAppData> list = new ArrayList<>(mFreezeRunningAppLists);
+            ThreadPool.execute(() -> {
+                List<FreezeAppData> queryLists = new ArrayList<>();
+                for (FreezeAppData freezeAppData : list) {
+                    FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), freezeAppData.appModel.packageName);
+                    if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                        queryLists.add(freezeAppData);
+                    }
+                }
+                UIExecutor.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        runningAdapter.updateData(queryLists);
+                    }
+                });
+            });
+        }
     }
 
 
@@ -249,46 +332,6 @@ public class ManagerActivity extends BaseActivity {
         });
     }
 
-    public static class CommonPageAdapter extends PagerAdapter {
-
-        private final List<View> viewPageViews = new ArrayList<>();
-        private final List<String> tabTitles = new ArrayList<>();
-
-        public CommonPageAdapter(List<View> viewPageViews, List<String> tabTitles) {
-            this.viewPageViews.addAll(viewPageViews);
-            this.tabTitles.addAll(tabTitles);
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return this.tabTitles.get(position);
-        }
-
-        @Override
-        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            container.removeView((View) object);
-        }
-
-        @NonNull
-        @Override
-        public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            View view = viewPageViews.get(position);
-            container.addView(view);
-            return view;
-        }
-
-        @Override
-        public int getCount() {
-            return viewPageViews.size();
-        }
-
-        @Override
-        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
-            return view == object;
-        }
-    }
-
     public List<FreezeAppData> getFreezeApps(String operate, List<FreezeAppManager.AppModel> list) {
         List<FreezeAppData> freezeAppDatas = new ArrayList<>();
         for (FreezeAppManager.AppModel appModel : list) {
@@ -301,7 +344,7 @@ public class ManagerActivity extends BaseActivity {
     }
 
 
-    public List<FreezeAppData> getFreezeRunningApp(String operate,List<FreezeAppManager.RunningModel> list, List<FreezeAppData> uiList) {
+    public List<FreezeAppData> getFreezeRunningApp(String operate, List<FreezeAppManager.RunningModel> list, List<FreezeAppData> uiList) {
         Map<String, FreezeAppData> tempMap = new HashMap<>();
 
         for (FreezeAppData commonUiModel : uiList) {
@@ -318,5 +361,21 @@ public class ManagerActivity extends BaseActivity {
             newList.add(uiModel);
         }
         return newList;
+    }
+
+    @Override
+    protected void onQueryTextChange(String query) {
+        super.onQueryTextChange(query);
+        updateFreezeApp();
+        updateDefrostApp();
+        updateFreezeRunningApp();
+    }
+
+    @Override
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateFreezeApp();
+        updateDefrostApp();
+        updateFreezeRunningApp();
     }
 }

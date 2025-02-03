@@ -13,12 +13,13 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarActivity;
 
 import java.util.List;
 
 
 @RequiresApi(Build.VERSION_CODES.S)
-public class BatteryUsageActivity extends BaseActivity {
+public class BatteryUsageActivity extends ToolbarActivity {
 
     BatteryUsageAdapter mAdapter = new BatteryUsageAdapter();
 
@@ -31,13 +32,16 @@ public class BatteryUsageActivity extends BaseActivity {
             finish();
             return;
         }
-        initToolbar();
-
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         requestBatteryUsage();
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.battery_usage_name);
     }
 
     private void requestBatteryUsage() {
@@ -59,24 +63,5 @@ public class BatteryUsageActivity extends BaseActivity {
 
             }
         });
-    }
-
-    private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

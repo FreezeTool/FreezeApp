@@ -2,24 +2,28 @@ package com.john.freezeapp.appops;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
 import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.ThreadPool;
+import com.john.freezeapp.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AppOpsActivity extends BaseActivity {
+public class AppOpsActivity extends ToolbarSearchActivity {
 
     AppOpsAdapter mAdapter = new AppOpsAdapter(null);
 
@@ -33,12 +37,15 @@ public class AppOpsActivity extends BaseActivity {
             return;
         }
 
-        initToolbar();
-
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         requestInstallApp();
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.app_ops_name);
     }
 
     private void requestInstallApp() {
@@ -78,6 +85,8 @@ public class AppOpsActivity extends BaseActivity {
         });
     }
 
+    private List<AppOpsData> mAppOpsData;
+
     private void updateData(List<FreezeAppManager.AppModel> userAppList, List<UsageStatsData> usageStatsDataList) {
         List<AppOpsData> data = new ArrayList<>();
         // usageStats 记录
@@ -96,11 +105,14 @@ public class AppOpsActivity extends BaseActivity {
         for (FreezeAppManager.AppModel appModel : userAppList) {
             data.add(new AppOpsData(appModel));
         }
-
+        mAppOpsData = data;
         if (isDestroy()) {
             return;
         }
+        updateData(mAppOpsData);
+    }
 
+    public void updateData(List<AppOpsData> data) {
         postUI(new Runnable() {
             @Override
             public void run() {
@@ -109,22 +121,42 @@ public class AppOpsActivity extends BaseActivity {
         });
     }
 
-
-    private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    @Override
+    protected void onQueryTextChange(String query) {
+        super.onQueryTextChange(query);
+        updateQueryData(query);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateOriginData();
+    }
+
+    private void updateQueryData(String query) {
+        if (mAppOpsData != null) {
+            List<AppOpsData> list = new ArrayList<>(mAppOpsData);
+            ThreadPool.execute(() -> {
+                if (TextUtils.isEmpty(query)) {
+                    updateData(list);
+                } else {
+                    List<AppOpsData> queryAppOpsLists = new ArrayList<>();
+                    for (AppOpsData appOpsData : list) {
+                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), appOpsData.appModel.packageName);
+                        if (appModel.name != null && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                            queryAppOpsLists.add(appOpsData);
+                        }
+                    }
+                    updateData(queryAppOpsLists);
+                }
+            });
+
+        }
+    }
+
+    private void updateOriginData() {
+        if (mAppOpsData != null) {
+            updateData(mAppOpsData);
         }
     }
 }

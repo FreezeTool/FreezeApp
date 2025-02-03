@@ -26,12 +26,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
 import com.john.freezeapp.BaseActivity;
+import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
+import com.john.freezeapp.util.ThreadPool;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class MiMixFlipSettingActivity extends BaseActivity {
+public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
 
     public static String[] scaleValues = {"0.1", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0"};
 
@@ -71,10 +73,6 @@ public class MiMixFlipSettingActivity extends BaseActivity {
             return;
         }
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         TextView tvTip = findViewById(R.id.tip);
         tvTip.setText(getTipString(this));
         tvTip.setMovementMethod(LinkMovementMethod.getInstance());
@@ -82,6 +80,11 @@ public class MiMixFlipSettingActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         requestAllUserApp();
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.mi_flip_setting);
     }
 
     private void forceStopOtherApp(Context context, MiMixFlipAppData data) {
@@ -246,6 +249,13 @@ public class MiMixFlipSettingActivity extends BaseActivity {
         if (isDestroy()) {
             return;
         }
+        mMiMixFlipAppData = data;
+        updateData(data);
+    }
+
+    List<MiMixFlipAppData> mMiMixFlipAppData;
+
+    private void updateData(List<MiMixFlipAppData> data) {
         postUI(new Runnable() {
             @Override
             public void run() {
@@ -274,6 +284,7 @@ public class MiMixFlipSettingActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_mi_mix_flip_menu, menu);
+        initSearchMenu(menu);
         return true;
     }
 
@@ -282,10 +293,7 @@ public class MiMixFlipSettingActivity extends BaseActivity {
 
         int itemId = item.getItemId();
 
-        if (android.R.id.home == itemId) {
-            finish();
-            return true;
-        } else if (R.id.menu_flip_open == itemId) {
+        if (R.id.menu_flip_open == itemId) {
             openFlipHome();
             return true;
         } else if (R.id.menu_flip_reset_scale == itemId) {
@@ -372,4 +380,32 @@ public class MiMixFlipSettingActivity extends BaseActivity {
 
     }
 
+
+    @Override
+    protected void onQueryTextChange(String query) {
+        super.onQueryTextChange(query);
+        if (mMiMixFlipAppData != null) {
+            if (TextUtils.isEmpty(query)) {
+                updateData(mMiMixFlipAppData);
+            } else {
+                List<MiMixFlipAppData> list = new ArrayList<>(mMiMixFlipAppData);
+                ThreadPool.execute(() -> {
+                    List<MiMixFlipAppData> queryLists = new ArrayList<>();
+                    for (MiMixFlipAppData miMixFlipAppData : list) {
+                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), miMixFlipAppData.appModel.packageName);
+                        if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                            queryLists.add(miMixFlipAppData);
+                        }
+                    }
+                    updateData(queryLists);
+                });
+            }
+        }
+    }
+
+    @Override
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateData(mMiMixFlipAppData);
+    }
 }

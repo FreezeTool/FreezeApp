@@ -61,6 +61,7 @@
     <string name="btn_cancel">取消</string>
     <string name="btn_setting">设置</string>
     <string name="btn_force_stop">强杀</string>
+    <string name="btn_search">搜索</string>
 
     <string name="command_btn_execute">执行</string>
 

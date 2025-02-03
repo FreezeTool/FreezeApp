@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -27,15 +28,17 @@ import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.home.FuncFragment;
 import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
+import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
-import com.john.hidden.api.Replace;
+import com.john.freezeapp.util.ThreadPool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends ToolbarActivity {
 
     ViewPager viewPager;
 
@@ -51,6 +54,10 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void initToolbar(Toolbar toolbar) {
+        setSupportActionBar(toolbar);
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,9 +65,6 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.activity_main);
 
         FreezeUtil.generateShell(this);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
         tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));
         tabs.add(new Tab(R.id.navigation_func, new FuncFragment()));
         tabs.add(new Tab(R.id.navigation_log, new LogFragment()));
@@ -97,8 +101,13 @@ public class MainActivity extends BaseActivity {
                 return false;
             }
         });
+        initPackage();
 
+    }
 
+    @Override
+    protected String getToolbarTitle() {
+        return getString(R.string.app_name);
     }
 
     public static class MainAdapter extends FragmentPagerAdapter {
@@ -140,7 +149,7 @@ public class MainActivity extends BaseActivity {
         if (R.id.menu_stop_server == itemId) {
             showStopDaemonDialog();
             return true;
-        } else if(R.id.menu_developer == itemId) {
+        } else if (R.id.menu_developer == itemId) {
             FreezeUtil.toDevelopPage(getContext());
         }
         return super.onOptionsItemSelected(item);
@@ -149,6 +158,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void bindDaemon(IDaemonBinder daemonBinder) {
         super.bindDaemon(daemonBinder);
+        initPackage();
         if (SharedPrefUtil.isFirstBindDaemon()) {
             postUI(new Runnable() {
                 @Override
@@ -159,6 +169,47 @@ public class MainActivity extends BaseActivity {
             SharedPrefUtil.setFirstBindDaemon();
         }
 
+    }
+
+    public class LoadPakcageRunnable implements Runnable {
+        private String packageName;
+        private int index;
+
+        public LoadPakcageRunnable(int index, String packageName) {
+            this.index = index;
+            this.packageName = packageName;
+        }
+
+        @Override
+        public void run() {
+            FreezeAppManager.getAppModel(getContext(), packageName);
+            ClientLog.log(String.format("LoadPakcageRunnable index=%d, package=%s", index, packageName));
+        }
+    }
+
+    private void initPackage() {
+        if (!isDaemonActive()) {
+            return;
+        }
+        FreezeAppManager.requestAppList(getContext(), FreezeAppManager.TYPE_ALL, FreezeAppManager.STATUS_ALL, true, new FreezeAppManager.Callback() {
+            @Override
+            public void success(List<FreezeAppManager.AppModel> list) {
+                ExecutorService executorService = ThreadPool.createExecutorService(4);
+                for (int i = 0; i < list.size(); i++) {
+                    FreezeAppManager.AppModel appModel = list.get(i);
+                    if (!TextUtils.isEmpty(appModel.packageName)) {
+                        executorService.execute(new LoadPakcageRunnable(i, appModel.packageName));
+                    }
+                }
+                executorService.shutdown();
+
+            }
+
+            @Override
+            public void fail() {
+
+            }
+        });
     }
 
     @Override
