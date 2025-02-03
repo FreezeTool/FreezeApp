@@ -21,7 +21,7 @@ import java.util.List;
 
 public class AppOpsActivity extends BaseActivity {
 
-    AppOpsAdapter mAdapter = new AppOpsAdapter();
+    AppOpsAdapter mAdapter = new AppOpsAdapter(null);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

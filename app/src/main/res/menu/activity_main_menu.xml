@@ -18,6 +18,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_developer"
+        android:title="开发者选项" />
+    <item
         android:id="@+id/menu_stop_server"
         android:title="停止Freeze服务" />
 </menu>

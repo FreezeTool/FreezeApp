@@ -20,6 +20,7 @@ import android.text.format.DateUtils;
 
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.adb.AdbPairActivity;
+import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
@@ -32,6 +33,8 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import rikka.shizuku.Shizuku;
@@ -173,8 +176,8 @@ public class FreezeUtil {
 
     public static void allowSystemAlertWindow() {
         try {
-            ClientBinderManager.getAppOpsService().setMode(AppOpsManagerHidden.OP_SYSTEM_ALERT_WINDOW, Process.myUid(), BuildConfig.APPLICATION_ID, AppOpsManager.MODE_ALLOWED);
-        } catch (RemoteException e) {
+            AppOps.setUidMode(AppOpsManagerHidden.OP_SYSTEM_ALERT_WINDOW, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -265,6 +268,42 @@ public class FreezeUtil {
         if (stringBuilder.toString().isEmpty()) {
             stringBuilder.append(time).append("毫秒");
         }
+        return stringBuilder.toString();
+    }
+
+
+    public static String formatAppOpsTime(long now, long last) {
+        long time = now - last;
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (time > 7 * DateUtils.DAY_IN_MILLIS) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(last);
+            Calendar nowCalender = Calendar.getInstance();
+            nowCalender.setTimeInMillis(now);
+            int lastYear = calendar.get(Calendar.YEAR);
+            int nowYear = nowCalender.get(Calendar.YEAR);
+            if (lastYear != nowYear) {
+                stringBuilder.append(lastYear).append("年");
+            }
+            stringBuilder.append(calendar.get(Calendar.MONTH) + 1).append("月").append(calendar.get(Calendar.DAY_OF_MONTH)).append("日");
+        } else if (time > 2 * DateUtils.DAY_IN_MILLIS) {
+            int day = (int) (time / DateUtils.DAY_IN_MILLIS);
+            stringBuilder.append(day).append("天前");
+        } else if (time > DateUtils.DAY_IN_MILLIS) {
+            stringBuilder.append("昨天前");
+        } else if (time > DateUtils.HOUR_IN_MILLIS) {
+            int hour = (int) (time / DateUtils.HOUR_IN_MILLIS);
+            stringBuilder.append(hour).append("小时前");
+        } else if (time > DateUtils.MINUTE_IN_MILLIS) {
+            int minute = (int) (time / DateUtils.MINUTE_IN_MILLIS);
+            stringBuilder.append(minute).append("分前");
+        } else if (time > DateUtils.SECOND_IN_MILLIS) {
+            int second = (int) (time / DateUtils.SECOND_IN_MILLIS);
+            stringBuilder.append(second).append("秒前");
+        }
+
+
         return stringBuilder.toString();
     }
 }

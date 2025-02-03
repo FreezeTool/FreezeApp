@@ -103,7 +103,7 @@ public class AdbStartDialog extends AlertDialog {
         }
         updateTitle("正在连接中", true);
         String host = "127.0.0.1";
-        AdbKey key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp3");
+        AdbKey key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp");
 
         executorService.execute(() -> {
             adbClient = new AdbClient(host, port, key);

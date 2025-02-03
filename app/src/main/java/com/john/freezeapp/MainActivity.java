@@ -140,6 +140,8 @@ public class MainActivity extends BaseActivity {
         if (R.id.menu_stop_server == itemId) {
             showStopDaemonDialog();
             return true;
+        } else if(R.id.menu_developer == itemId) {
+            FreezeUtil.toDevelopPage(getContext());
         }
         return super.onOptionsItemSelected(item);
     }

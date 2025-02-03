@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/colorAccent" /> <!-- 滑块颜色 -->
+    <corners android:radius="100dp" /> <!-- 滑块圆角 -->
+    <size
+        android:width="20dp"
+        android:height="20dp" /> <!-- 滑块大小 -->
+</shape>

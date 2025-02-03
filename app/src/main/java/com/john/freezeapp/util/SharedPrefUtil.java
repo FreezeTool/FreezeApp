@@ -12,6 +12,7 @@ public class SharedPrefUtil {
     public static final String KEY_FIRST_BIND_DAEMON = "KEY_FIRST_BIND_DAEMON";
     public static final String KEY_FIRST_UNBIND_DAEMON = "KEY_FIRST_UNBIND_DAEMON";
     public static final String KEY_APP_MONITOR_SWITCHER = "key_app_monitor_switcher";
+    public static final String KEY_APP_MONITOR_TEXT_SIZE = "key_app_monitor_text_size";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);
@@ -34,6 +35,17 @@ public class SharedPrefUtil {
     public static void setBoolean(String key, boolean value) {
         SharedPreferences.Editor edit = getSharedPref().edit();
         edit.putBoolean(key, value);
+        edit.apply();
+    }
+
+
+    public static int getInt(String key, int def) {
+        return getSharedPref().getInt(key, def);
+    }
+
+    public static void setInt(String key, int value) {
+        SharedPreferences.Editor edit = getSharedPref().edit();
+        edit.putInt(key, value);
         edit.apply();
     }
 

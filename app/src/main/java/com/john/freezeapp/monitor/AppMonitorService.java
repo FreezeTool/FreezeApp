@@ -6,23 +6,32 @@ import android.app.ForegroundServiceStartNotAllowedException;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.text.TextUtils;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.john.freezeapp.App;
 import com.john.freezeapp.R;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.util.UIExecutor;
 import com.john.freezeapp.window.FloatWindow;
 
 public class AppMonitorService extends Service {
     public static final String ACTION_START_APP_MONITOR = "action_start_app_monitor";
     public static final String ACTION_STOP_APP_MONITOR = "action_stop_app_monitor";
+    public static final String ACTION_UPDATE_TEXT_SIZE_APP_MONITOR = "action_update_text_size_app_monitor";
     AppMonitorManager.IAppMonitor iAppMonitor = this::showRunningTaskInfo;
     private static final String NOTIFICATION_CHANNEL_ID = "NOTIFICATION_APP_MONITOR";
     private static final int notificationId = 1;
@@ -68,6 +77,9 @@ public class AppMonitorService extends Service {
             hideWindow();
             stopSelf();
             return START_NOT_STICKY;
+        } else if (TextUtils.equals(action, ACTION_UPDATE_TEXT_SIZE_APP_MONITOR)) {
+            updateTextViewSize();
+            return START_STICKY;
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -80,11 +92,13 @@ public class AppMonitorService extends Service {
         } else {
             builder = new Notification.Builder(this);
         }
-
-        Notification notification = builder.setColor(getColor(R.color.purple_200))
-                .setSmallIcon(R.drawable.ic_vector_help)
+        Intent intent = new Intent(getApplicationContext(), AppMonitorActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Notification notification = builder.setColor(getColor(R.color.colorAccent))
+                .setSmallIcon(R.mipmap.ic_app_icon)
                 .setContentTitle("APP监控")
                 .setContentText("")
+                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .build();
         try {
             startForeground(notificationId, notification);
@@ -99,12 +113,34 @@ public class AppMonitorService extends Service {
     }
 
     FloatWindow mFloatWindow;
+    TextView mTextView;
 
     private void showWindow() {
         if (mFloatWindow == null) {
-            mFloatWindow = new FloatWindow();
+            mFloatWindow = new FloatWindow(getApplicationContext());
+            mFloatWindow.setOnLongClickListener(v -> {
+                Intent intent = new Intent(getApplicationContext(), AppMonitorActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                App.getApp().startActivity(intent);
+                return false;
+            });
+            mTextView = new TextView(getApplicationContext());
+            updateTextViewSize();
+            int padding = ScreenUtils.dp2px(getApplicationContext(), 10);
+            mTextView.setPadding(padding, padding, padding, padding);
+            mTextView.setGravity(Gravity.CENTER);
+            mTextView.setTextColor(Color.WHITE);
+            mTextView.setBackgroundResource(R.drawable.mask_background);
+            mFloatWindow.setView(mTextView);
+
         }
         mFloatWindow.show();
+    }
+
+    private void updateTextViewSize() {
+        if (mTextView != null) {
+            mTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, AppMonitorManager.getTextSize());
+        }
     }
 
     private void hideWindow() {
@@ -125,7 +161,10 @@ public class AppMonitorService extends Service {
             UIExecutor.postUI(new Runnable() {
                 @Override
                 public void run() {
-                    mFloatWindow.setText(stringBuilder.toString());
+                    if (mTextView != null) {
+                        mTextView.setText(stringBuilder.toString());
+                    }
+
                 }
             });
         }
@@ -144,6 +183,13 @@ public class AppMonitorService extends Service {
     public static void stopAppMonitor(Context context) {
         Intent intent = new Intent(context, AppMonitorService.class);
         intent.setAction(ACTION_STOP_APP_MONITOR);
+        context.startService(intent);
+    }
+
+
+    public static void updateAppMonitorTextSize(Context context) {
+        Intent intent = new Intent(context, AppMonitorService.class);
+        intent.setAction(ACTION_UPDATE_TEXT_SIZE_APP_MONITOR);
         context.startService(intent);
     }
 

@@ -122,7 +122,7 @@ public class AdbPairService extends Service {
 
                 AdbKey key = null;
                 try {
-                    key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp3");
+                    key = new AdbKey(new AdbKey.PreferenceAdbKeyStore(SharedPrefUtil.getSharedPref()), "freezeapp");
                 } catch (Throwable e){
                     return;
                 }
@@ -187,8 +187,8 @@ public class AdbPairService extends Service {
 
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new Notification.Builder(this, notificationChannelId)
-                .setColor(getColor(R.color.purple_200))
-                .setSmallIcon(R.drawable.ic_vector_help)
+                .setColor(getColor(R.color.colorAccent))
+                .setSmallIcon(R.mipmap.ic_app_icon)
                 .setContentTitle(title)
                 .setContentText(text)
                 .build();
@@ -239,8 +239,8 @@ public class AdbPairService extends Service {
 
     private Notification createSearchingNotification() {
         return new Notification.Builder(this, notificationChannelId)
-                .setColor(getColor(R.color.purple_200))
-                .setSmallIcon(R.drawable.ic_vector_help)
+                .setColor(getColor(R.color.colorAccent))
+                .setSmallIcon(R.mipmap.ic_app_icon)
                 .setContentTitle(getString(R.string.notification_adb_pairing_searching_for_service_title))
                 .addAction(stopNotificationAction())
                 .build();
@@ -248,18 +248,18 @@ public class AdbPairService extends Service {
 
     private Notification createInputNotification(int port) {
         return new Notification.Builder(this, notificationChannelId)
-                .setColor(getColor(R.color.purple_200))
+                .setColor(getColor(R.color.colorAccent))
                 .setContentTitle(getString(R.string.notification_adb_pairing_service_found_title))
-                .setSmallIcon(R.drawable.ic_vector_help)
+                .setSmallIcon(R.mipmap.ic_app_icon)
                 .addAction(replyNotificationAction(port))
                 .build();
     }
 
     private Notification workingNotification() {
         return new Notification.Builder(this, notificationChannelId)
-                .setColor(getColor(R.color.purple_200))
+                .setColor(getColor(R.color.colorAccent))
                 .setContentTitle(getString(R.string.notification_adb_pairing_working_title))
-                .setSmallIcon(R.drawable.ic_vector_help)
+                .setSmallIcon(R.mipmap.ic_app_icon)
                 .build();
     }
 

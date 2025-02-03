@@ -158,4 +158,12 @@ public class AppMonitorManager {
     public static void stopAppMonitor(Context context) {
         AppMonitorService.stopAppMonitor(context);
     }
+
+    public static void setTextSize(int size) {
+        SharedPrefUtil.setInt(SharedPrefUtil.KEY_APP_MONITOR_TEXT_SIZE, size);
+    }
+
+    public static int getTextSize() {
+        return SharedPrefUtil.getInt(SharedPrefUtil.KEY_APP_MONITOR_TEXT_SIZE, 12);
+    }
 }

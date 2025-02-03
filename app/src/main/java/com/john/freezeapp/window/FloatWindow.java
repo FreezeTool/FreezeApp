@@ -1,97 +1,121 @@
 package com.john.freezeapp.window;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.john.freezeapp.App;
-import com.john.freezeapp.R;
-
-import java.lang.reflect.Field;
+import com.john.freezeapp.monitor.AppMonitorActivity;
+import com.john.freezeapp.util.ScreenUtils;
 
 public class FloatWindow implements IFloatWindow {
-    private WindowManager.LayoutParams mLayoutParams;
-    private View mRootView;
-    private float mRootViewX;
-    private float mRootViewY;
-    private int mScreenHeight;
-    private int mScreenWidth;
-    private float mTouchInViewX;
-    private float mTouchInViewY;
-    private WindowManager mWindowManager;
-    private TextView textView;
-    int statusBarHeight;
+    private final WindowManager.LayoutParams mLayoutParams;
+    private final FloatContainer mRootView;
+    private final int mScreenHeight;
+    private final int mScreenWidth;
+    private final WindowManager mWindowManager;
     private boolean isShow = false;
 
-    public FloatWindow() {
-        mRootView = LayoutInflater.from(App.getApp()).inflate(R.layout.wm_float_view, null);
-        textView = mRootView.findViewById(R.id.tv_app_monitor);
-        mRootView.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    mTouchInViewX = event.getX();
-                    mTouchInViewY = event.getY();
-                    return true;
-                case MotionEvent.ACTION_UP:
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    mRootViewX = event.getRawX() - mTouchInViewX;
-                    mRootViewY = (event.getRawY() - getStatusBarHeight()) - mTouchInViewY;
-                    updateMovePosition();
-                    return true;
-                default:
-                    return true;
-            }
-        });
-        mRootView.setOnLongClickListener(new View.OnLongClickListener() {
+    /**
+     * Intent intent = new Intent(App.getApp(), AppMonitorActivity.class);
+     * intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+     * App.getApp().startActivity(intent);
+     */
+
+
+    public View.OnLongClickListener onLongClickListener;
+    public View.OnClickListener onClickListener;
+
+    public void setOnLongClickListener(View.OnLongClickListener onLongClickListener) {
+        this.onLongClickListener = onLongClickListener;
+    }
+
+    public void setOnClickListener(View.OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public FloatWindow(Context context) {
+
+        mRootView = new FloatContainer(context);
+        mRootView.setOnFloatListener(new FloatContainer.OnFloatListener() {
             @Override
-            public boolean onLongClick(View v) {
-                hide();
-                return true;
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onMove(float x, float y) {
+                updateMovePosition((int) x, (int) y);
+            }
+
+            @Override
+            public void onEnd() {
+
+            }
+
+            @Override
+            public void onLongClick() {
+                if (onLongClickListener != null) {
+                    onLongClickListener.onLongClick(mRootView);
+                }
+            }
+
+            @Override
+            public void onClick() {
+                if (onClickListener != null) {
+                    onClickListener.onClick(mRootView);
+                }
             }
         });
-        DisplayMetrics displayMetrics = App.getApp().getResources().getDisplayMetrics();
-        mScreenWidth = displayMetrics.widthPixels;
-        mScreenHeight = displayMetrics.heightPixels;
+        mRootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mScreenWidth = ScreenUtils.getScreenWidth(context);
+        mScreenHeight = ScreenUtils.getScreenHeight(context);
         mWindowManager = (WindowManager) App.getApp().getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
-        mLayoutParams = layoutParams;
-        layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        mLayoutParams = new WindowManager.LayoutParams();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        }
         mLayoutParams.format = 1;
         mLayoutParams.gravity = Gravity.TOP | Gravity.LEFT;
         mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        mRootViewY = mScreenHeight / 2;
-        mRootViewX = 0;
         mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        mLayoutParams.x = (int) mRootViewX;
-        mLayoutParams.y = (int) mRootViewY;
+        mLayoutParams.x = 0;
+        mLayoutParams.y = mScreenHeight / 2;
     }
 
-    public void updateMovePosition() {
+    public void setView(View view) {
+        mRootView.removeAllViews();
+        mRootView.addView(view, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+    }
+
+    public void updateMovePosition(int x, int y) {
         if (!this.isShow) {
             return;
         }
-        if (this.mRootViewX < 0.0f) {
-            mRootViewX = 0.0f;
+        if (x < 0) {
+            x = 0;
         }
-        if (this.mRootViewY < 0.0f) {
-            mRootViewY = 0.0f;
+        if (y < 0) {
+            y = 0;
         }
 
-        if (mRootViewX > mScreenWidth) {
-            mRootViewX = mScreenWidth;
+        if (x > mScreenWidth) {
+            x = mScreenWidth;
         }
-        if (mRootViewY > mScreenHeight) {
-            mRootViewY = mScreenHeight;
+        if (y > mScreenHeight) {
+            y = mScreenHeight;
         }
-        mLayoutParams.x = (int) mRootViewX;
-        mLayoutParams.y = (int) mRootViewY;
+        mLayoutParams.x = x;
+        mLayoutParams.y = y;
         mWindowManager.updateViewLayout(this.mRootView, mLayoutParams);
     }
 
@@ -114,25 +138,5 @@ public class FloatWindow implements IFloatWindow {
             isShow = false;
             mWindowManager.removeView(this.mRootView);
         }
-    }
-
-    /* JADX INFO: Access modifiers changed from: private */
-    public int getStatusBarHeight() {
-        if (this.statusBarHeight == 0) {
-            try {
-                Class<?> c = Class.forName("com.android.internal.R$dimen");
-                Object o = c.newInstance();
-                Field field = c.getField("status_bar_height");
-                int x = ((Integer) field.get(o)).intValue();
-                statusBarHeight = App.getApp().getResources().getDimensionPixelSize(x);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return statusBarHeight;
-    }
-
-    public void setText(String className) {
-        textView.setText(className);
     }
 }

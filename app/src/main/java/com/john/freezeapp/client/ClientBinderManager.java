@@ -1,5 +1,6 @@
 package com.john.freezeapp.client;
 
+import android.annotation.TargetApi;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.app.smartspace.ISmartspaceManager;
@@ -12,6 +13,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
+import android.permission.IPermissionManager;
 import android.view.IWindowManager;
 
 import com.android.internal.app.IAppOpsService;
@@ -257,6 +259,18 @@ public class ClientBinderManager {
     };
 
 
+    private final static ClientBinderSingleton<IPermissionManager> iPermissionManager = new ClientBinderSingleton<IPermissionManager>() {
+        @TargetApi(Build.VERSION_CODES.R)
+        @Override
+        protected IPermissionManager createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+            return IPermissionManager.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("permissionmgr")));
+        }
+    };
+
+
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();
     }
@@ -283,6 +297,11 @@ public class ClientBinderManager {
 
     public static IAppOpsService getAppOpsService() {
         return iAppOpsService.get();
+    }
+
+    @TargetApi(Build.VERSION_CODES.R)
+    public static IPermissionManager getPermissionManager() {
+        return iPermissionManager.get();
     }
 
 }

@@ -3,10 +3,14 @@ package com.john.freezeapp.appops;
 import android.app.AppOpsManagerHidden;
 
 import com.android.internal.app.IAppOpsService;
+import com.john.freezeapp.App;
 import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.util.FreezeUtil;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -15,11 +19,153 @@ import java.util.Map;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.content.pm.PermissionInfo;
 import android.os.RemoteException;
+import android.text.TextUtils;
 
 public class AppOps {
 
-    private static Map<String, Integer> sOpName = new HashMap<>();
+    private static final Map<String, Integer> sOpName = new HashMap<>();
+    private static final Map<String, Integer> sOpDes = new HashMap<>();
+
+    private static final Map<Integer, String> sMIUIOpStr = new HashMap<>();
+
+    private static final String[] opNameArray = {
+            "COARSE_LOCATION",
+            "FINE_LOCATION",
+            "GPS",
+            "VIBRATE",
+            "READ_CONTACTS",
+            "WRITE_CONTACTS",
+            "READ_CALL_LOG",
+            "WRITE_CALL_LOG",
+            "READ_CALENDAR",
+            "WRITE_CALENDAR",
+            "WIFI_SCAN",
+            "POST_NOTIFICATION",
+            "NEIGHBORING_CELLS",
+            "CALL_PHONE",
+            "READ_SMS",
+            "WRITE_SMS",
+            "RECEIVE_SMS",
+            "RECEIVE_EMERGECY_SMS",
+            "RECEIVE_MMS",
+            "RECEIVE_WAP_PUSH",
+            "SEND_SMS",
+            "READ_ICC_SMS",
+            "WRITE_ICC_SMS",
+            "WRITE_SETTINGS",
+            "SYSTEM_ALERT_WINDOW",
+            "ACCESS_NOTIFICATIONS",
+            "CAMERA", "RECORD_AUDIO",
+            "PLAY_AUDIO",
+            "READ_CLIPBOARD",
+            "WRITE_CLIPBOARD",
+            "TAKE_MEDIA_BUTTONS",
+            "TAKE_AUDIO_FOCUS",
+            "AUDIO_MASTER_VOLUME",
+            "AUDIO_VOICE_VOLUME",
+            "AUDIO_RING_VOLUME",
+            "AUDIO_MEDIA_VOLUME",
+            "AUDIO_ALARM_VOLUME",
+            "AUDIO_NOTIFICATION_VOLUME",
+            "AUDIO_BLUETOOTH_VOLUME",
+            "WAKE_LOCK",
+            "MONITOR_LOCATION",
+            "MONITOR_HIGH_POWER_LOCATION",
+            "GET_USAGE_STATS",
+            "MUTE_MICROPHONE",
+            "TOAST_WINDOW",
+            "PROJECT_MEDIA",
+            "ACTIVATE_VPN",
+            "WRITE_WALLPAPER",
+            "ASSIST_STRUCTURE",
+            "ASSIST_SCREENSHOT",
+            "READ_PHONE_STATE",
+            "ADD_VOICEMAIL",
+            "USE_SIP",
+            "PROCESS_OUTGOING_CALLS",
+            "USE_FINGERPRINT",
+            "BODY_SENSORS",
+            "READ_CELL_BROADCASTS",
+            "MOCK_LOCATION",
+            "READ_EXTERNAL_STORAGE",
+            "WRITE_EXTERNAL_STORAGE",
+            "TURN_ON_SCREEN",
+            "GET_ACCOUNTS",
+            "RUN_IN_BACKGROUND",
+            "AUDIO_ACCESSIBILITY_VOLUME",
+            "READ_PHONE_NUMBERS",
+            "REQUEST_INSTALL_PACKAGES",
+            "PICTURE_IN_PICTURE",
+            "INSTANT_APP_START_FOREGROUND",
+            "ANSWER_PHONE_CALLS",
+            "RUN_ANY_IN_BACKGROUND",
+            "CHANGE_WIFI_STATE",
+            "REQUEST_DELETE_PACKAGES",
+            "BIND_ACCESSIBILITY_SERVICE",
+            "ACCEPT_HANDOVER",
+            "MANAGE_IPSEC_TUNNELS",
+            "START_FOREGROUND",
+            "BLUETOOTH_SCAN",
+            "USE_BIOMETRIC",
+            "ACTIVITY_RECOGNITION",
+            "SMS_FINANCIAL_TRANSACTIONS",
+            "READ_MEDIA_AUDIO",
+            "WRITE_MEDIA_AUDIO",
+            "READ_MEDIA_VIDEO",
+            "WRITE_MEDIA_VIDEO",
+            "READ_MEDIA_IMAGES",
+            "WRITE_MEDIA_IMAGES",
+            "LEGACY_STORAGE",
+            "ACCESS_ACCESSIBILITY",
+            "READ_DEVICE_IDENTIFIERS",
+            "ACCESS_MEDIA_LOCATION",
+            "QUERY_ALL_PACKAGES",
+            "MANAGE_EXTERNAL_STORAGE",
+            "INTERACT_ACROSS_PROFILES",
+            "ACTIVATE_PLATFORM_VPN",
+            "LOADER_USAGE_STATS",
+            "deprecated",
+            "AUTO_REVOKE_PERMISSIONS_IF_UNUSED",
+            "AUTO_REVOKE_MANAGED_BY_INSTALLER",
+            "NO_ISOLATED_STORAGE",
+            "PHONE_CALL_MICROPHONE",
+            "PHONE_CALL_CAMERA",
+            "RECORD_AUDIO_HOTWORD",
+            "MANAGE_ONGOING_CALLS",
+            "MANAGE_CREDENTIALS",
+            "USE_ICC_AUTH_WITH_DEVICE_IDENTIFIER",
+            "RECORD_AUDIO_OUTPUT",
+            "SCHEDULE_EXACT_ALARM",
+            "FINE_LOCATION_SOURCE",
+            "COARSE_LOCATION_SOURCE",
+            "MANAGE_MEDIA",
+            "BLUETOOTH_CONNECT",
+            "UWB_RANGING",
+            "ACTIVITY_RECOGNITION_SOURCE",
+            "BLUETOOTH_ADVERTISE",
+            "RECORD_INCOMING_PHONE_AUDIO",
+            "NEARBY_WIFI_DEVICES",
+            "ESTABLISH_VPN_SERVICE",
+            "ESTABLISH_VPN_MANAGER",
+            "ACCESS_RESTRICTED_SETTINGS",
+            "RECEIVE_SOUNDTRIGGER_AUDIO",
+            "RECEIVE_EXPLICIT_USER_INTERACTION_AUDIO",
+            "RUN_LONG_JOBS",
+            "READ_MEDIA_VISUAL_USER_SELECTED",
+            "SYSTEM_EXEMPT_FROM_APP_STANDBY",
+            "SYSTEM_EXEMPT_FROM_FORCED_APP_STANDBY",
+            "READ_WRITE_HEALTH_DATA",
+            "FOREGROUND_SERVICE_SPECIAL_USE",
+            "SYSTEM_EXEMPT_FROM_POWER_RESTRICTIONS",
+            "SYSTEM_EXEMPT_FROM_HIBERNATION",
+            "SYSTEM_EXEMPT_FROM_ACTIVITY_BG_START_RESTRICTION",
+            "CAPTURE_CONSENTLESS_BUGREPORT_ON_USERDEBUG_BUILD",
+            "BODY_SENSORS_WRIST_TEMPERATURE",
+            "USE_FULL_SCREEN_INTENT",
+            "special:sensors"};
 
 
     static {
@@ -120,7 +266,50 @@ public class AppOps {
         sOpName.put("LOADER_USAGE_STATS", R.string.op_name_LOADER_USAGE_STATS);
         sOpName.put("AUTO_REVOKE_PERMISSIONS_IF_UNUSED", R.string.op_name_AUTO_REVOKE_PERMISSIONS_IF_UNUSED);
         sOpName.put("AUTO_REVOKE_MANAGED_BY_INSTALLER", R.string.op_name_AUTO_REVOKE_MANAGED_BY_INSTALLER);
+
+
+        sOpDes.put("READ_CLIPBOARD", R.string.op_desc_READ_CLIPBOARD);
+        sOpDes.put("WAKE_LOCK", R.string.op_desc_WAKE_LOCK);
+        sOpDes.put("START_FOREGROUND", R.string.op_desc_START_FOREGROUND);
+        sOpDes.put("READ_DEVICE_IDENTIFIERS", R.string.op_desc_READ_DEVICE_IDENTIFIERS);
+        sOpDes.put("ACCESS_MEDIA_LOCATION", R.string.op_desc_ACCESS_MEDIA_LOCATION);
+        if (FreezeUtil.atLeast30()) {
+            sOpDes.put("TOAST_WINDOW", R.string.op_desc_TOAST_WINDOW_30);
+        }
+        sOpDes.put("special:sensors", R.string.op_desc_special_SENSORS);
+
+        if (FreezeUtil.isMIUI()) {
+            initMIUIOpSimpleName();
+        }
+
     }
+
+    public static final int OP_MIUI_START = 10000;
+
+    private static void initMIUIOpSimpleName() {
+        Field[] declaredFields = AppOpsManager.class.getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            int modifiers = declaredField.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
+                try {
+                    declaredField.setAccessible(true);
+                    String name = declaredField.getName();
+                    if (!TextUtils.isEmpty(name) && name.startsWith("OP_")) {
+                        Object object = declaredField.get(null);
+                        if (object instanceof Integer) {
+                            if ((int) object >= OP_MIUI_START) {
+                                sMIUIOpStr.put((int) object, name.replace("OP_", ""));
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 
     public static String getOpNameStr(Context context, String opStr) {
         if (sOpName.containsKey(opStr)) {
@@ -131,29 +320,33 @@ public class AppOps {
 
     public static class AppOpInfo {
         public int code;
-        public String name;
-        public String permission;
         public int opSwitchCode;
 
-        public AppOpInfo(int code, String name, String permission, int opSwitchCode) {
+        public AppOpInfo(int code, int opSwitchCode) {
             this.code = code;
-            this.name = name;
-            this.permission = permission;
             this.opSwitchCode = opSwitchCode;
         }
     }
 
-    public static class AppOpsDetail extends AppOpInfo {
-        public int mode = MODE_UNKNOWN;
-        public int defaultMode = MODE_UNKNOWN;
+    public static class AppOpsDetail {
+        public int op;
+        public int switchOp;
+        public int defMode = MODE_UNKNOWN;
+        public int uidMode = MODE_UNKNOWN;
+        public int pkgMode = MODE_UNKNOWN;
+        public int uid;
         public String packageName;
         public long lastAccessTime;
         public long lastRejectTime;
         public boolean isRunning;
         public long duration;
+        public boolean ignoreSetting;
 
-        public AppOpsDetail(AppOpInfo appOpInfo) {
-            super(appOpInfo.code, appOpInfo.name, appOpInfo.permission, appOpInfo.opSwitchCode);
+        public AppOpsDetail(int op, int opSwitchCode, int uid, String packageName) {
+            this.op = op;
+            this.switchOp = opSwitchCode;
+            this.uid = uid;
+            this.packageName = packageName;
         }
     }
 
@@ -177,6 +370,7 @@ public class AppOps {
     public static final int MODE_DEFAULT = AppOpsManager.MODE_DEFAULT;
     public static final int MODE_FOREGROUND = AppOpsManager.MODE_FOREGROUND;
     public static final int MODE_ASK = 5;
+    public static final int MODE_ONETIME = 100;
 
     public static String getModelStr(int mode) {
         switch (mode) {
@@ -189,7 +383,9 @@ public class AppOps {
             case MODE_DEFAULT:
                 return "默认";
             case MODE_FOREGROUND:
-                return "仅在前台使用时允许";
+                return "仅在前台使用期间允许";
+            case MODE_ONETIME:
+                return "每次都询问";
             case MODE_ASK:
                 return "ask";
             default:
@@ -203,9 +399,72 @@ public class AppOps {
             for (int i = 0; i < 200; i++) {
                 insertAOSPCode(i);
             }
-//            insertMIUICode();
         }
+    }
 
+    public static final int PROTECTION_UNKNOWN = -1;
+    public static final int PROTECTION_NORMAL = PermissionInfo.PROTECTION_NORMAL;
+    public static final int PROTECTION_DANGEROUS = PermissionInfo.PROTECTION_DANGEROUS;
+    public static final int PROTECTION_SIGNATURE = PermissionInfo.PROTECTION_SIGNATURE;
+    public static final int PROTECTION_SIGNATURE_OR_SYSTEM = PermissionInfo.PROTECTION_SIGNATURE_OR_SYSTEM;
+    public static final int PROTECTION_INTERNAL = PermissionInfo.PROTECTION_INTERNAL;
+
+    public static final int PROTECTION_FLAG_UNKNOWN = -1;
+
+    private static final Map<Integer, Integer> sPermissionProtectionMap = new HashMap<>();
+    private static final Map<Integer, Integer> sPermissionProtectionFlagsMap = new HashMap<>();
+
+
+    public static int getPermissionProtection(int op, String packageName) {
+        Integer i = sPermissionProtectionMap.get(op);
+        if (i != null) {
+            return i;
+        }
+        String permission = AppOpsManagerHidden.opToPermission(op);
+        if (!TextUtils.isEmpty(permission)) {
+            try {
+
+                PermissionInfo permissionInfo = getPermissionInfo(permission, packageName);
+
+                int protection;
+                if (FreezeUtil.atLeast28()) {
+                    protection = permissionInfo.getProtection();
+                } else {
+                    protection = permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE;
+                }
+                sPermissionProtectionMap.put(op, protection);
+                return protection;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return PROTECTION_UNKNOWN;
+    }
+
+    public static int getPermissionProtectionFlags(int op, String packageName) {
+        Integer i = sPermissionProtectionFlagsMap.get(op);
+        if (i != null) {
+            return i;
+        }
+        String permission = AppOpsManagerHidden.opToPermission(op);
+        if (!TextUtils.isEmpty(permission)) {
+            try {
+
+                PermissionInfo permissionInfo = getPermissionInfo(permission, packageName);
+
+                int flags;
+                if (FreezeUtil.atLeast28()) {
+                    flags = permissionInfo.getProtectionFlags();
+                } else {
+                    flags = permissionInfo.protectionLevel & ~PermissionInfo.PROTECTION_MASK_BASE;
+                }
+                sPermissionProtectionFlagsMap.put(op, flags);
+                return flags;
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return PROTECTION_FLAG_UNKNOWN;
     }
 
     private static void insertAOSPCode(int i) {
@@ -217,18 +476,30 @@ public class AppOps {
             return;
         }
 
-        AppOpInfo appOpInfo = new AppOpInfo(i, name, AppOpsManagerHidden.opToPermission(i), AppOpsManagerHidden.opToSwitch(i));
+        AppOpInfo appOpInfo = new AppOpInfo(i, AppOpsManagerHidden.opToSwitch(i));
         appOpInfoMap.put(i, appOpInfo);
         appOpInfos.add(appOpInfo);
     }
 
 
     public static String getOpName(int op) {
-        AppOpInfo appOpInfo = appOpInfoMap.get(op);
-        if (appOpInfo != null) {
-            return appOpInfo.name;
+
+        if (FreezeUtil.isMIUI() && op >= OP_MIUI_START) {
+            String opName = sMIUIOpStr.get(op);
+            if (!TextUtils.isEmpty(opName)) {
+                return opName;
+            }
         }
-        return null;
+
+        String opName = AppOpsManagerHidden.opToName(op);
+        if (!TextUtils.isEmpty(opName)) {
+            return opName;
+        }
+        return "";
+    }
+
+    public static String getOpPermission(int op) {
+        return AppOpsManagerHidden.opToPermission(op);
     }
 
     public static List<AppOpsDetail> getAppOpDetail(String packageName) {
@@ -249,20 +520,17 @@ public class AppOps {
                 // 默认的操作信息
                 List<AppOpsManagerHidden.PackageOps> opsForPackage = appOpsService.getOpsForPackage(packageUid, packageName, null);
 
-
                 for (AppOpsManagerHidden.PackageOps appOpsList : opsForPackage) {
                     List<AppOpsManagerHidden.OpEntry> opEntries = appOpsList.getOps();
                     if (opEntries != null && !opEntries.isEmpty()) {
                         for (AppOpsManagerHidden.OpEntry opEntry : opEntries) {
                             int op = opEntry.getOp();
                             int mode = opEntry.getMode();
-                            AppOpInfo appOpInfo = getAppOpInfoMap().get(op);
-                            if (appOpInfo == null) {
-                                continue;
-                            }
-                            AppOpsDetail appOpsDetail = new AppOpsDetail(appOpInfo);
-                            appOpsDetail.defaultMode = mode;
-                            appOpsDetail.packageName = packageName;
+                            int switchOp = AppOpsManagerHidden.opToSwitch(op);
+                            int defaultMode = AppOpsManagerHidden.opToDefaultMode(op);
+                            AppOpsDetail appOpsDetail = new AppOpsDetail(op, switchOp, appOpsList.getUid(), packageName);
+                            appOpsDetail.defMode = defaultMode;
+                            appOpsDetail.pkgMode = mode;
                             long lastAccessTime = opEntry.getTime();
                             if (lastAccessTime != -1) {
                                 appOpsDetail.lastAccessTime = lastAccessTime;
@@ -275,13 +543,13 @@ public class AppOps {
                             if (opEntry.isRunning()) {
                                 appOpsDetail.isRunning = opEntry.isRunning();
                             }
-                            appOpsDetailMap.put(op, appOpsDetail);
+                            if (op < OP_MIUI_START) {
+                                appOpsDetailMap.put(op, appOpsDetail);
+                            }
                         }
                     }
                 }
 
-
-                // 获取用户修改过的权限
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                     opsForPackage = appOpsService.getUidOps(packageUid, null);
                     for (AppOpsManagerHidden.PackageOps appOpsList : opsForPackage) {
@@ -290,17 +558,19 @@ public class AppOps {
                             for (AppOpsManagerHidden.OpEntry opEntry : opEntries) {
                                 int op = opEntry.getOp();
                                 int mode = opEntry.getMode();
-                                AppOpInfo appOpInfo = getAppOpInfoMap().get(op);
-                                if (appOpInfo == null) {
-                                    continue;
-                                }
-
-
+                                int defaultMode = AppOpsManagerHidden.opToDefaultMode(op);
                                 AppOpsDetail appOpsDetail = appOpsDetailMap.get(op);
                                 if (appOpsDetail == null) {
+//                                    int switchOp = AppOpsManagerHidden.opToSwitch(op);
+//
+//                                    appOpsDetail = new AppOpsDetail(op, switchOp, appOpsList.getUid(), packageName);
+//                                    appOpsDetail.defMode = defaultMode;
+//                                    if (op < OP_MIUI_START) {
+//                                        appOpsDetailMap.put(op, appOpsDetail);
+//                                    }
                                     continue;
                                 }
-                                appOpsDetail.mode = mode;
+                                appOpsDetail.uidMode = mode;
                             }
                         }
                     }
@@ -309,6 +579,22 @@ public class AppOps {
                 for (Map.Entry<Integer, AppOpsDetail> entry : appOpsDetailMap.entrySet()) {
                     appOpsDetails.add(entry.getValue());
                 }
+
+                for (AppOpsDetail appOpsDetail : appOpsDetails) {
+                    String defModeStr = getModelStr(appOpsDetail.defMode);
+                    String uidModeStr = getModelStr(appOpsDetail.uidMode);
+                    String pkgModeStr = getModelStr(appOpsDetail.pkgMode);
+                    String opName = getOpNameStr(App.getApp(), getOpName(appOpsDetail.op));
+                    String opPermission = AppOpsManagerHidden.opToPermission(appOpsDetail.op);
+                    int opPermissionProtection = getPermissionProtection(appOpsDetail.op, appOpsDetail.packageName);
+                    boolean opAllowsReset = AppOpsManagerHidden.opAllowsReset(appOpsDetail.op);
+                    int checkOp = checkOperation(appOpsDetail.op, appOpsDetail.packageName);
+                    int checkUidPermission = checkUidPermission(opPermission, appOpsDetail.uid);
+                    int checkPermission = checkPermission(opPermission, appOpsDetail.uid, appOpsDetail.packageName);
+                    ClientLog.log(String.format("AppOpsDetail - defMode=%s, uidMode=%s, pkgMode=%s, opName=%s, opPermission=%s, opPermissionProtection=%d, opAllowsReset=%b, checkOp=%d, checkUidPermission=%d, checkPermission=%d",
+                            defModeStr, uidModeStr, pkgModeStr, opName, opPermission, opPermissionProtection, opAllowsReset, checkOp, checkUidPermission, checkPermission));
+                }
+
                 return appOpsDetails;
 
             } catch (Throwable e) {
@@ -319,14 +605,15 @@ public class AppOps {
     }
 
 
-    public static boolean setUidMode(int op, int mode, String packageName) {
+    public static boolean setUidMode(int op, int mode, int uid, String packageName) {
         try {
             IAppOpsService appOpsService = ClientBinderManager.getAppOpsService();
             if (appOpsService != null) {
-                int packageUid = getPackageUid(packageName);
-                appOpsService.setUidMode(op, packageUid, mode);
+                appOpsService.setMode(op, uid, packageName, mode);
+                appOpsService.setUidMode(op, uid, mode);
                 return true;
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -347,16 +634,50 @@ public class AppOps {
         return -1;
     }
 
-    public static int getPackageUid(String packageName) throws RemoteException {
+    public static int getPackageUid(String packageName) {
         int packageUid = 0;
-        if (FreezeUtil.atLeast33()) {
-            packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0L, 0);
-        } else if (FreezeUtil.atLeast24()) {
-            packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0, 0);
-        } else {
-            packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0);
+        try {
+            if (FreezeUtil.atLeast33()) {
+                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0L, 0);
+            } else if (FreezeUtil.atLeast24()) {
+                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0, 0);
+            } else {
+                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return packageUid;
+    }
+
+    public static PermissionInfo getPermissionInfo(String permission, String packageName) throws RemoteException {
+        PermissionInfo permissionInfo;
+        if (FreezeUtil.atLeast30()) {
+            permissionInfo = ClientBinderManager.getPermissionManager().getPermissionInfo(permission, packageName, 0);
+        } else if (FreezeUtil.atLeast26()) {
+            permissionInfo = ClientBinderManager.getPackageManager().getPermissionInfo(permission, packageName, 0);
+        } else {
+            permissionInfo = ClientBinderManager.getPackageManager().getPermissionInfo(permission, 0);
+        }
+        return permissionInfo;
+    }
+
+
+    public static int checkUidPermission(String permission, int uid) {
+        try {
+            return ClientBinderManager.getPackageManager().checkUidPermission(permission, uid);
+        } catch (RemoteException e) {
+            return PackageManager.PERMISSION_DENIED;
+        }
+    }
+
+
+    public static int checkPermission(String permission, int uid, String packageName) {
+        try {
+            return ClientBinderManager.getPackageManager().checkPermission(permission, packageName, uid);
+        } catch (RemoteException e) {
+            return PackageManager.PERMISSION_DENIED;
+        }
     }
 
 

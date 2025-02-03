@@ -1,17 +1,19 @@
 package com.john.freezeapp.appops;
 
-import android.graphics.Rect;
+import android.content.pm.PackageManager;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.john.freezeapp.App;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 import com.john.freezeapp.util.FreezeUtil;
@@ -23,6 +25,7 @@ import java.util.List;
 public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
 
     TextView tvName, tvSubName, tvOperate, tvLastAccessTime, tvLastRejectTime, tvRunning;
+    ImageView ivGuide;
     LinearLayout llOperate;
 
     public static Creator<AppOpsDetailData> CREATOR = new Creator<AppOpsDetailData>() {
@@ -41,16 +44,7 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
         tvLastAccessTime = itemView.findViewById(R.id.tv_last_access_time);
         tvLastRejectTime = itemView.findViewById(R.id.tv_last_reject_time);
         tvRunning = itemView.findViewById(R.id.tv_running);
-    }
-
-    private static final List<Integer> mModes = new ArrayList<>();
-
-    static {
-        mModes.add(AppOps.MODE_ALLOWED);
-        mModes.add(AppOps.MODE_ERRORED);
-        if (FreezeUtil.atLeast29()) {
-            mModes.add(AppOps.MODE_FOREGROUND);
-        }
+        ivGuide = itemView.findViewById(R.id.iv_guide);
     }
 
 
@@ -59,20 +53,33 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
 
         LinearLayout linearLayout = new LinearLayout(getContext());
         linearLayout.setOrientation(LinearLayout.VERTICAL);
-        for (Integer mode : mModes) {
+
+        List<Pair<Integer, Integer>> modes = new ArrayList<>();
+        if (data.defMode == AppOps.MODE_DEFAULT) {
+            modes.add(new Pair<>(AppOps.MODE_DEFAULT, AppOps.MODE_DEFAULT));
+        }
+        modes.add(new Pair<>(AppOps.MODE_ALLOWED, AppOps.MODE_ALLOWED));
+        modes.add(new Pair<>(AppOps.MODE_ERRORED, AppOps.MODE_ERRORED));
+        if (AppOps.getPermissionProtection(data.op, data.packageName) == AppOps.PROTECTION_DANGEROUS) {
+            modes.add(new Pair<>(AppOps.MODE_ONETIME, AppOps.MODE_IGNORED));
+        } else {
+            modes.add(new Pair<>(AppOps.MODE_IGNORED, AppOps.MODE_IGNORED));
+        }
+        if (FreezeUtil.atLeast29()) {
+            modes.add(new Pair<>(AppOps.MODE_FOREGROUND, AppOps.MODE_FOREGROUND));
+        }
+
+
+        for (Pair<Integer, Integer> mode : modes) {
             View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_app_ops_popwindow, linearLayout, false);
             TextView tvOperate = itemView.findViewById(R.id.tv_operate);
-            tvOperate.setText(AppOps.getModelStr(mode));
-            tvOperate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AppOps.setUidMode(data.op, mode, data.packageName);
-                    if (AppOps.checkOperation(data.op, data.packageName) == mode) {
-                        data.mode = mode;
-                        getAdapter().notifyDataSetChanged();
-                    }
-                    popupWindow.dismiss();
+            tvOperate.setText(AppOps.getModelStr(mode.first));
+            tvOperate.setOnClickListener(v -> {
+                AppOps.setUidMode(data.op, mode.second, data.uid, data.packageName);
+                if (getAdapter().getListener() instanceof AppOpsAdapter.OnItemClick) {
+                    ((AppOpsAdapter.OnItemClick) getAdapter().getListener()).refreshAppOps(data.packageName);
                 }
+                popupWindow.dismiss();
             });
             linearLayout.addView(itemView, new LinearLayout.LayoutParams(ScreenUtils.dp2px(getContext(), 100), ScreenUtils.dp2px(getContext(), LinearLayout.LayoutParams.WRAP_CONTENT)));
 
@@ -91,9 +98,9 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
 
         if (location[1] > ScreenUtils.getScreenHeight(getContext()) / 2) {
 
-            popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, (location[0] + view.getMeasuredWidth() / 2) - popupWidth/2, location[1] - popupHeight);
+            popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, (location[0] + view.getMeasuredWidth() / 2) - popupWidth / 2, location[1] - popupHeight);
         } else {
-            popupWindow.showAtLocation(view,  Gravity.NO_GRAVITY, (location[0] + view.getMeasuredWidth() / 2) - popupWidth/2, location[1] + view.getMeasuredHeight());
+            popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, (location[0] + view.getMeasuredWidth() / 2) - popupWidth / 2, location[1] + view.getMeasuredHeight());
         }
 
 
@@ -108,36 +115,45 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
 
         tvSubName.setVisibility(View.GONE);
 
-        if (data.op != data.opSwitchCode) {
-            String opSwitchName = AppOps.getOpName(data.opSwitchCode);
+        if (data.op != data.switchOp) {
+            String opSwitchName = AppOps.getOpName(data.switchOp);
             if (opSwitchName != null) {
                 tvSubName.setVisibility(View.VISIBLE);
                 tvSubName.setText(String.format("由[%s]控制", AppOps.getOpNameStr(getContext(), opSwitchName)));
             }
             llOperate.setVisibility(View.GONE);
         } else {
-            if (data.mode != AppOps.MODE_UNKNOWN) {
-                tvOperate.setText(AppOps.getModelStr(data.mode));
-            } else if (data.defaultMode != AppOps.MODE_UNKNOWN) {
-                tvOperate.setText(AppOps.getModelStr(data.defaultMode));
-            } else {
-                tvOperate.setText("尚未设置");
+            boolean isSetting = true;
+            String opPermission = AppOps.getOpPermission(data.op);
+            if (opPermission != null) {
+                if (AppOps.checkUidPermission(opPermission, data.uid) == PackageManager.PERMISSION_DENIED && data.uidMode != AppOps.MODE_UNKNOWN && data.defMode != AppOps.MODE_DEFAULT) {
+                    isSetting = false;
+                }
             }
+
             llOperate.setOnClickListener(v -> showPopupWindow(tvOperate, data));
             llOperate.setVisibility(View.VISIBLE);
+            if (!isSetting) {
+                tvOperate.setText("尚未设置");
+            } else if (data.uidMode != AppOps.MODE_UNKNOWN) {
+                tvOperate.setText(AppOps.getModelStr(data.uidMode));
+            } else if (data.pkgMode != AppOps.MODE_UNKNOWN) {
+                tvOperate.setText(AppOps.getModelStr(data.pkgMode));
+            }
+
         }
 
 
         if (data.lastAccessTime != 0) {
             tvLastAccessTime.setVisibility(View.VISIBLE);
-            tvLastAccessTime.setText(String.format("%s前曾允许", FreezeUtil.formatTime(data.nowTime - data.lastAccessTime)));
+            tvLastAccessTime.setText(String.format("%s曾允许", FreezeUtil.formatAppOpsTime(data.nowTime, data.lastAccessTime)));
         } else {
             tvLastAccessTime.setVisibility(View.GONE);
         }
 
         if (data.lastRejectTime != 0) {
             tvLastRejectTime.setVisibility(View.VISIBLE);
-            tvLastRejectTime.setText(String.format("%s前曾拒绝", FreezeUtil.formatTime(data.nowTime - data.lastRejectTime)));
+            tvLastRejectTime.setText(String.format("%s曾拒绝", FreezeUtil.formatAppOpsTime(data.nowTime, data.lastRejectTime)));
         } else {
             tvLastRejectTime.setVisibility(View.GONE);
         }

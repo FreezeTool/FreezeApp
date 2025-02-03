@@ -37,6 +37,7 @@
                     android:textSize="10dp" />
 
                 <ImageView
+                    android:id="@+id/iv_guide"
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:src="@drawable/ic_vector_arrow_down" />

@@ -89,22 +89,6 @@ public class FreezeHomeToolHelper {
                     }));
         }
 
-        if (ClientBinderManager.isActive()) {
-            if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
-                list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
-                        R.drawable.ic_vector_display,
-                        0xff9986A4,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(context, MiMixFlipSettingActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
-                            }
-                        }));
-            }
-        }
-
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_ops_name),
                 R.drawable.ic_vector_key,
                 0xffC1B790,
@@ -128,6 +112,23 @@ public class FreezeHomeToolHelper {
                         context.startActivity(intent);
                     }
                 }));
+
+        if (ClientBinderManager.isActive()) {
+            if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
+                list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
+                        R.drawable.ic_vector_display,
+                        0xff9986A4,
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(context, MiMixFlipSettingActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                context.startActivity(intent);
+                            }
+                        }));
+            }
+        }
+
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,

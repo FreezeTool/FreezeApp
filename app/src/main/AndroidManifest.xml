@@ -27,7 +27,8 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenLayout|screenSize"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -46,59 +47,72 @@
 
         <activity
             android:name=".freeze.ManagerActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".battery.BatteryUsageActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".CommandActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".DaemonStartActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".usagestats.UsageStatsActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".hyper.MiMixFlipSettingActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
         <activity
             android:name=".adb.AdbPairActivity"
-            android:configChanges="orientation|screenLayout|screenSize">
+            android:configChanges="orientation|screenLayout|screenSize"
+            android:launchMode="singleTask">
 
         </activity>
 
-        <activity android:name=".monitor.AppMonitorActivity">
+        <activity
+            android:name=".monitor.AppMonitorActivity"
+            android:launchMode="singleTask">
 
         </activity>
 
-        <activity android:name=".appops.AppOpsActivity">
+        <activity
+            android:name=".appops.AppOpsActivity"
+            android:launchMode="singleTask">
 
         </activity>
 
-        <activity android:name=".appops.AppOpsDetailActivity">
+        <activity
+            android:name=".appops.AppOpsDetailActivity"
+            android:launchMode="singleTask">
 
         </activity>
 
-        <service android:name=".monitor.AppMonitorService"/>
+        <service android:name=".monitor.AppMonitorService" />
 
         <service
             android:name=".adb.AdbPairService"
