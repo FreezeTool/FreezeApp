@@ -109,37 +109,17 @@ public class AppOpsActivity extends ToolbarSearchActivity {
         if (isDestroy()) {
             return;
         }
-        updateData(mAppOpsData);
+        updateData();
     }
 
-    public void updateData(List<AppOpsData> data) {
-        postUI(new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.updateData(data);
-            }
-        });
-    }
-
-    @Override
-    protected void onQueryTextChange(String query) {
-        super.onQueryTextChange(query);
-        updateQueryData(query);
-    }
-
-    @Override
-    protected void onQueryTextClose() {
-        super.onQueryTextClose();
-        updateOriginData();
-    }
-
-    private void updateQueryData(String query) {
+    public void updateData() {
         if (mAppOpsData != null) {
-            List<AppOpsData> list = new ArrayList<>(mAppOpsData);
-            ThreadPool.execute(() -> {
-                if (TextUtils.isEmpty(query)) {
-                    updateData(list);
-                } else {
+            String query = getQuery();
+            if (TextUtils.isEmpty(query)) {
+                UIExecutor.post(() -> mAdapter.updateData(mAppOpsData));
+            } else {
+                List<AppOpsData> list = new ArrayList<>(mAppOpsData);
+                ThreadPool.execute(() -> {
                     List<AppOpsData> queryAppOpsLists = new ArrayList<>();
                     for (AppOpsData appOpsData : list) {
                         FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), appOpsData.appModel.packageName);
@@ -147,16 +127,23 @@ public class AppOpsActivity extends ToolbarSearchActivity {
                             queryAppOpsLists.add(appOpsData);
                         }
                     }
-                    updateData(queryAppOpsLists);
-                }
-            });
+                    UIExecutor.post(() -> mAdapter.updateData(queryAppOpsLists));
+                });
+            }
+
 
         }
     }
 
-    private void updateOriginData() {
-        if (mAppOpsData != null) {
-            updateData(mAppOpsData);
-        }
+    @Override
+    protected void onQueryTextChange(String query) {
+        super.onQueryTextChange(query);
+        updateData();
+    }
+
+    @Override
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateData();
     }
 }

@@ -45,19 +45,28 @@ public class UsageStatsActivity extends ToolbarSearchActivity {
         return getString(R.string.usage_stats_name);
     }
 
-    private void updateData(List<UsageStatsData> usageStatsDataList) {
-        usageStatsDataList.removeIf(next -> next.totalTimeVisible <= 0);
-        Collections.sort(usageStatsDataList);
-
+    private void updateData() {
         if (isDestroy()) {
             return;
         }
-        UIExecutor.post(new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.updateData(usageStatsDataList);
+        if (mUsageStatsList != null) {
+            String query = getQuery();
+            if (TextUtils.isEmpty(query)) {
+                UIExecutor.post(() -> mAdapter.updateData(mUsageStatsList));
+            } else {
+                List<UsageStatsData> list = new ArrayList<>(mUsageStatsList);
+                ThreadPool.execute(() -> {
+                    List<UsageStatsData> queryLists = new ArrayList<>();
+                    for (UsageStatsData usageStatsData : list) {
+                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), usageStatsData.packageName);
+                        if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
+                            queryLists.add(usageStatsData);
+                        }
+                    }
+                    UIExecutor.post(() -> mAdapter.updateData(queryLists));
+                });
             }
-        });
+        }
     }
 
     List<UsageStatsData> mUsageStatsList;
@@ -71,8 +80,10 @@ public class UsageStatsActivity extends ToolbarSearchActivity {
                 if (isDestroy()) {
                     return;
                 }
+                usageStatsDataList.removeIf(next -> next.totalTimeVisible <= 0);
+                Collections.sort(usageStatsDataList);
                 mUsageStatsList = usageStatsDataList;
-                updateData(usageStatsDataList);
+                updateData();
             }
 
             @Override
@@ -91,28 +102,12 @@ public class UsageStatsActivity extends ToolbarSearchActivity {
     @Override
     protected void onQueryTextChange(String query) {
         super.onQueryTextChange(query);
-        if (mUsageStatsList != null) {
-            if (TextUtils.isEmpty(query)) {
-                updateData(mUsageStatsList);
-            } else {
-                List<UsageStatsData> list = new ArrayList<>(mUsageStatsList);
-                ThreadPool.execute(() -> {
-                    List<UsageStatsData> queryLists = new ArrayList<>();
-                    for (UsageStatsData usageStatsData : list) {
-                        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(getContext(), usageStatsData.packageName);
-                        if (!TextUtils.isEmpty(appModel.name) && appModel.name.toLowerCase().contains(query.toLowerCase())) {
-                            queryLists.add(usageStatsData);
-                        }
-                    }
-                    updateData(queryLists);
-                });
-            }
-        }
+        updateData();
     }
 
     @Override
     protected void onQueryTextClose() {
         super.onQueryTextClose();
-        updateData(mUsageStatsList);
+        updateData();
     }
 }

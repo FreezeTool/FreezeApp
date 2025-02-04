@@ -171,22 +171,6 @@ public class MainActivity extends ToolbarActivity {
 
     }
 
-    public class LoadPakcageRunnable implements Runnable {
-        private String packageName;
-        private int index;
-
-        public LoadPakcageRunnable(int index, String packageName) {
-            this.index = index;
-            this.packageName = packageName;
-        }
-
-        @Override
-        public void run() {
-            FreezeAppManager.getAppModel(getContext(), packageName);
-            ClientLog.log(String.format("LoadPakcageRunnable index=%d, package=%s", index, packageName));
-        }
-    }
-
     private void initPackage() {
         if (!isDaemonActive()) {
             return;
@@ -195,12 +179,20 @@ public class MainActivity extends ToolbarActivity {
             @Override
             public void success(List<FreezeAppManager.AppModel> list) {
                 ExecutorService executorService = ThreadPool.createExecutorService(4);
-                for (int i = 0; i < list.size(); i++) {
-                    FreezeAppManager.AppModel appModel = list.get(i);
-                    if (!TextUtils.isEmpty(appModel.packageName)) {
-                        executorService.execute(new LoadPakcageRunnable(i, appModel.packageName));
-                    }
+                ClientLog.log("initPackage - start");
+                List<List<FreezeAppManager.AppModel>> lists = FreezeUtil.averageAssign(list, 4);
+                for (List<FreezeAppManager.AppModel> appModels : lists) {
+                    executorService.execute(() -> {
+                        for (FreezeAppManager.AppModel appModel : appModels) {
+                            if (!TextUtils.isEmpty(appModel.packageName)) {
+                                FreezeAppManager.getAppModel(getContext(), appModel.packageName);
+                            }
+                        }
+                        ClientLog.log("initPackage - done");
+                    });
                 }
+
+
                 executorService.shutdown();
 
             }

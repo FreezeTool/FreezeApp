@@ -34,6 +34,7 @@ import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
 import com.john.freezeapp.util.ThreadPool;
+import com.john.freezeapp.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -250,19 +251,11 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
             return;
         }
         mMiMixFlipAppData = data;
-        updateData(data);
+        updateData();
     }
 
     List<MiMixFlipAppData> mMiMixFlipAppData;
 
-    private void updateData(List<MiMixFlipAppData> data) {
-        postUI(new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.updateData(data);
-            }
-        });
-    }
 
     private void allowAllApp(Context context) {
         List<PackageInfo> installUserApp = FreezeAppManager.getInstallUserApp();
@@ -384,9 +377,20 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
     @Override
     protected void onQueryTextChange(String query) {
         super.onQueryTextChange(query);
+        updateData();
+    }
+
+    @Override
+    protected void onQueryTextClose() {
+        super.onQueryTextClose();
+        updateData();
+    }
+
+    private void updateData() {
         if (mMiMixFlipAppData != null) {
+            String query = getQuery();
             if (TextUtils.isEmpty(query)) {
-                updateData(mMiMixFlipAppData);
+                UIExecutor.post(() -> mAdapter.updateData(mMiMixFlipAppData));
             } else {
                 List<MiMixFlipAppData> list = new ArrayList<>(mMiMixFlipAppData);
                 ThreadPool.execute(() -> {
@@ -397,15 +401,10 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
                             queryLists.add(miMixFlipAppData);
                         }
                     }
-                    updateData(queryLists);
+                    UIExecutor.post(() -> mAdapter.updateData(queryLists));
                 });
             }
         }
     }
 
-    @Override
-    protected void onQueryTextClose() {
-        super.onQueryTextClose();
-        updateData(mMiMixFlipAppData);
-    }
 }

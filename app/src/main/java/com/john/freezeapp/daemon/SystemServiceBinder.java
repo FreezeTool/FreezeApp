@@ -12,6 +12,10 @@ import androidx.annotation.Nullable;
 
 import java.io.FileDescriptor;
 
+/**
+ * https://xrefandroid.com/
+ * @param <T>
+ */
 public class SystemServiceBinder<T extends IInterface> implements IBinder, IBinder.DeathRecipient {
 
     public interface OnGetBinderListener {

@@ -33,6 +33,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -305,5 +306,25 @@ public class FreezeUtil {
 
 
         return stringBuilder.toString();
+    }
+
+
+    public static <T> List<List<T>> averageAssign(List<T> source, int n) {
+        List<List<T>> result = new ArrayList<>();
+        int remainder = source.size() % n;  //(先计算出余数)
+        int number = source.size() / n;  //然后是商
+        int offset = 0;//偏移量
+        for (int i = 0; i < n; i++) {
+            List<T> value;
+            if (remainder > 0) {
+                value = source.subList(i * number + offset, (i + 1) * number + offset + 1);
+                remainder--;
+                offset++;
+            } else {
+                value = source.subList(i * number + offset, (i + 1) * number + offset);
+            }
+            result.add(value);
+        }
+        return result;
     }
 }
