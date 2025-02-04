@@ -9,7 +9,6 @@ import android.content.AttributionSource;
 import android.content.Context;
 import android.content.IContentProvider;
 import android.content.pm.IPackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;

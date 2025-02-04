@@ -169,8 +169,7 @@ public interface IActivityManager extends IInterface {
 
     boolean isUidActive(int uid, String callingPackage);
 
-    //    void handleApplicationCrash(IBinder app,
-//                                ApplicationErrorReport.ParcelableCrashInfo crashInfo);
+    //    void handleApplicationCrash(IBinder app, ApplicationErrorReport.ParcelableCrashInfo crashInfo);
     int startActivity(IApplicationThread caller, String callingPackage, Intent intent,
                       String resolvedType, IBinder resultTo, String resultWho, int requestCode,
                       int flags, ProfilerInfo profilerInfo, Bundle options);
@@ -222,19 +221,18 @@ public interface IActivityManager extends IInterface {
     int stopService(IApplicationThread caller, Intent service,
                     String resolvedType, int userId);
 
-    // Currently keeping old bindService because it is on the greylist
 
-//    int bindService(IApplicationThread caller, IBinder token, Intent service,
-//                    String resolvedType, IServiceConnection connection, int flags,
-//                    String callingPackage, int userId);
-//
-//    int bindServiceInstance(IApplicationThread caller, IBinder token, Intent service,
-//                            String resolvedType, IServiceConnection connection, int flags,
-//                            String instanceName, String callingPackage, int userId);
-//
-//    void updateServiceGroup(IServiceConnection connection, int group, int importance);
-//
-//    boolean unbindService(IServiceConnection connection);
+    int bindService(IApplicationThread caller, IBinder token, Intent service,
+                    String resolvedType, IServiceConnection connection, int flags,
+                    String callingPackage, int userId);
+
+    int bindServiceInstance(IApplicationThread caller, IBinder token, Intent service,
+                            String resolvedType, IServiceConnection connection, int flags,
+                            String instanceName, String callingPackage, int userId);
+
+    void updateServiceGroup(IServiceConnection connection, int group, int importance);
+
+    boolean unbindService(IServiceConnection connection);
 
     void publishService(IBinder token, Intent intent, IBinder service);
 
@@ -307,7 +305,7 @@ public interface IActivityManager extends IInterface {
 
     void cancelIntentSender(IIntentSender sender);
 
-//    ActivityManager.PendingIntentInfo getInfoForIntentSender(IIntentSender sender);
+    ActivityManagerHidden.PendingIntentInfo getInfoForIntentSender(IIntentSender sender);
 
     boolean registerIntentSenderCancelListenerEx(IIntentSender sender,
                                                  IResultReceiver receiver);
@@ -358,13 +356,11 @@ public interface IActivityManager extends IInterface {
 
     List<ActivityManager.RunningServiceInfo> getServices(int maxNum, int flags);
 
-    // Retrieve running application processes the system
 
     List<ActivityManager.RunningAppProcessInfo> getRunningAppProcesses() throws RemoteException;
 
     IBinder peekService(Intent service, String resolvedType, String callingPackage);
 
-    // Turn on/off profiling a particular process.
     boolean profileControl(String process, int userId, boolean start,
                            ProfilerInfo profilerInfo, int profileType);
 
@@ -396,22 +392,16 @@ public interface IActivityManager extends IInterface {
 
     void killApplicationProcess(String processName, int uid);
 
-    // Special low-level communication with activity manager.
-//    boolean handleApplicationWtf(IBinder app, String tag, boolean system,
-//                                 ApplicationErrorReport.ParcelableCrashInfo crashInfo, int immediateCallerPid);
+    //    boolean handleApplicationWtf(IBinder app, String tag, boolean system, ApplicationErrorReport.ParcelableCrashInfo crashInfo, int immediateCallerPid);
     void killBackgroundProcesses(String packageName, int userId);
 
     boolean isUserAMonkey();
 
-    // Retrieve info of applications installed on external media that are currently
-    // running.
     List<ApplicationInfo> getRunningExternalApplications();
 
     void finishHeavyWeightApp();
 
-    // A StrictMode violation to be handled.
-//    void handleApplicationStrictModeViolation(IBinder app, int penaltyMask,
-//                                              StrictMode.ViolationInfo crashInfo);
+    //    void handleApplicationStrictModeViolation(IBinder app, int penaltyMask, StrictMode.ViolationInfo crashInfo);
     boolean isTopActivityImmersive();
 
     void crashApplicationWithType(int uid, int initialPid, String packageName, int userId,
@@ -424,7 +414,6 @@ public interface IActivityManager extends IInterface {
 
     void getProviderMimeTypeAsync(Uri uri, int userId, RemoteCallback resultCallback);
 
-    // Cause the specified process to dump the specified heap.
     boolean dumpHeap(String process, int userId, boolean managed, boolean mallocInfo,
                      boolean runGc, String path, ParcelFileDescriptor fd,
                      RemoteCallback finishCallback);
@@ -457,7 +446,7 @@ public interface IActivityManager extends IInterface {
 
     void removeContentProviderExternalAsUser(String name, IBinder token, int userId);
 
-    // Get memory information about the calling process.
+
     void getMyMemoryState(ActivityManager.RunningAppProcessInfo outInfo);
 
     boolean killProcessesBelowForeground(String reason);
@@ -466,8 +455,6 @@ public interface IActivityManager extends IInterface {
 
     int getCurrentUserId();
 
-    // This is not public because you need to be very careful how you
-    // manage your activity to make sure it is always the uid you expect.
     int getLaunchedFromUid(IBinder activityToken);
 
     void unstableProviderDied(IBinder connection);
@@ -490,7 +477,6 @@ public interface IActivityManager extends IInterface {
 
     int[] getRunningUserIds();
 
-    // Request a heap dump for the system server.
     void requestSystemServerHeapDump();
 
     void requestBugReport(int bugreportType);
@@ -517,8 +503,6 @@ public interface IActivityManager extends IInterface {
 
     Intent getIntentForIntentSender(IIntentSender sender);
 
-    // This is not public because you need to be very careful how you
-    // manage your activity to make sure it is always the uid you expect.
     String getLaunchedFromPackage(IBinder activityToken);
 
     void killUid(int appId, int userId, String reason);
@@ -543,8 +527,6 @@ public interface IActivityManager extends IInterface {
 
     boolean setProcessMemoryTrimLevel(String process, int userId, int level);
 
-
-    // Start of L transactions
     String getTagForIntentSender(IIntentSender sender, String prefix);
 
     boolean startUserInBackground(int userid);
@@ -578,12 +560,8 @@ public interface IActivityManager extends IInterface {
 
     void noteAlarmFinish(IIntentSender sender, WorkSource workSource, int sourceUid, String tag);
 
-    // Start of N transactions
-    // Start Binder transaction tracking for all applications.
     boolean startBinderTracking();
 
-    // Stop Binder transaction tracking for all applications and dump trace data to the given file
-    // descriptor.
     boolean stopBinderTrackingAndDump(ParcelFileDescriptor fd);
 
     void enableBinderTracing();
@@ -613,7 +591,6 @@ public interface IActivityManager extends IInterface {
 
     boolean isBackgroundRestricted(String packageName);
 
-    // Start of N MR1 transactions
     void setRenderThread(int tid);
 
     /**
@@ -626,7 +603,6 @@ public interface IActivityManager extends IInterface {
      */
     void setHasTopUi(boolean hasTopUi);
 
-    // Start of O transactions
     int restartUserInBackground(int userId);
 
     /**
@@ -644,8 +620,6 @@ public interface IActivityManager extends IInterface {
      * Add a bare uid to the background restrictions whitelist.  Only the system uid may call this.
      */
     void backgroundAllowlistUid(int uid);
-
-    // Start of P transactions
 
     /**
      * Similar to {@link #startUserInBackground(int userId), but with a listener to report

@@ -2,8 +2,8 @@ package com.john.freezeapp.hyper;
 
 import android.graphics.drawable.Drawable;
 
-import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.recyclerview.CardData;
+import com.john.freezeapp.util.FreezeAppManager;
 
 public class MiMixFlipAppData extends CardData {
     public FreezeAppManager.AppModel appModel;

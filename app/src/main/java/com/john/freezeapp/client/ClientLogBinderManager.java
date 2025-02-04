@@ -15,17 +15,17 @@ public class ClientLogBinderManager {
         }
     }
 
-    private static List<LogData> logDatas = new ArrayList<>();
+    private final static List<LogData> logDatas = new ArrayList<>();
 
-    public static List<LogData> getLogData() {
+    public synchronized static List<LogData> getLogData() {
         return logDatas;
     }
 
-    public static void unbindDaemon() {
+    public synchronized static void unbindDaemon() {
         logDatas.clear();
     }
 
-    static void notifyLog(String msg) {
+    static synchronized void notifyLog(String msg) {
         logDatas.add(new LogData(msg));
         for (ClientLogCallback clientLogCallback : clientLogCallbacks) {
             clientLogCallback.log(msg);

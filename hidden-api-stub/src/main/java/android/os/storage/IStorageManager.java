@@ -1,4 +1,5 @@
 package android.os.storage;
+import android.content.pm.IPackageMoveObserver;
 import android.content.res.ObbInfo;
 import android.os.Binder;
 import android.os.IBinder;
@@ -16,7 +17,7 @@ import android.app.PendingIntent;
  * @hide - Applications should use android.os.storage.StorageManager to access
  * storage functions.
  */
-interface IStorageManager {
+public interface IStorageManager {
     /**
      * Registers an IStorageEventListener for receiving async notifications.
      */

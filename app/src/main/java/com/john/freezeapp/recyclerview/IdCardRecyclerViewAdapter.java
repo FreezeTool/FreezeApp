@@ -1,11 +1,11 @@
 package com.john.freezeapp.recyclerview;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class IdCardRecyclerViewAdapter extends CardRecyclerViewAdapter<IndexCreatorPool> {
 

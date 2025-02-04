@@ -21,18 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.adb.AdbStartDialog;
-import com.john.freezeapp.util.FreezeAppManager;
-import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
-import com.john.freezeapp.util.SharedPrefUtil;
 import com.john.freezeapp.adb.AdbPairActivity;
+import com.john.freezeapp.adb.AdbStartDialog;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,7 +222,7 @@ public class HomeFragment extends BaseFragment {
         if (isDaemonActive()) {
 
             try {
-                String daemonVersion = getDaemonBinder().getConfig(DaemonHelper.KEY_DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_VERSION);
+                String daemonVersion = getDaemonBinder().getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_VERSION);
                 version = daemonVersion + "（" + BuildConfig.VERSION_NAME + "）";
                 if (!TextUtils.equals(daemonVersion, BuildConfig.VERSION_NAME)) {
                     tip = context.getString(R.string.main_home_daemon_tip);

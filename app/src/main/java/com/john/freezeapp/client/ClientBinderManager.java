@@ -4,6 +4,7 @@ import android.annotation.TargetApi;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.app.smartspace.ISmartspaceManager;
+import android.app.usage.IStorageStatsManager;
 import android.app.usage.IUsageStatsManager;
 import android.content.Context;
 import android.content.pm.IPackageManager;
@@ -13,6 +14,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
+import android.os.storage.IStorageManager;
 import android.permission.IPermissionManager;
 import android.view.IWindowManager;
 
@@ -270,6 +272,29 @@ public class ClientBinderManager {
         }
     };
 
+    private final static ClientBinderSingleton<IStorageManager> iStorageManager = new ClientBinderSingleton<IStorageManager>() {
+        @Override
+        protected IStorageManager createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            return IStorageManager.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("mount")));
+        }
+    };
+
+    private final static ClientBinderSingleton<IStorageStatsManager> iStorageStatsManager = new ClientBinderSingleton<IStorageStatsManager>() {
+        @TargetApi(Build.VERSION_CODES.O)
+        @Override
+        protected IStorageStatsManager createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            return IStorageStatsManager.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService(Context.STORAGE_STATS_SERVICE)));
+        }
+    };
+
 
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();
@@ -304,4 +329,12 @@ public class ClientBinderManager {
         return iPermissionManager.get();
     }
 
+    public static IStorageManager getStorageManager() {
+        return iStorageManager.get();
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    public static IStorageStatsManager getStorageStatsManager() {
+        return iStorageStatsManager.get();
+    }
 }

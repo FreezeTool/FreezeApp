@@ -1,15 +1,13 @@
 package com.john.freezeapp.daemon;
 
 import android.app.ActivityThread;
-import android.app.IActivityManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
+import android.os.RemoteException;
 import android.text.TextUtils;
 
 import androidx.annotation.Keep;
-
-import java.lang.reflect.Method;
 
 @Keep
 public class Daemon {
@@ -61,6 +59,21 @@ public class Daemon {
         mActivityThread = ActivityThread.systemMain();
         DaemonBinderManager.register(mActivityThread.getSystemContext());
         DaemonBinderManager.sendBinderContainer();
+
+        try {
+            String[] packageNames = ActivityThread.getPackageManager().getPackagesForUid(
+                    Process.myUid());
+            if (packageNames != null) {
+                for (String packageName : packageNames) {
+                    DaemonLog.log("packageName - " + packageName);
+                }
+            }
+
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
 

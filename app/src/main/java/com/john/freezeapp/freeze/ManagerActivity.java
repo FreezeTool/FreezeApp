@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
+import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.util.FreezeAppManager;
-import com.john.freezeapp.R;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 

@@ -5,7 +5,6 @@ import android.content.Context;
 
 import com.john.freezeapp.monitor.AppMonitorManager;
 import com.john.freezeapp.util.FreezeUtil;
-import com.john.freezeapp.util.UIExecutor;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 

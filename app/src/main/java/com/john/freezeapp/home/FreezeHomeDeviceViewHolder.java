@@ -8,8 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.john.freezeapp.R;
-import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.ScreenUtils;
 
 public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceData> {
 

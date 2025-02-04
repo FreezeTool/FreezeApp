@@ -1,7 +1,5 @@
 package com.john.freezeapp.home;
 
-import android.app.AppOpsManager;
-import android.app.IActivityTaskManager;
 import android.app.smartspace.ISmartspaceManager;
 import android.app.smartspace.SmartspaceConfig;
 import android.app.smartspace.SmartspaceSessionId;
@@ -9,14 +7,16 @@ import android.app.smartspace.SmartspaceTarget;
 import android.app.smartspace.SmartspaceTargetEvent;
 import android.app.smartspace.uitemplatedata.BaseTemplateData;
 import android.app.smartspace.uitemplatedata.Text;
+import android.app.usage.IStorageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
+import android.os.storage.IStorageManager;
+import android.os.storage.StorageVolume;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -24,21 +24,18 @@ import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.CommandActivity;
 import com.john.freezeapp.MainActivity;
-import com.john.freezeapp.appops.AppOpsActivity;
-import com.john.freezeapp.monitor.AppMonitorActivity;
-import com.john.freezeapp.daemon.DaemonHelper;
-import com.john.freezeapp.hyper.MixFlipUtil;
 import com.john.freezeapp.R;
+import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientLog;
+import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
+import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.util.FreezeUtil;
 
-import org.lsposed.hiddenapibypass.HiddenApiBypass;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -114,7 +111,7 @@ public class FreezeHomeToolHelper {
                 }));
 
         if (ClientBinderManager.isActive()) {
-            if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
+            if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
                 list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
                         R.drawable.ic_vector_display,
                         0xff9986A4,
@@ -150,7 +147,7 @@ public class FreezeHomeToolHelper {
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
+                            toTest3(context);
                         }
                     }));
         }
@@ -160,7 +157,13 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
-        MixFlipUtil.configAppScale2();
+        IStorageManager storageManager = ClientBinderManager.getStorageManager();
+        IStorageStatsManager iStorageStatsManager = ClientBinderManager.getStorageStatsManager();
+        StorageVolume[] volumeList = storageManager.getVolumeList(0, ClientBinderManager.getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_PACKAGE_NAME), 0);
+        for (StorageVolume storageVolume : volumeList) {
+            ClientLog.log("StorageVolume - " + storageVolume.toString());
+        }
+
     }
 
     /**

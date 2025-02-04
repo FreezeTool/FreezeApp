@@ -1,17 +1,13 @@
 package com.john.freezeapp.window;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
-import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.john.freezeapp.App;
-import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.util.ScreenUtils;
 
 public class FloatWindow implements IFloatWindow {

@@ -1,9 +1,5 @@
 package com.john.freezeapp.usagestats;
 
-import android.graphics.drawable.Drawable;
-
-import java.util.Comparator;
-
 public class UsageStatsData implements Comparable<UsageStatsData> {
 
     public String packageName;

@@ -1,5 +1,7 @@
 package android.app;
 
+import android.content.pm.IPackageManager;
+
 public class ActivityThread {
 
     public static ActivityThread systemMain() {
@@ -7,6 +9,10 @@ public class ActivityThread {
     }
 
     public static ActivityThread currentActivityThread() {
+        throw new RuntimeException();
+    }
+
+    public static IPackageManager getPackageManager() {
         throw new RuntimeException();
     }
 

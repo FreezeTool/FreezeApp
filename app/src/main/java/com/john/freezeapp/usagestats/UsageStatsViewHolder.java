@@ -1,6 +1,5 @@
 package com.john.freezeapp.usagestats;
 
-import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,9 +8,9 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.text.SimpleDateFormat;

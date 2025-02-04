@@ -14,10 +14,10 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
 import com.john.freezeapp.daemon.process.RemoteProcess;
+import com.john.freezeapp.util.FreezeUtil;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -26,8 +26,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DaemonBinderStub extends IDaemonBinder.Stub {
+
+    private final static Map<String, IBinder> sDaemonBinderMap = new HashMap<>();
+
+    static {
+        sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_FRP, new DaemonFrpBinderStub());
+    }
 
     @Override
     public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
@@ -68,11 +76,11 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     public String getConfig(String module, String key) throws RemoteException {
         DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call getConfig key=" + key);
 
-        if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_CUSTOM)) {
-            return Custom.getConfig(key);
-        } else if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_SYSTEM)) {
+        if (TextUtils.equals(module, DaemonHelper.DAEMON_MODULE_CUSTOM)) {
+            return DaemonConfig.getConfig(key);
+        } else if (TextUtils.equals(module, DaemonHelper.DAEMON_MODULE_SYSTEM)) {
             return System.getProperty(key);
-        } else if (TextUtils.equals(module, DaemonHelper.KEY_DAEMON_MODULE_SYSTEM_PROPERTIES)) {
+        } else if (TextUtils.equals(module, DaemonHelper.DAEMON_MODULE_SYSTEM_PROPERTIES)) {
             return SystemProperties.get(key);
         }
         return "";
@@ -100,10 +108,8 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     @Override
     public IBinder getService(String name) throws RemoteException {
         DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call getService name=" + name);
-        if (TextUtils.equals(name, Context.ACTIVITY_SERVICE)) {
-            return DaemonService.activityManager.asBinder();
-        } else if (TextUtils.equals(name, "package")) {
-            return DaemonService.packageManager.asBinder();
+        if (sDaemonBinderMap.containsKey(name)) {
+            return sDaemonBinderMap.get(name);
         }
         return null;
     }

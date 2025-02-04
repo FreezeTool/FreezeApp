@@ -13,9 +13,15 @@ public class DaemonHelper {
     public static final String ACTION_APP_PROCESS_START = "action.freeze.app.process.start";
     public static final String ACTION_APP_PROCESS_STOP = "action.freeze.app.process.stop";
     public static final String DAEMON_NICKNAME = "FreezeApp_" + BuildConfig.APPLICATION_ID;
+
+    public static final String DAEMON_MODULE_CUSTOM = "FreezeApp";
+    public static final String DAEMON_MODULE_SYSTEM = "System";
+    public static final String DAEMON_MODULE_SYSTEM_PROPERTIES = "SystemProperties";
     public static final String KEY_DAEMON_VERSION = "key_daemon_version";
-    public static final String KEY_DAEMON_MODULE_CUSTOM = "FreezeApp";
-    public static final String KEY_DAEMON_MODULE_SYSTEM = "System";
-    public static final String KEY_DAEMON_MODULE_SYSTEM_PROPERTIES = "SystemProperties";
+    public static final String KEY_DAEMON_PACKAGE_NAME = "key_daemon_package_name";
+
+    public static final String DAEMON_SHELL_PACKAGE = "com.android.shell";
+    public static final String DAEMON_BINDER_FRP = "daemon_binder_frp";
+
 
 }

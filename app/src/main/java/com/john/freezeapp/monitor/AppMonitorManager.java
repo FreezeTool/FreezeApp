@@ -1,20 +1,12 @@
 package com.john.freezeapp.monitor;
 
 import android.app.ActivityManager;
-import android.app.AppOpsManager;
 import android.app.IActivityManager;
-import android.app.IProcessObserver;
 import android.app.ITaskStackListener;
-import android.app.IUserSwitchObserver;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.pm.IPackageManager;
-import android.os.IRemoteCallback;
 import android.os.RemoteException;
-import android.window.TaskSnapshot;
 
 import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
 

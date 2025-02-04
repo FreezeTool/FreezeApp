@@ -86,7 +86,8 @@ public class LogFragment extends BaseFragment {
             public void run() {
                 List<CardData> list = new ArrayList<>();
                 if (isDaemonActive()) {
-                    for (ClientLogBinderManager.LogData logData : ClientLogBinderManager.getLogData()) {
+                    List<ClientLogBinderManager.LogData> logList = new ArrayList<>(ClientLogBinderManager.getLogData());
+                    for (ClientLogBinderManager.LogData logData : logList) {
                         list.add(new FreezeHomeLogData(logData.msg));
                     }
                 } else {

@@ -1,6 +1,5 @@
 package com.john.freezeapp.monitor;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.CompoundButton;

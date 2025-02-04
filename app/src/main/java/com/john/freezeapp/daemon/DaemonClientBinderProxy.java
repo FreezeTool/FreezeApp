@@ -1,6 +1,4 @@
 package com.john.freezeapp.daemon;
-
-import android.os.Binder;
 import android.os.IBinder;
 import android.os.IInterface;
 import android.os.RemoteException;

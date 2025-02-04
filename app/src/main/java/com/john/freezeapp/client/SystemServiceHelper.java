@@ -2,6 +2,7 @@ package com.john.freezeapp.client;
 
 import android.annotation.SuppressLint;
 import android.os.IBinder;
+import android.os.ServiceManager;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -19,25 +20,14 @@ public class SystemServiceHelper {
     private static final Map<String, IBinder> SYSTEM_SERVICE_CACHE = new HashMap<>();
     private static final Map<String, Integer> TRANSACT_CODE_CACHE = new HashMap<>();
 
-    private static Method getService;
-
     static {
-        try {
-            Class<?> sm = Class.forName("android.os.ServiceManager");
-            getService = sm.getMethod("getService", String.class);
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
-            Log.w("SystemServiceHelper", Log.getStackTraceString(e));
-        }
+
     }
 
     public static IBinder getSystemService(@NonNull String name) {
         IBinder binder = SYSTEM_SERVICE_CACHE.get(name);
         if (binder == null) {
-            try {
-                binder = (IBinder) getService.invoke(null, name);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                Log.w("SystemServiceHelper", Log.getStackTraceString(e));
-            }
+            binder = ServiceManager.getService(name);
             SYSTEM_SERVICE_CACHE.put(name, binder);
         }
         return binder;

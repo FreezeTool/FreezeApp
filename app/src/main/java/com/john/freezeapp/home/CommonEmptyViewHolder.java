@@ -1,14 +1,9 @@
 package com.john.freezeapp.home;
 
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ShapeDrawable;
-import android.graphics.drawable.shapes.OvalShape;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewParent;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 

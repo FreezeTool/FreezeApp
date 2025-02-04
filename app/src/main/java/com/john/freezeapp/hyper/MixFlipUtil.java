@@ -6,12 +6,12 @@ import android.os.ParcelFileDescriptor;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
 
-import com.john.freezeapp.util.FreezeAppManager;
-import com.john.freezeapp.util.FreezeUtil;
-import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.ThreadPool;
 
 import java.io.FileDescriptor;
 import java.io.IOException;

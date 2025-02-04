@@ -1,6 +1,6 @@
 package android.os.storage;
 
-interface IStorageEventListener {
+public interface IStorageEventListener {
 
     void onUsbMassStorageConnectionChanged(boolean connected) ;
 

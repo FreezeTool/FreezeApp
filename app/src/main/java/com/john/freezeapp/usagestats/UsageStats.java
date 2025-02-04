@@ -3,12 +3,11 @@ package com.john.freezeapp.usagestats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.ParceledListSlice;
-import android.os.Build;
 import android.os.RemoteException;
 
+import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
-import com.john.freezeapp.client.ClientBinderManager;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

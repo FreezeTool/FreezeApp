@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.pm.dex.IArtManager;
 import android.graphics.Bitmap;
 import android.os.Binder;
 import android.os.Build;
@@ -306,9 +307,9 @@ public interface IPackageManager extends IInterface {
     String[] setDistractingPackageRestrictionsAsUser(String[] packageNames, int restrictionFlags,
                                                      int userId);
 
-//    String[] setPackagesSuspendedAsUser(String[] packageNames, boolean suspended,
-//                                        PersistableBundle appExtras, PersistableBundle launcherExtras,
-//                                        SuspendDialogInfo dialogInfo, String callingPackage, int userId);
+    String[] setPackagesSuspendedAsUser(String[] packageNames, boolean suspended,
+                                        PersistableBundle appExtras, PersistableBundle launcherExtras,
+                                        SuspendDialogInfo dialogInfo, String callingPackage, int userId);
 
     String[] getUnsuspendablePackagesForUser(String[] packageNames, int userId);
 
@@ -463,7 +464,7 @@ public interface IPackageManager extends IInterface {
     void clearApplicationProfileData(String packageName);
 
 
-//    void getPackageSizeInfo(String packageName, int userHandle, IPackageStatsObserver observer);
+    void getPackageSizeInfo(String packageName, int userHandle, IPackageStatsObserver observer);
 
     /**
      * Get a list of shared libraries that are available on the
@@ -492,8 +493,8 @@ public interface IPackageManager extends IInterface {
     void notifyDexLoad(String loadingPackageName,
                        Map<String, String> classLoaderContextMap, String loaderIsa);
 
-//    void registerDexModule(String packageName, String dexModulePath,
-//                           boolean isSharedModule, IDexModuleRegisterCallback callback);
+    void registerDexModule(String packageName, String dexModulePath,
+                           boolean isSharedModule, IDexModuleRegisterCallback callback);
 
 
     /**
@@ -528,9 +529,9 @@ public interface IPackageManager extends IInterface {
 
     int getMoveStatus(int moveId);
 
-//    void registerMoveCallback(IPackageMoveObserver callback);
-//
-//    void unregisterMoveCallback(IPackageMoveObserver callback);
+    void registerMoveCallback(IPackageMoveObserver callback);
+
+    void unregisterMoveCallback(IPackageMoveObserver callback);
 
     int movePackage(String packageName, String volumeUuid);
 
@@ -567,7 +568,7 @@ public interface IPackageManager extends IInterface {
 
     ParceledListSlice getAllIntentFilters(String packageName);
 
-//    VerifierDeviceIdentity getVerifierDeviceIdentity();
+    VerifierDeviceIdentity getVerifierDeviceIdentity();
 
     boolean isFirstBoot();
 
@@ -593,13 +594,13 @@ public interface IPackageManager extends IInterface {
 
     boolean getBlockUninstallForUser(String packageName, int userId);
 
-//    KeySet getKeySetByAlias(String packageName, String alias);
-//
-//    KeySet getSigningKeySet(String packageName);
-//
-//    boolean isPackageSignedByKeySet(String packageName, KeySet ks);
-//
-//    boolean isPackageSignedByKeySetExactly(String packageName, KeySet ks);
+    KeySet getKeySetByAlias(String packageName, String alias);
+
+    KeySet getSigningKeySet(String packageName);
+
+    boolean isPackageSignedByKeySet(String packageName, KeySet ks);
+
+    boolean isPackageSignedByKeySetExactly(String packageName, KeySet ks);
 
     String getPermissionControllerPackageName();
 
@@ -649,7 +650,7 @@ public interface IPackageManager extends IInterface {
 
     String getInstantAppAndroidId(String packageName, int userId);
 
-//    IArtManager getArtManager();
+    IArtManager getArtManager();
 
     void setHarmfulAppWarning(String packageName, CharSequence warning, int userId);
 
@@ -693,7 +694,7 @@ public interface IPackageManager extends IInterface {
 
     void notifyPackagesReplacedReceived(String[] packages);
 
-//    void requestPackageChecksums(String packageName, boolean includeSplits, int optional, int required, List trustedInstallers, IOnChecksumsReadyListener onChecksumsReadyListener, int userId);
+    void requestPackageChecksums(String packageName, boolean includeSplits, int optional, int required, List trustedInstallers, IOnChecksumsReadyListener onChecksumsReadyListener, int userId);
 
     IntentSender getLaunchIntentSenderForPackage(String packageName, String callingPackage,
                                                  String featureId, int userId);

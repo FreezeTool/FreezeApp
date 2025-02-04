@@ -2,7 +2,6 @@ package com.john.freezeapp;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -12,7 +11,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -20,7 +18,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientRemoteShell;
-import com.john.freezeapp.daemon.DaemonBinderManager;
 
 public class CommandActivity extends BaseActivity {
     Toolbar toolbar;

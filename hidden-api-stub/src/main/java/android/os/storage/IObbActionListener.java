@@ -1,6 +1,6 @@
 package android.os.storage;
 
-interface IObbActionListener {
+public interface IObbActionListener {
     /**
      * Return from an OBB action result.
      *

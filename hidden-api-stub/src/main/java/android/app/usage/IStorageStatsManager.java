@@ -4,7 +4,7 @@ import android.content.pm.ParceledListSlice;
 import android.os.Binder;
 import android.os.IBinder;
 
-interface IStorageStatsManager {
+public interface IStorageStatsManager {
     boolean isQuotaSupported(String volumeUuid, String callingPackage);
 
     boolean isReservedSupported(String volumeUuid, String callingPackage);
@@ -33,7 +33,6 @@ interface IStorageStatsManager {
 
     ParceledListSlice queryCratesForUser(String volumeUuid, int userId,
                                          String callingPackage);
-
 
 
     abstract class Stub extends Binder implements IStorageStatsManager {

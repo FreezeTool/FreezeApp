@@ -9,10 +9,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.john.freezeapp.util.AppInfoLoader;
-import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.AppInfoLoader;
+import com.john.freezeapp.util.FreezeAppManager;
 
 public class FreezeAppViewHolder extends CardViewHolder<FreezeAppData> {
 

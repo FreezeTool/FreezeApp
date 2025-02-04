@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.john.freezeapp.util.AppInfoLoader;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.AppInfoLoader;
 
 public class MiMixFlipAppViewHolder extends CardViewHolder<MiMixFlipAppData> {
 

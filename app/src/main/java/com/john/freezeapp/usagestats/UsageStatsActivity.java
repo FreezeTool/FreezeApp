@@ -2,14 +2,11 @@ package com.john.freezeapp.usagestats;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.util.FreezeAppManager;

@@ -20,19 +20,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aigestudio.wheelpicker.WheelPicker;
-import com.john.freezeapp.BaseActivity;
-import com.john.freezeapp.ToolbarSearchActivity;
-import com.john.freezeapp.util.FreezeAppManager;
-import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
+import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 

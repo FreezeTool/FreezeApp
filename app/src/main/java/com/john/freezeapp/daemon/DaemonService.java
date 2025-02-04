@@ -2,11 +2,9 @@ package com.john.freezeapp.daemon;
 
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
-import android.app.Service;
 import android.content.pm.ILauncherApps;
 import android.content.pm.IPackageManager;
 import android.hardware.display.IDisplayManager;
-import android.os.Build;
 import android.os.IBatteryPropertiesRegistrar;
 import android.os.IBinder;
 import android.os.IDeviceIdleController;

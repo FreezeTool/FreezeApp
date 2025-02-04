@@ -16,7 +16,6 @@ import android.os.IBinder;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -131,6 +130,7 @@ public class AppMonitorService extends Service {
             mTextView.setGravity(Gravity.CENTER);
             mTextView.setTextColor(Color.WHITE);
             mTextView.setBackgroundResource(R.drawable.mask_background);
+            mTextView.setText(getShowContent(getPackageName(), AppMonitorActivity.class.getName()));
             mFloatWindow.setView(mTextView);
 
         }
@@ -151,23 +151,29 @@ public class AppMonitorService extends Service {
 
     private void showRunningTaskInfo(ActivityManager.RunningTaskInfo runningTaskInfo) {
         if (runningTaskInfo != null) {
-            StringBuilder stringBuilder = new StringBuilder();
+
             if (runningTaskInfo.topActivity != null) {
-                stringBuilder.append(runningTaskInfo.topActivity.getPackageName());
-                stringBuilder.append("\n");
-                stringBuilder.append(runningTaskInfo.topActivity.getClassName());
+                String content = getShowContent(runningTaskInfo.topActivity.getPackageName(), runningTaskInfo.topActivity.getClassName());
+
+
+                UIExecutor.postUI(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (mTextView != null) {
+                            mTextView.setText(content);
+                        }
+                    }
+                });
             }
 
-            UIExecutor.postUI(new Runnable() {
-                @Override
-                public void run() {
-                    if (mTextView != null) {
-                        mTextView.setText(stringBuilder.toString());
-                    }
 
-                }
-            });
         }
+    }
+
+    private String getShowContent(String packageName, String className) {
+        return packageName +
+                "\n" +
+                className;
     }
 
     public static void startAppMonitor(Context context) {
