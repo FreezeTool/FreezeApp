@@ -10,6 +10,9 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -61,6 +64,44 @@ public class HomeFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         requestKernelVersion();
         Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_home_menu, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (R.id.menu_stop_server == itemId) {
+            showStopDaemonDialog();
+            return true;
+        } else if (R.id.menu_developer == itemId) {
+            FreezeUtil.toDevelopPage(getContext());
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showStopDaemonDialog() {
+        new AlertDialog.Builder(getContext())
+                .setMessage(R.string.freeze_stop_daemon_title)
+                .setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        FreezeUtil.stopDaemon();
+                    }
+                })
+                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).show();
     }
 
     @Nullable

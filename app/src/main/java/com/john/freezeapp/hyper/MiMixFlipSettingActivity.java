@@ -87,20 +87,22 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
     }
 
     private void forceStopOtherApp(Context context, MiMixFlipAppData data) {
-        if (FreezeUtil.isFreezeApp(data.appModel.packageName)) {
+        String packageName = data.appModel.packageName;
+        if (FreezeUtil.isFreezeApp(packageName)) {
             Toast.makeText(MiMixFlipSettingActivity.this, "请手动强杀" + context.getString(R.string.app_name) + "~", Toast.LENGTH_SHORT).show();
             return;
         }
-        FreezeAppManager.requestForceStopApp(data.appModel.packageName, new FreezeAppManager.Callback2() {
+        FreezeAppManager.requestForceStopApp(packageName, new FreezeAppManager.Callback2() {
             @Override
             public void success() {
                 if (isDestroy()) {
                     return;
                 }
+
                 postUI(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(context, data.name + "应用强杀成功~", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getAppName(context, packageName) + "应用强杀成功~", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
@@ -112,7 +114,17 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
         });
     }
 
-    private void updateScaleSetting(Context context, String appName, String packageName, String scaleValue) {
+    private String getAppName(Context context, String packageName) {
+        String name = "";
+        FreezeAppManager.CacheAppModel appModel = FreezeAppManager.getAppModel(context, packageName);
+        if (!TextUtils.isEmpty(appModel.name)) {
+            name = appModel.name;
+        }
+        return name;
+
+    }
+
+    private void updateScaleSetting(Context context, String packageName, String scaleValue) {
         MixFlipUtil.allowStartApps(packageName);
         MixFlipUtil.configAppScale(packageName, scaleValue);
         if (!FreezeUtil.isFreezeApp(packageName)) {
@@ -123,7 +135,7 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
                     if (isDestroy()) {
                         return;
                     }
-                    Toast.makeText(context, appName + "缩放配置修改成功～", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, getAppName(context, packageName) + "缩放配置修改成功～", Toast.LENGTH_SHORT).show();
 
                 }
             }, 100);
@@ -139,16 +151,17 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
         if (index != -1) {
             wheelPicker.setSelectedItemPosition(index, false);
         }
+        String packageName = data.appModel.packageName;
         new AlertDialog.Builder(context)
                 .setView(wheelPicker)
                 .setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String scaleValue = scaleValues[wheelPicker.getCurrentItemPosition()];
-                        MiMixFlipStorage.setScale(data.appModel.packageName, scaleValue);
+                        MiMixFlipStorage.setScale(packageName, scaleValue);
                         data.scale = scaleValue;
                         mAdapter.notifyDataSetChanged();
-                        updateScaleSetting(MiMixFlipSettingActivity.this, data.name, data.appModel.packageName, scaleValue);
+                        updateScaleSetting(MiMixFlipSettingActivity.this, packageName, scaleValue);
                     }
                 })
                 .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {

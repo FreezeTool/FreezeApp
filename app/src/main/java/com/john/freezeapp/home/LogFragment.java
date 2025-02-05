@@ -2,6 +2,9 @@ package com.john.freezeapp.home;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -29,6 +32,28 @@ public class LogFragment extends BaseFragment {
             addMsg(msg);
         }
     };
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main_log_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.menu_clear_log) {
+            ClientLogBinderManager.clearLog();
+            updateData();
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Nullable
     @Override
@@ -65,6 +90,7 @@ public class LogFragment extends BaseFragment {
         });
     }
 
+
     @Override
     protected void bindDaemon(IDaemonBinder daemonBinder) {
         super.bindDaemon(daemonBinder);
@@ -85,13 +111,18 @@ public class LogFragment extends BaseFragment {
             @Override
             public void run() {
                 List<CardData> list = new ArrayList<>();
-                if (isDaemonActive()) {
-                    List<ClientLogBinderManager.LogData> logList = new ArrayList<>(ClientLogBinderManager.getLogData());
-                    for (ClientLogBinderManager.LogData logData : logList) {
-                        list.add(new FreezeHomeLogData(logData.msg));
-                    }
+
+                if(!isDaemonActive()) {
+                    list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_daemon_not_active_content)));
                 } else {
-                    list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
+                    List<ClientLogBinderManager.LogData> logList = new ArrayList<>(ClientLogBinderManager.getLogData());
+                    if(logList.isEmpty()) {
+                        list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
+                    } else {
+                        for (ClientLogBinderManager.LogData logData : logList) {
+                            list.add(new FreezeHomeLogData(logData.msg));
+                        }
+                    }
                 }
                 homeAdapter.updateData(list);
             }

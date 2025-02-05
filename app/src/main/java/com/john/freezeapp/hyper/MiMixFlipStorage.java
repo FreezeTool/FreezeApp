@@ -17,8 +17,13 @@ public class MiMixFlipStorage {
         if (TextUtils.isEmpty(string)) {
             return null;
         }
-        return new Gson().fromJson(string, new TypeToken<Map<String, String>>() {
-        }.getType());
+        try {
+            return new Gson().fromJson(string, new TypeToken<Map<String, String>>() {
+            }.getType());
+        } catch (Exception e) {
+            //
+        }
+        return null;
     }
 
     public static void setScale(String packageName, String scale) {
@@ -27,7 +32,12 @@ public class MiMixFlipStorage {
             scaleMap = new HashMap<>();
         }
         scaleMap.put(packageName, scale);
-        SharedPrefUtil.setString(KEY_MI_MIX_FLIP_SCALE, new Gson().toJson(scaleMap));
+        try {
+            SharedPrefUtil.setString(KEY_MI_MIX_FLIP_SCALE, new Gson().toJson(scaleMap));
+        } catch (Exception e) {
+            //
+        }
+
     }
 
     public static void resetScale() {

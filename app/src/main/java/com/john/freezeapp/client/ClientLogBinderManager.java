@@ -22,6 +22,10 @@ public class ClientLogBinderManager {
     }
 
     public synchronized static void unbindDaemon() {
+        clearLog();
+    }
+
+    public synchronized static void clearLog() {
         logDatas.clear();
     }
 

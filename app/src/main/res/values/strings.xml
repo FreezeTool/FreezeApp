@@ -71,9 +71,10 @@
     <string name="main_home_func">功能</string>
     <string name="main_home_log">日志</string>
 
-    <string name="main_home_empty_content">"启动Freeze服务后使用～"</string>
+    <string name="main_home_daemon_not_active_content">启动Freeze服务后使用～</string>
+    <string name="main_home_empty_content">空空如也～</string>
 
-    <string name="main_home_daemon_tip">"Freeze服务版本和Freeze管理器版本不一致，请重新启动Freeze服务～"</string>
+    <string name="main_home_daemon_tip">Freeze服务版本和Freeze管理器版本不一致，请重新启动Freeze服务～</string>
 
     <string name="mi_mix_flip_home_open">打开外屏应用</string>
     <string name="mi_mix_flip_home_reset_scale">重置外屏缩放</string>

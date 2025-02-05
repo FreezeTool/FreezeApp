@@ -31,18 +31,15 @@ import com.john.hidden.api.Descriptor;
 public class ReplaceProcessor extends AbstractProcessor {
 
     public ReplaceProcessor() {
-        System.out.println("RefineProcessor ReplaceProcessor - ");
     }
 
     @Override
     public Set<String> getSupportedAnnotationTypes() {
-        System.out.println("RefineProcessor getSupportedAnnotationTypes - ");
         return Set.of(Replace.class.getName());
     }
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
-        System.out.println("RefineProcessor getSupportedSourceVersion - ");
         return SourceVersion.RELEASE_11;
     }
 
@@ -124,9 +121,6 @@ public class ReplaceProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
-
-        System.out.println("RefineProcessor process - ");
-
         try {
             final TypeElement eRefineAs = processingEnv.getElementUtils().getTypeElement(Replace.class.getName());
             final ExecutableElement eRefineAsValue = (ExecutableElement) eRefineAs.getEnclosedElements().stream()

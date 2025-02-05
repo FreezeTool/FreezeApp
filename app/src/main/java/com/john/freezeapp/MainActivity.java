@@ -129,26 +129,6 @@ public class MainActivity extends ToolbarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int itemId = item.getItemId();
-
-        if (R.id.menu_stop_server == itemId) {
-            showStopDaemonDialog();
-            return true;
-        } else if (R.id.menu_developer == itemId) {
-            FreezeUtil.toDevelopPage(getContext());
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     protected void bindDaemon(IDaemonBinder daemonBinder) {
         super.bindDaemon(daemonBinder);
         initPackage();
@@ -209,22 +189,5 @@ public class MainActivity extends ToolbarActivity {
                 viewPager.setCurrentItem(0);
             }
         });
-    }
-
-    private void showStopDaemonDialog() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.freeze_stop_daemon_title)
-                .setPositiveButton(R.string.btn_submit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        FreezeUtil.stopDaemon();
-                    }
-                })
-                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                }).show();
     }
 }
