@@ -141,18 +141,15 @@ public class FreezeAppManager {
 
 
     public static void requestForceStopApp(String packageName, Callback2 callback) {
-        ThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ClientBinderManager.getActivityManager().forceStopPackage(packageName, 0);
-                    if (callback != null) {
-                        callback.success();
-                    }
-                } catch (RemoteException e) {
-                    if (callback != null) {
-                        callback.fail();
-                    }
+        ThreadPool.execute(() -> {
+            try {
+                ClientBinderManager.getActivityManager().forceStopPackage(packageName, 0);
+                if (callback != null) {
+                    callback.success();
+                }
+            } catch (RemoteException e) {
+                if (callback != null) {
+                    callback.fail();
                 }
             }
         });
@@ -161,16 +158,13 @@ public class FreezeAppManager {
 
 
     public static void requestDefrostApp(String packageName, Callback2 callback) {
-        ThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    ClientBinderManager.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0, 0, "");
-                    callback.success();
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    callback.fail();
-                }
+        ThreadPool.execute(() -> {
+            try {
+                ClientBinderManager.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0, 0, "");
+                callback.success();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.fail();
             }
         });
 
@@ -192,23 +186,9 @@ public class FreezeAppManager {
         });
     }
 
-    public static void requestCommand(String command, Callback2 callback) {
-        ClientRemoteShell.execCommand(command, new ClientRemoteShell.RemoteShellCommandResultCallback() {
-            @Override
-            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                if (commandResult.result) {
-                    callback.success();
-                } else {
-                    callback.fail();
-                }
-            }
-        });
-    }
-
     public static void requestEnableApp(Context context, Callback callback) {
         requestAppList(context, TYPE_NORMAL_APP, STATUS_ENABLE_APP, true, callback);
     }
-
 
     public static void requestDisableApp(Context context, Callback callback) {
         requestAppList(context, TYPE_NORMAL_APP, STATUS_DISABLE_APP, true, callback);
@@ -219,30 +199,34 @@ public class FreezeAppManager {
     }
 
     public static void requestAppList(Context context, @TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp, Callback callback) {
-        ThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                List<PackageInfo> packageInfos = getInstallApp(appType, appStatus);
-                if (packageInfos != null) {
-                    List<AppModel> list = new ArrayList<>();
-                    for (PackageInfo packageInfo : packageInfos) {
-                        if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
-                            continue;
-                        }
-                        AppModel appModel = new AppModel(packageInfo.packageName);
-                        appModel.lastUpdateTime = packageInfo.lastUpdateTime;
-                        appModel.firstInstallTime = packageInfo.firstInstallTime;
-                        appModel.versionName = packageInfo.versionName;
-                        appModel.versionCode = packageInfo.versionCode;
-                        list.add(appModel);
-                    }
-                    callback.success(list);
-                } else {
-                    callback.fail();
-                }
+        ThreadPool.execute(() -> {
+            List<AppModel> install = getInstallAppModel(appType, appStatus, ignoreFreezeApp);
+            if (install != null) {
+                callback.success(install);
+            } else {
+                callback.fail();
             }
         });
     }
+
+    public static List<AppModel> getInstallAppModel(@TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp) {
+        List<PackageInfo> packageInfos = getInstallApp(appType, appStatus, ignoreFreezeApp);
+        if (packageInfos != null) {
+            List<AppModel> list = new ArrayList<>();
+            for (PackageInfo packageInfo : packageInfos) {
+
+                AppModel appModel = new AppModel(packageInfo.packageName);
+                appModel.lastUpdateTime = packageInfo.lastUpdateTime;
+                appModel.firstInstallTime = packageInfo.firstInstallTime;
+                appModel.versionName = packageInfo.versionName;
+                appModel.versionCode = packageInfo.versionCode;
+                list.add(appModel);
+            }
+            return list;
+        }
+        return null;
+    }
+
 
     public static void requestRunningApp(Context context, Callback3 callback) {
         requestRunningApp(context, false, callback);
@@ -275,113 +259,41 @@ public class FreezeAppManager {
     }
 
     private static void requestRunningProcess2(Context context, Callback3 callback) {
-        ThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = ClientBinderManager.getActivityManager().getRunningAppProcesses();
-                    Map<String, RunningModel> runningModelMap = new HashMap<>();
-                    for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
-                        ProcessModel processModel = new ProcessModel();
-                        processModel.processName = runningAppProcess.processName;
-                        processModel.time = runningAppProcess.pid + "";
-                        for (String packageName : runningAppProcess.pkgList) {
-                            if (!TextUtils.equals(packageName, BuildConfig.APPLICATION_ID)) {
-                                AppModel appModel = sAllAppMap.get(packageName);
-                                if (appModel != null) {
-                                    RunningModel runningModel = runningModelMap.get(packageName);
-                                    if (runningModel == null) {
-                                        runningModel = new RunningModel(appModel);
-                                        runningModelMap.put(packageName, runningModel);
-                                    }
-                                    runningModel.addProcess(processModel);
-                                }
-                            }
-                        }
-                    }
-
-                    List<RunningModel> runningModels = new ArrayList<>();
-
-                    for (Map.Entry<String, RunningModel> entry : runningModelMap.entrySet()) {
-                        runningModels.add(entry.getValue());
-                    }
-                    callback.success(runningModels);
-
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    callback.fail();
-                }
-            }
-        });
-    }
-
-    private static void requestRunningProcess(Context context, Callback3 callback) {
-
-        ClientRemoteShell.execCommand("ps -ef | grep -vE \"root|system|media|shell|radio|nobody|wifi|gps\"", new ClientRemoteShell.RemoteShellCommandResultCallback() {
-            @Override
-            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                if (!TextUtils.isEmpty(commandResult.successMsg)) {
-                    try {
-                        Map<String, RunningModel> runningModelMap = new HashMap<>();
-                        String[] line = commandResult.successMsg.split("\n");
-                        for (int i = 0; i < line.length; i++) {
-                            if (i == 0) {
-                                continue;
-                            }
-                            // UID        0
-                            // PID        1
-                            // PPID       2
-                            // C          3
-                            // STIME      4
-                            // TTY        5
-                            // TIME       6
-                            // CMD        7
-                            String[] info = line[i].split("\\s+");
-                            if (info.length == 8) {
-                                String[] processInfo = info[7].split(":");
-                                String packageName = processInfo[0];
-                                ProcessModel processModel = new ProcessModel();
-                                processModel.packageName = packageName;
-                                processModel.uid = info[0];
-                                processModel.pid = info[1];
-                                processModel.ppid = info[2];
-                                processModel.c = info[3];
-                                processModel.sTime = info[4];
-                                processModel.tty = info[5];
-                                processModel.time = info[6];
-                                processModel.processName = info[7];
-
+        ThreadPool.execute(() -> {
+            try {
+                List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = ClientBinderManager.getActivityManager().getRunningAppProcesses();
+                Map<String, RunningModel> runningModelMap = new HashMap<>();
+                for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
+                    ProcessModel processModel = new ProcessModel();
+                    processModel.processName = runningAppProcess.processName;
+                    processModel.time = runningAppProcess.pid + "";
+                    for (String packageName : runningAppProcess.pkgList) {
+                        if (!TextUtils.equals(packageName, BuildConfig.APPLICATION_ID)) {
+                            AppModel appModel = sAllAppMap.get(packageName);
+                            if (appModel != null) {
                                 RunningModel runningModel = runningModelMap.get(packageName);
-
                                 if (runningModel == null) {
-                                    AppModel appModel = sAllAppMap.get(packageName);
-                                    if (appModel != null) {
-                                        runningModel = new RunningModel(appModel);
-                                        runningModel.packageName = appModel.packageName;
-                                        runningModelMap.put(packageName, runningModel);
-                                    }
+                                    runningModel = new RunningModel(appModel);
+                                    runningModelMap.put(packageName, runningModel);
                                 }
-
-                                if (runningModel != null) {
-                                    runningModel.addProcess(processModel);
-                                }
+                                runningModel.addProcess(processModel);
                             }
                         }
-
-                        List<RunningModel> runningModels = new ArrayList<>();
-                        for (Map.Entry<String, RunningModel> entry : runningModelMap.entrySet()) {
-                            runningModels.add(entry.getValue());
-                        }
-                        callback.success(runningModels);
-                    } catch (Exception e) {
-                        callback.fail();
                     }
-                } else {
-                    callback.fail();
                 }
+
+                List<RunningModel> runningModels = new ArrayList<>();
+
+                for (Map.Entry<String, RunningModel> entry : runningModelMap.entrySet()) {
+                    runningModels.add(entry.getValue());
+                }
+                callback.success(runningModels);
+
+            } catch (RemoteException e) {
+                e.printStackTrace();
+                callback.fail();
             }
         });
-
     }
 
     public static CacheAppModel getAppModel(Context context, String packageName) {
@@ -425,10 +337,10 @@ public class FreezeAppManager {
     }
 
     public static List<PackageInfo> getInstallUserApp() {
-        return getInstallApp(TYPE_NORMAL_APP, STATUS_ALL);
+        return getInstallApp(TYPE_NORMAL_APP, STATUS_ALL, false);
     }
 
-    public static List<PackageInfo> getInstallApp(@TYPE int appType, @STATUS int appStatus) {
+    public static List<PackageInfo> getInstallApp(@TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp) {
         try {
             List<PackageInfo> packageInfos = new ArrayList<>();
             ParceledListSlice<PackageInfo> installedPackages = null;
@@ -439,6 +351,11 @@ public class FreezeAppManager {
             }
             if (installedPackages != null) {
                 for (PackageInfo packageInfo : installedPackages.getList()) {
+
+
+                    if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
+                        continue;
+                    }
 
                     boolean isApex = false;
                     if (FreezeUtil.atLeast29()) {

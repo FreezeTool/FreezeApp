@@ -136,13 +136,8 @@ public class BatteryUsageStats {
         throw new RuntimeException("STUB");
     }
 
-//    @RequiresApi(34)
-//    public AggregateBatteryConsumer getAggregateBatteryConsumer(int scope) {
-//        throw new RuntimeException("STUB");
-//    }
-//
-//    @RequiresApi(31) // android 31 - S
-//    public BatteryConsumer getAggregateBatteryConsumer(int scope) {
-//        throw new RuntimeException("STUB");
-//    }
+    @RequiresApi(34)
+    public AggregateBatteryConsumer getAggregateBatteryConsumer(int scope) {
+        throw new RuntimeException("STUB");
+    }
 }

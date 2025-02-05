@@ -1,5 +1,6 @@
 package com.john.freezeapp.usagestats;
 
+import android.app.usage.UsageStatsHidden;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.pm.ParceledListSlice;
@@ -8,8 +9,7 @@ import android.os.RemoteException;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
-
-import java.lang.reflect.Field;
+import com.john.hidden.api.ReplaceRef;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -49,26 +49,10 @@ public final class UsageStats {
                             usageStatsData.totalTimeForegroundServiceUsed = usageStats.getTotalTimeForegroundServiceUsed();
 
                         }
-                        // mLaunchCount , mAppLaunchCount
-
-                        Object mLaunchCount = getReflectValue(android.app.usage.UsageStats.class, "mLaunchCount", usageStats);
-                        if (mLaunchCount != null) {
-                            try {
-                                usageStatsData.launchCount = Integer.parseInt(String.valueOf(mLaunchCount));
-                            } catch (Exception e) {
-                                //
-                            }
+                        usageStatsData.launchCount = ReplaceRef.<UsageStatsHidden>unsafeCast(usageStats).mLaunchCount;
+                        if (FreezeUtil.atLeast28()) {
+                            usageStatsData.appLaunchCount = ReplaceRef.<UsageStatsHidden>unsafeCast(usageStats).mAppLaunchCount;
                         }
-
-                        Object mAppLaunchCount = getReflectValue(android.app.usage.UsageStats.class, "mAppLaunchCount", usageStats);
-                        if (mLaunchCount != null) {
-                            try {
-                                usageStatsData.appLaunchCount = Integer.parseInt(String.valueOf(mAppLaunchCount));
-                            } catch (Exception e) {
-                                //
-                            }
-                        }
-
                         usageStatsDatas.add(usageStatsData);
                     }
                     if (callback != null) {
@@ -83,16 +67,4 @@ public final class UsageStats {
             }
         });
     }
-
-
-    private static Object getReflectValue(Class<?> clz, String fieldName, Object object) {
-        try {
-            Field declaredField = clz.getDeclaredField(fieldName);
-            declaredField.setAccessible(true);
-            return declaredField.get(object);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 }

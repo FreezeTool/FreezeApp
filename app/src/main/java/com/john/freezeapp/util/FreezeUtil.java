@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.IBinderHidden;
 import android.os.Process;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
@@ -21,13 +22,11 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
-
-import org.lsposed.hiddenapibypass.HiddenApiBypass;
+import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -139,13 +138,8 @@ public class FreezeUtil {
                                     FileDescriptor err,
                                     String[] args, ShellCallback shellCallback,
                                     ResultReceiver resultReceiver) throws Exception {
-        Method shellCommand;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            shellCommand = HiddenApiBypass.getDeclaredMethod(service.getClass(), "shellCommand", FileDescriptor.class, FileDescriptor.class, FileDescriptor.class, String[].class, ShellCallback.class, ResultReceiver.class);
-        } else {
-            shellCommand = service.getClass().getDeclaredMethod("shellCommand", FileDescriptor.class, FileDescriptor.class, FileDescriptor.class, String[].class, ShellCallback.class, ResultReceiver.class);
-        }
-        shellCommand.invoke(service, in, out, err, args, shellCallback, resultReceiver);
+
+
     }
 
     public static boolean isFreezeApp(String packageName) {
@@ -230,6 +224,10 @@ public class FreezeUtil {
 
     public static boolean atLeast33() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
+    }
+
+    public static boolean atLeast34() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
 

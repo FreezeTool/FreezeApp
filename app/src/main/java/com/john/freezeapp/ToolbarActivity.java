@@ -39,7 +39,7 @@ public abstract class ToolbarActivity extends BaseActivity {
         Toolbar toolbar = new Toolbar(context);
         toolbar.setTitle(getToolbarTitle());
         initToolbar(toolbar);
-        linearLayout.addView(toolbar,new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        linearLayout.addView(toolbar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         return linearLayout;
     }
 
@@ -73,4 +73,5 @@ public abstract class ToolbarActivity extends BaseActivity {
         }
         super.onBackPressed();
     }
+
 }

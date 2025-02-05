@@ -3,6 +3,7 @@ package com.john.freezeapp.daemon;
 import android.content.Context;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.IBinderHidden;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
@@ -18,6 +19,7 @@ import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
 import com.john.freezeapp.daemon.process.RemoteProcess;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -213,7 +215,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
         }
 
         try {
-            FreezeUtil.shellCommand(service, in, out, err, serverArgs, shellCallback, resultReceiver);
+            ReplaceRef.<IBinderHidden>unsafeCast(service).shellCommand(in, out, err, args, shellCallback, resultReceiver);
         } catch (Exception e) {
             e.printStackTrace();
             dumpFail(err, "shellCommand exception " + e.getMessage());

@@ -9,9 +9,6 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 
 import com.john.freezeapp.App;
-
-import java.lang.reflect.Field;
-
 public class FloatContainer extends FrameLayout {
     private static final int OFFSET_MOVE_X = 10;
     private static final int OFFSET_MOVE_Y = 10;
@@ -113,11 +110,7 @@ public class FloatContainer extends FrameLayout {
     private int getStatusBarHeight() {
         if (this.statusBarHeight == 0) {
             try {
-                Class<?> c = Class.forName("com.android.internal.R$dimen");
-                Object o = c.newInstance();
-                Field field = c.getField("status_bar_height");
-                int x = ((Integer) field.get(o)).intValue();
-                statusBarHeight = App.getApp().getResources().getDimensionPixelSize(x);
+                statusBarHeight = App.getApp().getResources().getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
             } catch (Exception e) {
                 e.printStackTrace();
             }

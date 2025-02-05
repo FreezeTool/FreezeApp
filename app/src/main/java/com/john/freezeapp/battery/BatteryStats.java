@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.BatteryConsumer;
 import android.os.BatteryUsageStats;
+import android.os.BatteryUsageStats31;
 import android.os.BatteryUsageStatsQuery;
 import android.os.Build;
 import android.os.UidBatteryConsumer;
@@ -15,11 +16,11 @@ import androidx.annotation.RequiresApi;
 
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
-
-import java.lang.reflect.Method;
+import com.john.hidden.api.ReplaceRef;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -178,97 +179,32 @@ public class BatteryStats {
                         BatteryConsumer appsConsumer;
 
 
-                        boolean isReflectSuccess;
-                        Method method = null;
-                        try {
-                            method = BatteryUsageStats.class.getDeclaredMethod("getAggregateBatteryConsumer", int.class);
-                            isReflectSuccess = true;
-                        } catch (NoSuchMethodException e) {
-                            e.printStackTrace();
-                            isReflectSuccess = false;
+                        if (FreezeUtil.atLeast34()) {
+                            deviceConsumer = batteryUsageStats.getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_DEVICE);
+                            appsConsumer = batteryUsageStats.getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_ALL_APPS);
+                        } else {
+                            deviceConsumer = ReplaceRef.<BatteryUsageStats31>unsafeCast(batteryUsageStats).getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_DEVICE);
+                            appsConsumer = ReplaceRef.<BatteryUsageStats31>unsafeCast(batteryUsageStats).getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_ALL_APPS);
                         }
-                        if (isReflectSuccess) {
-                            deviceConsumer = (BatteryConsumer) method.invoke(batteryUsageStats, BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_DEVICE);
-                            appsConsumer = (BatteryConsumer) method.invoke(batteryUsageStats, BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_ALL_APPS);
 
-                            list.add(new BatteryUsageTitleData("Device"));
-                            ClientLog.log(" --------------device-------------");
+                        list.add(new BatteryUsageTitleData("Device"));
+                        ClientLog.log(" --------------device-------------");
 
-                            for (int componentId = 0; componentId < BatteryConsumer.POWER_COMPONENT_COUNT;
-                                 componentId++) {
-                                for (BatteryConsumer.Key key : deviceConsumer.getKeys(componentId)) {
-                                    final double devicePowerMah = deviceConsumer.getConsumedPower(key);
-                                    final double appsPowerMah = appsConsumer.getConsumedPower(key);
-                                    if (devicePowerMah == 0 && appsPowerMah == 0) {
-                                        continue;
-                                    }
-
-                                    String label = BatteryConsumer.powerComponentIdToString(componentId);
-                                    if (key.processState != BatteryConsumer.PROCESS_STATE_UNSPECIFIED) {
-                                        label = label
-                                                + "(" + BatteryConsumer.processStateToString(key.processState) + ")";
-                                    }
-                                    int powerModel = BatteryConsumer.POWER_MODEL_UNDEFINED;
-
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append("      ").append(label).append(": ")
-                                            .append(BatteryStats.formatCharge(devicePowerMah));
-                                    if (powerModel != BatteryConsumer.POWER_MODEL_UNDEFINED
-                                            && powerModel != BatteryConsumer.POWER_MODEL_POWER_PROFILE) {
-                                        sb.append(" [");
-                                        sb.append(BatteryConsumer.powerModelToString(powerModel));
-                                        sb.append("]");
-                                    }
-                                    sb.append(" apps: ").append(BatteryStats.formatCharge(appsPowerMah));
-
-                                    long durationMs = deviceConsumer.getUsageDurationMillis(key);
-
-                                    if (durationMs != 0) {
-                                        sb.append(" duration: ");
-                                        BatteryStats.formatTimeMs(sb, durationMs);
-                                    }
-
-                                    BatteryUsageDeviceData batteryUsageGlobalData = new BatteryUsageDeviceData();
-                                    batteryUsageGlobalData.deviceLabel = label;
-                                    StringBuilder devicePowerMahBuilder = new StringBuilder();
-                                    devicePowerMahBuilder.append(BatteryStats.formatCharge(devicePowerMah));
-                                    if (powerModel != BatteryConsumer.POWER_MODEL_UNDEFINED
-                                            && powerModel != BatteryConsumer.POWER_MODEL_POWER_PROFILE) {
-                                        devicePowerMahBuilder.append(" [");
-                                        devicePowerMahBuilder.append(BatteryConsumer.powerModelToString(powerModel));
-                                        devicePowerMahBuilder.append("]");
-                                    }
-                                    batteryUsageGlobalData.devicePowerMah = devicePowerMahBuilder.toString();
-
-                                    batteryUsageGlobalData.appsLabel = "apps";
-                                    batteryUsageGlobalData.appsPowerMah = BatteryStats.formatCharge(appsPowerMah);
-
-                                    batteryUsageGlobalData.durationLabel = "duration";
-                                    StringBuilder durationBuilder = new StringBuilder();
-                                    BatteryStats.formatTimeMs(durationBuilder, durationMs);
-                                    batteryUsageGlobalData.duration = durationBuilder.toString();
-
-                                    list.add(batteryUsageGlobalData);
-
-                                    ClientLog.log(sb.toString());
-                                }
-                            }
-                            ClientLog.log(" -----------------------------");
-                            for (int componentId = BatteryConsumer.FIRST_CUSTOM_POWER_COMPONENT_ID;
-                                 componentId < BatteryConsumer.FIRST_CUSTOM_POWER_COMPONENT_ID
-                                         + batteryUsageStats.getCustomPowerComponentNames().length;
-                                 componentId++) {
-                                final double devicePowerMah =
-                                        deviceConsumer.getConsumedPowerForCustomComponent(componentId);
-                                final double appsPowerMah =
-                                        appsConsumer.getConsumedPowerForCustomComponent(componentId);
+                        for (int componentId = 0; componentId < BatteryConsumer.POWER_COMPONENT_COUNT;
+                             componentId++) {
+                            for (BatteryConsumer.Key key : deviceConsumer.getKeys(componentId)) {
+                                final double devicePowerMah = deviceConsumer.getConsumedPower(key);
+                                final double appsPowerMah = appsConsumer.getConsumedPower(key);
                                 if (devicePowerMah == 0 && appsPowerMah == 0) {
                                     continue;
                                 }
 
-                                String label = deviceConsumer.getCustomPowerComponentName(componentId);
+                                String label = BatteryConsumer.powerComponentIdToString(componentId);
+                                if (key.processState != BatteryConsumer.PROCESS_STATE_UNSPECIFIED) {
+                                    label = label
+                                            + "(" + BatteryConsumer.processStateToString(key.processState) + ")";
+                                }
                                 int powerModel = BatteryConsumer.POWER_MODEL_UNDEFINED;
-
 
                                 StringBuilder sb = new StringBuilder();
                                 sb.append("      ").append(label).append(": ")
@@ -280,12 +216,13 @@ public class BatteryStats {
                                     sb.append("]");
                                 }
                                 sb.append(" apps: ").append(BatteryStats.formatCharge(appsPowerMah));
-                                long durationMs = deviceConsumer.getUsageDurationForCustomComponentMillis(componentId);
+
+                                long durationMs = deviceConsumer.getUsageDurationMillis(key);
+
                                 if (durationMs != 0) {
                                     sb.append(" duration: ");
                                     BatteryStats.formatTimeMs(sb, durationMs);
                                 }
-
 
                                 BatteryUsageDeviceData batteryUsageGlobalData = new BatteryUsageDeviceData();
                                 batteryUsageGlobalData.deviceLabel = label;
@@ -309,10 +246,69 @@ public class BatteryStats {
 
                                 list.add(batteryUsageGlobalData);
 
-
                                 ClientLog.log(sb.toString());
                             }
                         }
+                        ClientLog.log(" -----------------------------");
+                        for (int componentId = BatteryConsumer.FIRST_CUSTOM_POWER_COMPONENT_ID;
+                             componentId < BatteryConsumer.FIRST_CUSTOM_POWER_COMPONENT_ID
+                                     + batteryUsageStats.getCustomPowerComponentNames().length;
+                             componentId++) {
+                            final double devicePowerMah =
+                                    deviceConsumer.getConsumedPowerForCustomComponent(componentId);
+                            final double appsPowerMah =
+                                    appsConsumer.getConsumedPowerForCustomComponent(componentId);
+                            if (devicePowerMah == 0 && appsPowerMah == 0) {
+                                continue;
+                            }
+
+                            String label = deviceConsumer.getCustomPowerComponentName(componentId);
+                            int powerModel = BatteryConsumer.POWER_MODEL_UNDEFINED;
+
+
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("      ").append(label).append(": ")
+                                    .append(BatteryStats.formatCharge(devicePowerMah));
+                            if (powerModel != BatteryConsumer.POWER_MODEL_UNDEFINED
+                                    && powerModel != BatteryConsumer.POWER_MODEL_POWER_PROFILE) {
+                                sb.append(" [");
+                                sb.append(BatteryConsumer.powerModelToString(powerModel));
+                                sb.append("]");
+                            }
+                            sb.append(" apps: ").append(BatteryStats.formatCharge(appsPowerMah));
+                            long durationMs = deviceConsumer.getUsageDurationForCustomComponentMillis(componentId);
+                            if (durationMs != 0) {
+                                sb.append(" duration: ");
+                                BatteryStats.formatTimeMs(sb, durationMs);
+                            }
+
+
+                            BatteryUsageDeviceData batteryUsageGlobalData = new BatteryUsageDeviceData();
+                            batteryUsageGlobalData.deviceLabel = label;
+                            StringBuilder devicePowerMahBuilder = new StringBuilder();
+                            devicePowerMahBuilder.append(BatteryStats.formatCharge(devicePowerMah));
+                            if (powerModel != BatteryConsumer.POWER_MODEL_UNDEFINED
+                                    && powerModel != BatteryConsumer.POWER_MODEL_POWER_PROFILE) {
+                                devicePowerMahBuilder.append(" [");
+                                devicePowerMahBuilder.append(BatteryConsumer.powerModelToString(powerModel));
+                                devicePowerMahBuilder.append("]");
+                            }
+                            batteryUsageGlobalData.devicePowerMah = devicePowerMahBuilder.toString();
+
+                            batteryUsageGlobalData.appsLabel = "apps";
+                            batteryUsageGlobalData.appsPowerMah = BatteryStats.formatCharge(appsPowerMah);
+
+                            batteryUsageGlobalData.durationLabel = "duration";
+                            StringBuilder durationBuilder = new StringBuilder();
+                            BatteryStats.formatTimeMs(durationBuilder, durationMs);
+                            batteryUsageGlobalData.duration = durationBuilder.toString();
+
+                            list.add(batteryUsageGlobalData);
+
+
+                            ClientLog.log(sb.toString());
+                        }
+
 
                         ClientLog.log(" --------------app-------------");
                         list.add(new BatteryUsageTitleData("App"));

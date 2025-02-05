@@ -1,15 +1,17 @@
 <resources>
     <string name="app_name">FreezeApp</string>
-    <string name="manager_name">Freeze Manager</string>
-    <string name="command_name">Execute Command</string>
-    <string name="battery_usage_name">Battery Usage</string>
+    <string name="manager_name">App Freeze Manager</string>
+    <string name="command_name">App Execute Command</string>
+    <string name="battery_usage_name">App Battery Usage</string>
     <string name="daemon_start_name">Daemon Start</string>
-    <string name="usage_stats_name">Usage Stats</string>
+    <string name="usage_stats_name">App Usage Stats</string>
     <string name="mi_flip_setting">Mix Flip Setting</string>
     <string name="adb_pair">Adb Pair</string>
     <string name="app_ops_name">App Ops</string>
     <string name="app_ops_detail_name">App Ops Detail</string>
     <string name="app_monitor">App Monitor</string>
+    <string name="storage_name">App Storage</string>
+    <string name="storage_detail_name">App Storage Detail</string>
 
 
     <string name="main_app_server_active">Freeze服务正在运行</string>

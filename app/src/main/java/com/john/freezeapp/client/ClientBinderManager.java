@@ -11,6 +11,7 @@ import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.IBinderHidden;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
@@ -23,6 +24,7 @@ import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
+import com.john.hidden.api.ReplaceRef;
 
 import java.io.FileDescriptor;
 import java.util.ArrayList;
@@ -164,7 +166,7 @@ public class ClientBinderManager {
         String[] dumpArgs = new String[args.length + 1];
         dumpArgs[0] = serviceName;
         System.arraycopy(args, 0, dumpArgs, 1, args.length);
-        FreezeUtil.shellCommand(getDaemonBinder().asBinder(), in, out, err, dumpArgs, shellCallback, resultReceiver);
+        ReplaceRef.<IBinderHidden>unsafeCast(getDaemonBinder().asBinder()).shellCommand(in, out, err, args, shellCallback, resultReceiver);
     }
 
 
