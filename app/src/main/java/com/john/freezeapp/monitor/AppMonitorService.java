@@ -39,14 +39,14 @@ public class AppMonitorService extends Service {
     public void onCreate() {
         super.onCreate();
         if (FreezeUtil.atLeast26()) {
-            createNotificationChannel();
+            createNotificationChannel(getApplicationContext());
         }
     }
 
 
     @TargetApi(Build.VERSION_CODES.O)
-    private void createNotificationChannel() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+    private void createNotificationChannel(Context context) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "APP监控", NotificationManager.IMPORTANCE_LOW);
         notificationChannel.setSound(null, null);
         notificationChannel.setShowBadge(false);
@@ -67,9 +67,9 @@ public class AppMonitorService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (TextUtils.equals(action, ACTION_START_APP_MONITOR)) {
-            showNotification();
+            showNotification(getApplicationContext());
             AppMonitorManager.registerAppMonitor(iAppMonitor);
-            showWindow();
+            showWindow(getApplicationContext());
             return START_STICKY;
         } else if (TextUtils.equals(action, ACTION_STOP_APP_MONITOR)) {
             AppMonitorManager.unregisterAppMonitor(iAppMonitor);
@@ -83,7 +83,7 @@ public class AppMonitorService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private void showNotification() {
+    private void showNotification(Context context) {
 
         Notification.Builder builder;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -91,13 +91,13 @@ public class AppMonitorService extends Service {
         } else {
             builder = new Notification.Builder(this);
         }
-        Intent intent = new Intent(getApplicationContext(), AppMonitorActivity.class);
+        Intent intent = new Intent(context, AppMonitorActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Notification notification = builder.setColor(getColor(R.color.colorAccent))
                 .setSmallIcon(R.mipmap.ic_app_icon)
                 .setContentTitle("APP监控")
                 .setContentText("")
-                .setContentIntent(PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                .setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
                 .build();
         try {
             startForeground(notificationId, notification);
@@ -105,7 +105,7 @@ public class AppMonitorService extends Service {
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                     && e instanceof ForegroundServiceStartNotAllowedException) {
-                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.notify(notificationId, notification);
             }
         }
@@ -114,18 +114,18 @@ public class AppMonitorService extends Service {
     FloatWindow mFloatWindow;
     TextView mTextView;
 
-    private void showWindow() {
+    private void showWindow(Context context) {
         if (mFloatWindow == null) {
-            mFloatWindow = new FloatWindow(getApplicationContext());
+            mFloatWindow = new FloatWindow(context);
             mFloatWindow.setOnLongClickListener(v -> {
-                Intent intent = new Intent(getApplicationContext(), AppMonitorActivity.class);
+                Intent intent = new Intent(context, AppMonitorActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 App.getApp().startActivity(intent);
                 return false;
             });
-            mTextView = new TextView(getApplicationContext());
+            mTextView = new TextView(context);
             updateTextViewSize();
-            int padding = ScreenUtils.dp2px(getApplicationContext(), 10);
+            int padding = ScreenUtils.dp2px(context, 10);
             mTextView.setPadding(padding, padding, padding, padding);
             mTextView.setGravity(Gravity.CENTER);
             mTextView.setTextColor(Color.WHITE);

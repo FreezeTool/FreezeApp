@@ -4,9 +4,13 @@ import android.app.ActivityManager;
 import android.app.IActivityManager;
 import android.app.ITaskStackListener;
 import android.content.Context;
+import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.daemon.monitor.DaemonAppMonitorConfig;
+import com.john.freezeapp.daemon.monitor.IDaemonAppMonitorBinder;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
 
@@ -142,13 +146,22 @@ public class AppMonitorManager {
     }
 
     public static void startAppMonitor(Context context) {
-        if (isAppMonitor() && FreezeUtil.isOverlayPermission(context)) {
-            AppMonitorService.startAppMonitor(context);
+        if (ClientBinderManager.isActive()) {
+            if (!FreezeUtil.isOverlayPermission(context)) {
+                FreezeUtil.allowSystemAlertWindow();
+            }
+            if (isAppMonitor() && FreezeUtil.isOverlayPermission(context)) {
+                AppMonitorService.startAppMonitor(context);
+            }
         }
     }
 
     public static void stopAppMonitor(Context context) {
         AppMonitorService.stopAppMonitor(context);
+    }
+
+    public static void updateAppMonitorTextSize(Context context) {
+        AppMonitorService.updateAppMonitorTextSize(context);
     }
 
     public static void setTextSize(int size) {

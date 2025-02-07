@@ -1,10 +1,13 @@
 package com.john.freezeapp.daemon;
 
 import android.app.ActivityThread;
+import android.app.smartspace.uitemplatedata.Text;
 import android.os.Process;
+import android.system.Os;
 import android.text.TextUtils;
 
 import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.util.UserHandleCompat;
 
 public class DaemonConfig {
     public static String getConfig(String key) {
@@ -21,7 +24,12 @@ public class DaemonConfig {
                 //
             }
             return DaemonHelper.DAEMON_SHELL_PACKAGE;
-
+        } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_PID)) {
+            return String.valueOf(android.os.Process.myPid());
+        } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_UID)) {
+            return String.valueOf(android.os.Process.myUid());
+        } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_USERID)) {
+            return String.valueOf(UserHandleCompat.myUserId());
         }
         return "";
     }

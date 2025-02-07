@@ -12,12 +12,15 @@ import androidx.annotation.RequiresApi;
 @RequiresApi(30)
 public interface IPermissionManager extends IInterface {
 
+
+    // 14/13/12/11
     void grantRuntimePermission(String packageName, String permissionName, int userId)
             throws RemoteException;
 
     void grantRuntimePermission(String packageName, String permissionName, int deviceId, int userId)
             throws RemoteException;
 
+    @RequiresApi(35)
     void grantRuntimePermission(String packageName, String permissionName, String persistentDeviceId, int userId)
             throws RemoteException;
 

@@ -18,6 +18,10 @@ public class DaemonLog {
         Log.d(TAG, msg);
         Log.d(TAG, "----------------------------------------");
         Log.d(TAG, e.getMessage());
+        StackTraceElement[] stackTrace = e.getStackTrace();
+        for (StackTraceElement stackTraceElement : stackTrace) {
+            Log.d(TAG, stackTraceElement.toString());
+        }
         Log.d(TAG, "----------------------------------------");
     }
 

@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
+import android.os.IInstalld;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
@@ -33,6 +34,7 @@ import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
+import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.util.FreezeUtil;
 
@@ -50,25 +52,19 @@ public class FreezeHomeToolHelper {
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_manager_app),
                 R.drawable.ic_vector_apps,
                 0xffF2C8F8,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, ManagerActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
+                v -> {
+                    Intent intent = new Intent(context, ManagerActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }));
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_usage),
                 R.drawable.ic_vector_usage_stats,
                 0xffACD4EB,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, UsageStatsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
+                v -> {
+                    Intent intent = new Intent(context, UsageStatsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }));
 
         IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
@@ -76,38 +72,29 @@ public class FreezeHomeToolHelper {
             list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage),
                     R.drawable.ic_vector_battery,
                     0xffB5EBDA,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(context, BatteryUsageActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent);
-                        }
+                    v -> {
+                        Intent intent = new Intent(context, BatteryUsageActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
                     }));
         }
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_ops_name),
                 R.drawable.ic_vector_key,
                 0xffC1B790,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, AppOpsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
+                v -> {
+                    Intent intent = new Intent(context, AppOpsActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }));
 
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_monitor),
                 R.drawable.ic_vector_window,
                 0xffEFAAB1,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, AppMonitorActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
+                v -> {
+                    Intent intent = new Intent(context, AppMonitorActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }));
 
         if (ClientBinderManager.isActive()) {
@@ -115,28 +102,32 @@ public class FreezeHomeToolHelper {
                 list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
                         R.drawable.ic_vector_display,
                         0xff9986A4,
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Intent intent = new Intent(context, MiMixFlipSettingActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                context.startActivity(intent);
-                            }
+                        v -> {
+                            Intent intent = new Intent(context, MiMixFlipSettingActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent);
                         }));
             }
         }
 
 
+        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_storage_name),
+                R.drawable.ic_vector_storage,
+                0xffBC9DEB,
+                v -> {
+                    Intent intent = new Intent(context, StorageActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }));
+
+
         list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,
                 0xffF4E1B9,
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, CommandActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        context.startActivity(intent);
-                    }
+                v -> {
+                    Intent intent = new Intent(context, CommandActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
                 }));
 
 
@@ -144,12 +135,7 @@ public class FreezeHomeToolHelper {
             list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test),
                     R.drawable.ic_vector_window,
                     0xffD0ACA3,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            toTest3(context);
-                        }
-                    }));
+                    v -> toTest3(context)));
         }
 
         return list;
@@ -157,13 +143,7 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
-        IStorageManager storageManager = ClientBinderManager.getStorageManager();
-        IStorageStatsManager iStorageStatsManager = ClientBinderManager.getStorageStatsManager();
-        StorageVolume[] volumeList = storageManager.getVolumeList(0, ClientBinderManager.getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_PACKAGE_NAME), 0);
-        for (StorageVolume storageVolume : volumeList) {
-            ClientLog.log("StorageVolume - " + storageVolume.toString());
-        }
-
+        // /sdcard/Android/data/com.autonavi.minimap/files/vui_autotest/case_今天天气怎么样_1738815442203.json
     }
 
     /**

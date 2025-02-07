@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -52,11 +53,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         isDestroy = false;
         daemonBinder = ClientBinderManager.getDaemonBinder();
         ClientBinderManager.registerDaemonBinderListener(iDaemonBinderListener);
-        mContentView = getWindow().getDecorView().findViewById(android.R.id.content);
+
     }
 
 
     protected ViewGroup getLoadingContainer() {
+        if (mContentView == null) {
+            mContentView = (ViewGroup) getWindow().getDecorView();
+        }
         return mContentView;
     }
 
@@ -68,13 +72,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             @Override
             public void run() {
                 if (mLoadingView == null) {
-                    mLoadingView = new RelativeLayout(BaseActivity.this);
-                    mLoadingView.setBackgroundColor(0x50000000);
-                    mLoadingView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    ProgressBar progressBar = new ProgressBar(BaseActivity.this);
-                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                    mLoadingView.addView(progressBar, layoutParams);
+                    mLoadingView = LoadingHelper.getLoadingView(getContext());
                 }
                 mLoadingInteger.getAndIncrement();
                 if (mLoadingView.getParent() == null) {

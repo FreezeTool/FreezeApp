@@ -6,9 +6,9 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.IBinderHidden;
 import android.os.Process;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
@@ -22,7 +22,6 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
-import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -189,6 +188,17 @@ public class FreezeUtil {
         context.startActivity(intent);
     }
 
+    public static void toPackageSetting(Context context, String packageName) {
+        try {
+            Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + packageName));
+            context.startActivity(intent);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
     public static boolean isMIUI() {
         String manufacturer = Build.MANUFACTURER;
         if ("xiaomi".equalsIgnoreCase(manufacturer)) {
@@ -228,6 +238,10 @@ public class FreezeUtil {
 
     public static boolean atLeast34() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+    }
+
+    public static boolean atLeast35() {
+        return Build.VERSION.SDK_INT >= 35;
     }
 
 
@@ -319,4 +333,21 @@ public class FreezeUtil {
         }
         return result;
     }
+
+
+    private static String[] SIZE_LABEL = {"B", "KB", "MB", "GB"};
+
+    public static String getSizeText(long cacheBytes) {
+        int index = 0;
+        while (cacheBytes > 1024) {
+            index++;
+            cacheBytes /= 1024;
+        }
+        if (index < SIZE_LABEL.length) {
+            return String.format("%d%s", cacheBytes, SIZE_LABEL[index]);
+        }
+        return "";
+    }
+
+
 }

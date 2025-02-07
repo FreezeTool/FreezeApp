@@ -53,7 +53,7 @@ public class BaseFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isDestroy = false;
-        mContentView = getActivity().getWindow().findViewById(android.R.id.content);
+
     }
 
     @Override
@@ -64,6 +64,9 @@ public class BaseFragment extends Fragment {
     }
 
     protected ViewGroup getLoadingContainer() {
+        if (mContentView == null) {
+            mContentView = LoadingHelper.getLoadingContainer(getActivity());
+        }
         return mContentView;
     }
 
@@ -75,13 +78,7 @@ public class BaseFragment extends Fragment {
             @Override
             public void run() {
                 if (mLoadingView == null) {
-                    mLoadingView = new RelativeLayout(getContext());
-                    mLoadingView.setBackgroundColor(0x50000000);
-                    mLoadingView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                    ProgressBar progressBar = new ProgressBar(getContext());
-                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-                    mLoadingView.addView(progressBar, layoutParams);
+                    mLoadingView = LoadingHelper.getLoadingView(getContext());
                 }
                 mLoadingInteger.getAndIncrement();
                 if (mLoadingView.getParent() == null) {
@@ -129,7 +126,6 @@ public class BaseFragment extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -169,7 +165,6 @@ public class BaseFragment extends Fragment {
         unbindDaemon();
         removeDelayHideLoading();
     }
-
 
 
     private final Handler mHandler = new Handler(Looper.getMainLooper());

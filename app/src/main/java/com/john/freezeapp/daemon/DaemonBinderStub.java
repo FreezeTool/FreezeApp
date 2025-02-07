@@ -1,6 +1,5 @@
 package com.john.freezeapp.daemon;
 
-import android.content.Context;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.IBinderHidden;
@@ -17,8 +16,8 @@ import androidx.annotation.Nullable;
 
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
+import com.john.freezeapp.daemon.monitor.DaemonAppMonitorBinderStub;
 import com.john.freezeapp.daemon.process.RemoteProcess;
-import com.john.freezeapp.util.FreezeUtil;
 import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
@@ -37,6 +36,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
 
     static {
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_FRP, new DaemonFrpBinderStub());
+        sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_APP_MONITOR, new DaemonAppMonitorBinderStub());
     }
 
     @Override

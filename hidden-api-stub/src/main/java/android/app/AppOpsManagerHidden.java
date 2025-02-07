@@ -23,6 +23,10 @@ public class AppOpsManagerHidden {
 
     public static int OP_SYSTEM_ALERT_WINDOW;
 
+    public static int OP_GET_USAGE_STATS;
+
+    public static int OP_MANAGE_EXTERNAL_STORAGE;
+
     @RequiresApi(Build.VERSION_CODES.Q)
     public static String KEY_HISTORICAL_OPS;
 

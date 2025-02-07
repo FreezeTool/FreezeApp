@@ -19,9 +19,13 @@ public class DaemonHelper {
     public static final String DAEMON_MODULE_SYSTEM_PROPERTIES = "SystemProperties";
     public static final String KEY_DAEMON_VERSION = "key_daemon_version";
     public static final String KEY_DAEMON_PACKAGE_NAME = "key_daemon_package_name";
+    public static final String KEY_DAEMON_PID = "key_daemon_pid";
+    public static final String KEY_DAEMON_UID = "key_daemon_uid";
+    public static final String KEY_DAEMON_USERID = "key_daemon_userid";
 
     public static final String DAEMON_SHELL_PACKAGE = "com.android.shell";
     public static final String DAEMON_BINDER_FRP = "daemon_binder_frp";
+    public static final String DAEMON_BINDER_APP_MONITOR = "daemon_binder_app_monitor";
 
 
 }

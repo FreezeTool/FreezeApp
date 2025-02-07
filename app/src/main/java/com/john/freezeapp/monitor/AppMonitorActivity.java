@@ -24,10 +24,6 @@ public class AppMonitorActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_monitor);
-
-        if (!FreezeUtil.isOverlayPermission(AppMonitorActivity.this)) {
-            FreezeUtil.allowSystemAlertWindow();
-        }
         initToolbar();
         initSwitcher();
         initSeekbar();
@@ -48,7 +44,7 @@ public class AppMonitorActivity extends BaseActivity {
                 int value = (int) ((float) progress / 100 * range) + MIN_SEEKBAR;
                 AppMonitorManager.setTextSize(value);
                 tvSeekbarValue.setText(getSeekbarText(value));
-                AppMonitorService.updateAppMonitorTextSize(getContext());
+                AppMonitorManager.updateAppMonitorTextSize(AppMonitorActivity.this);
 
             }
 
@@ -76,11 +72,6 @@ public class AppMonitorActivity extends BaseActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (buttonView.isPressed()) {
                     if (isChecked) {
-                        if (!FreezeUtil.isOverlayPermission(AppMonitorActivity.this)) {
-                            buttonView.setChecked(false);
-                            FreezeUtil.toOverlayPermissionPage(AppMonitorActivity.this);
-                            return;
-                        }
                         AppMonitorManager.setAppMonitor(isChecked);
                         AppMonitorManager.startAppMonitor(AppMonitorActivity.this);
                     } else {

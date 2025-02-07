@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.IBinderHidden;
+import android.os.IInstalld;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ShellCallback;
@@ -21,6 +22,7 @@ import android.view.IWindowManager;
 
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IBatteryStats;
+import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.client.process.ClientRemoteProcess;
@@ -170,6 +172,43 @@ public class ClientBinderManager {
     }
 
 
+    public static String getDaemonPackageName() {
+        return getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_PACKAGE_NAME);
+    }
+
+    public static int getDaemonUid() {
+        String uid = getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_UID);
+        try {
+            return Integer.parseInt(uid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int getDaemonPid() {
+
+        String pid = getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_PID);
+        try {
+            return Integer.parseInt(pid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public static int getDaemonUserId() {
+
+        String userId = getConfig(DaemonHelper.DAEMON_MODULE_CUSTOM, DaemonHelper.KEY_DAEMON_USERID);
+        try {
+            return Integer.parseInt(userId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
     private final static ClientBinderSingleton<IPackageManager> iPackageManager = new ClientBinderSingleton<IPackageManager>() {
         @Override
         protected IPackageManager createBinder() {
@@ -298,6 +337,23 @@ public class ClientBinderManager {
     };
 
 
+    private final static ClientBinderSingleton<IInstalld> iInstalld = new ClientBinderSingleton<IInstalld>() {
+        @Override
+        protected IInstalld createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            IBinder installd = SystemServiceHelper.getSystemService("installd");
+            if(installd != null) {
+                return IInstalld.Stub.asInterface(new ClientSystemBinderWrapper(installd));
+            }
+
+            return null;
+        }
+    };
+
+
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();
     }
@@ -338,5 +394,10 @@ public class ClientBinderManager {
     @TargetApi(Build.VERSION_CODES.O)
     public static IStorageStatsManager getStorageStatsManager() {
         return iStorageStatsManager.get();
+    }
+
+    @Deprecated
+    public static IInstalld getInstalld() {
+        return iInstalld.get();
     }
 }

@@ -1,4 +1,4 @@
 package com.android.internal.infra;
 
-public class AndroidFuture {
+public class AndroidFuture<T> {
 }

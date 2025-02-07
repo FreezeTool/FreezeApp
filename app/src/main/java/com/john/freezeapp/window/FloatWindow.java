@@ -6,8 +6,6 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import com.john.freezeapp.App;
 import com.john.freezeapp.util.ScreenUtils;
 
 public class FloatWindow implements IFloatWindow {
@@ -17,13 +15,6 @@ public class FloatWindow implements IFloatWindow {
     private final int mScreenWidth;
     private final WindowManager mWindowManager;
     private boolean isShow = false;
-
-    /**
-     * Intent intent = new Intent(App.getApp(), AppMonitorActivity.class);
-     * intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-     * App.getApp().startActivity(intent);
-     */
-
 
     public View.OnLongClickListener onLongClickListener;
     public View.OnClickListener onClickListener;
@@ -72,7 +63,7 @@ public class FloatWindow implements IFloatWindow {
         mRootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mScreenWidth = ScreenUtils.getScreenWidth(context);
         mScreenHeight = ScreenUtils.getScreenHeight(context);
-        mWindowManager = (WindowManager) App.getApp().getSystemService(Context.WINDOW_SERVICE);
+        mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         mLayoutParams = new WindowManager.LayoutParams();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
