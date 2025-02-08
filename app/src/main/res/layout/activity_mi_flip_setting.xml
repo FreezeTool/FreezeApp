@@ -10,7 +10,7 @@
         style="@style/TextView.Style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:background="@color/colorSecondary"
         android:padding="10dp"
         android:text="@string/mi_mix_flip_tip"
         android:textSize="12dp" />

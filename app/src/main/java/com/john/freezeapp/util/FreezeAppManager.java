@@ -297,10 +297,20 @@ public class FreezeAppManager {
     }
 
     public static CacheAppModel getAppModel(Context context, String packageName) {
+        return getAppModel(context, packageName, false);
+    }
+
+    public static CacheAppModel getAppModel(Context context, String packageName, boolean onlyCache) {
         CacheAppModel appModel = new CacheAppModel();
         appModel.packageName = packageName;
 
         CacheAppModel cacheAppModel = sCacheAppModel.get(packageName);
+
+        if (onlyCache) {
+            if (cacheAppModel == null) {
+                return null;
+            }
+        }
 
         if (cacheAppModel == null) {
             synchronized (sCacheAppModel) {

@@ -12,4 +12,5 @@
     <color name="homeIconColor">#000000</color>
     <color name="homeIconBgColor">#cdd8f0</color>
     <color name="homeButtonColor">#FFFFFF</color>
+    <color name="colorDivider">#eeeeee</color>
 </resources>

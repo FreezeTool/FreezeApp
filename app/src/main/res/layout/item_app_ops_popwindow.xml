@@ -7,7 +7,6 @@
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_operate"
         style="@style/TextView.Style"
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -16,7 +15,7 @@
         android:textSize="10dp" />
 
     <View
-
         android:layout_width="match_parent"
-        android:layout_height="1dp" />
+        android:layout_height="1dp"
+        android:background="@color/colorDivider" />
 </LinearLayout>

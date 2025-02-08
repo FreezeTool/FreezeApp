@@ -20,6 +20,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         sApp = this;
+        AppCompatDelegate.setDefaultNightMode(SettingUtil.getNightMode());
     }
 
     @Override
@@ -30,8 +31,6 @@ public class App extends Application {
             HiddenApiBypass.addHiddenApiExemptions("L");
         }
         AppMonitorManager.startAppMonitor(getApp());
-        AppCompatDelegate.setDefaultNightMode(SettingUtil.getNightMode());
-
     }
 
     public static App getApp() {

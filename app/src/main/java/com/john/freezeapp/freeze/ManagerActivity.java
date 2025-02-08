@@ -151,7 +151,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
     private void updateDefrostApp() {
         String query = getQuery();
         if (TextUtils.isEmpty(query)) {
-            UIExecutor.post(new Runnable() {
+            UIExecutor.postUI(new Runnable() {
                 @Override
                 public void run() {
                     defrostAppAdapter.updateData(mDefrostAppLists);
@@ -167,7 +167,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
                         queryLists.add(freezeAppData);
                     }
                 }
-                UIExecutor.post(new Runnable() {
+                UIExecutor.postUI(new Runnable() {
                     @Override
                     public void run() {
                         defrostAppAdapter.updateData(queryLists);
@@ -197,7 +197,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
     private void updateFreezeApp() {
         String query = getQuery();
         if (TextUtils.isEmpty(query)) {
-            UIExecutor.post(new Runnable() {
+            UIExecutor.postUI(new Runnable() {
                 @Override
                 public void run() {
                     freezeAppAdapter.updateData(mFreezeAppLists);
@@ -213,7 +213,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
                         queryLists.add(freezeAppData);
                     }
                 }
-                UIExecutor.post(new Runnable() {
+                UIExecutor.postUI(new Runnable() {
                     @Override
                     public void run() {
                         freezeAppAdapter.updateData(queryLists);
@@ -284,7 +284,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
     private void updateFreezeRunningApp() {
         String query = getQuery();
         if (TextUtils.isEmpty(query)) {
-            UIExecutor.post(new Runnable() {
+            UIExecutor.postUI(new Runnable() {
                 @Override
                 public void run() {
                     runningAdapter.updateData(mFreezeRunningAppLists);
@@ -300,7 +300,7 @@ public class ManagerActivity extends ToolbarSearchActivity {
                         queryLists.add(freezeAppData);
                     }
                 }
-                UIExecutor.post(new Runnable() {
+                UIExecutor.postUI(new Runnable() {
                     @Override
                     public void run() {
                         runningAdapter.updateData(queryLists);

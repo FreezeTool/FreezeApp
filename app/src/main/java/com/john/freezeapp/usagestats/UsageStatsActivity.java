@@ -49,7 +49,7 @@ public class UsageStatsActivity extends ToolbarSearchActivity {
         if (mUsageStatsList != null) {
             String query = getQuery();
             if (TextUtils.isEmpty(query)) {
-                UIExecutor.post(() -> mAdapter.updateData(mUsageStatsList));
+                UIExecutor.postUI(() -> mAdapter.updateData(mUsageStatsList));
             } else {
                 List<UsageStatsData> list = new ArrayList<>(mUsageStatsList);
                 ThreadPool.execute(() -> {
@@ -60,7 +60,7 @@ public class UsageStatsActivity extends ToolbarSearchActivity {
                             queryLists.add(usageStatsData);
                         }
                     }
-                    UIExecutor.post(() -> mAdapter.updateData(queryLists));
+                    UIExecutor.postUI(() -> mAdapter.updateData(queryLists));
                 });
             }
         }

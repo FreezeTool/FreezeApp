@@ -123,7 +123,7 @@ public class AdbStartDialog extends AlertDialog {
                     e.printStackTrace();
                 }
 
-                UIExecutor.post(new Runnable() {
+                UIExecutor.postUI(new Runnable() {
                     @Override
                     public void run() {
                         if (isShowing()) {

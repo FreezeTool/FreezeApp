@@ -85,7 +85,7 @@ public class StorageActivity extends ToolbarSearchActivity {
                         storageDataList.add(storageData);
                     }
                     Collections.sort(storageDataList);
-                    UIExecutor.post(() -> {
+                    UIExecutor.postUI(() -> {
                         mStorageDataList = storageDataList;
                         updateData();
                     });
@@ -106,7 +106,7 @@ public class StorageActivity extends ToolbarSearchActivity {
         if (mStorageDataList != null) {
             String query = getQuery();
             if (TextUtils.isEmpty(query)) {
-                UIExecutor.post(() -> mAdapter.updateData(mStorageDataList));
+                UIExecutor.postUI(() -> mAdapter.updateData(mStorageDataList));
             } else {
                 List<StorageData> list = new ArrayList<>(mStorageDataList);
                 ThreadPool.execute(() -> {
@@ -117,7 +117,7 @@ public class StorageActivity extends ToolbarSearchActivity {
                             storageDataList.add(storageData);
                         }
                     }
-                    UIExecutor.post(() -> mAdapter.updateData(storageDataList));
+                    UIExecutor.postUI(() -> mAdapter.updateData(storageDataList));
                 });
             }
         }
@@ -137,7 +137,7 @@ public class StorageActivity extends ToolbarSearchActivity {
                 if (storageData != null) {
                     storageData.setStorageStats(storageStats);
                 }
-                UIExecutor.post(() -> {
+                UIExecutor.postUI(() -> {
                     updateData();
                 });
             }
@@ -156,7 +156,7 @@ public class StorageActivity extends ToolbarSearchActivity {
                     }
                     mStorageDataList = storageDataList;
                 }
-                UIExecutor.post(() -> {
+                UIExecutor.postUI(() -> {
                     updateData();
                 });
             }

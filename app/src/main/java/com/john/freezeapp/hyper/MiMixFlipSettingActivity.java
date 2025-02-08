@@ -401,7 +401,7 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
         if (mMiMixFlipAppData != null) {
             String query = getQuery();
             if (TextUtils.isEmpty(query)) {
-                UIExecutor.post(() -> mAdapter.updateData(mMiMixFlipAppData));
+                UIExecutor.postUI(() -> mAdapter.updateData(mMiMixFlipAppData));
             } else {
                 List<MiMixFlipAppData> list = new ArrayList<>(mMiMixFlipAppData);
                 ThreadPool.execute(() -> {
@@ -412,7 +412,7 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
                             queryLists.add(miMixFlipAppData);
                         }
                     }
-                    UIExecutor.post(() -> mAdapter.updateData(queryLists));
+                    UIExecutor.postUI(() -> mAdapter.updateData(queryLists));
                 });
             }
         }

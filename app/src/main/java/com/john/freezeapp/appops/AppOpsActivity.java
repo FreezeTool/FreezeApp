@@ -116,7 +116,7 @@ public class AppOpsActivity extends ToolbarSearchActivity {
         if (mAppOpsData != null) {
             String query = getQuery();
             if (TextUtils.isEmpty(query)) {
-                UIExecutor.post(() -> mAdapter.updateData(mAppOpsData));
+                UIExecutor.postUI(() -> mAdapter.updateData(mAppOpsData));
             } else {
                 List<AppOpsData> list = new ArrayList<>(mAppOpsData);
                 ThreadPool.execute(() -> {
@@ -127,7 +127,7 @@ public class AppOpsActivity extends ToolbarSearchActivity {
                             queryAppOpsLists.add(appOpsData);
                         }
                     }
-                    UIExecutor.post(() -> mAdapter.updateData(queryAppOpsLists));
+                    UIExecutor.postUI(() -> mAdapter.updateData(queryAppOpsLists));
                 });
             }
         }
