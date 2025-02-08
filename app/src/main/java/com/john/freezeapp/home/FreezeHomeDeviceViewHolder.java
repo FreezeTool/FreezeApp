@@ -33,7 +33,7 @@ public class FreezeHomeDeviceViewHolder extends CardViewHolder<FreezeHomeDeviceD
      * android:layout_width="match_parent"
      * android:layout_height="wrap_content"
      * android:text=""
-     * android:textColor="#666666"
+     *
      * android:textSize="15dp" />
      */
     @Override

@@ -5,17 +5,17 @@
     android:orientation="vertical">
 
     <RelativeLayout
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/tip_background_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/tip_background_2"
+        android:paddingLeft="10dp"
         android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp">
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp">
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_icon"
@@ -32,60 +32,65 @@
             android:gravity="center_vertical|right"
             android:orientation="vertical">
 
-            <TextView
-                android:textSize="12dp"
-                android:textColor="#666666"
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_uid"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="UID 10000" />
+                style="@style/TextView.Style"
 
-            <TextView
-                android:layout_marginTop="2dp"
-                android:textSize="12dp"
-                android:textColor="#666666"
-                android:id="@+id/tv_api"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="API 30" />
+                android:text="UID 10000"
+                android:textSize="12dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_api"
+                style="@style/TextView.Style"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="API 30"
+                android:textSize="12dp" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_toLeftOf="@+id/ll_right"
             android:layout_toRightOf="@+id/iv_icon"
             android:orientation="vertical">
 
-            <TextView
-                android:textSize="16dp"
-                android:textColor="#333333"
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_name"
+                style="@style/TextView.Style"
+
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/app_name" />
+                android:text="@string/app_name"
+                android:textSize="16dp" />
 
-            <TextView
-                android:layout_marginTop="1dp"
-                android:textSize="13dp"
-                android:textColor="#666666"
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_version"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="版本 1.0" />
 
-            <TextView
-                android:layout_marginTop="1dp"
-                android:textSize="11dp"
-                android:textColor="#666666"
-                android:id="@+id/tv_package"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="com.john.freezeapp" />
+                android:layout_marginTop="1dp"
+                android:text="版本 1.0"
+                android:textSize="13dp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_package"
+                style="@style/TextView.Style"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:text="com.john.freezeapp"
+                android:textSize="11dp" />
         </LinearLayout>
     </RelativeLayout>
 </FrameLayout>

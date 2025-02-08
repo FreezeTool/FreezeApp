@@ -2,7 +2,7 @@
     android:width="20dp"
     android:height="20dp"
     android:autoMirrored="true"
-    android:tint="#000000"
+    android:tint="@color/homeIconColor"
     android:viewportWidth="24"
     android:viewportHeight="24">
 

@@ -18,14 +18,16 @@
             android:paddingRight="20dp"
             android:paddingBottom="5dp">
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_device"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_duration"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="" />
@@ -33,7 +35,6 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="#eeeeee" />
+            android:layout_height="1px" />
     </LinearLayout>
 </FrameLayout>

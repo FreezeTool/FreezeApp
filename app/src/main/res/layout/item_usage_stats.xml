@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+
     android:orientation="vertical">
 
     <LinearLayout
@@ -19,23 +19,25 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp">
 
-            <ImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_centerVertical="true" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_total_time_visible"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:textColor="#999999"
+
                 android:textSize="12dp" />
 
-            <TextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_name"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -47,14 +49,13 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#eeeeee" />
+            android:layout_height="1dp" />
 
         <LinearLayout
             android:id="@+id/ll_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#eeeeee"
+
             android:orientation="vertical"
             android:padding="15dp">
 
@@ -63,19 +64,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="70dp"
                     android:text="启动时间"
-                    android:textColor="#999999"
+
                     android:textSize="12dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_first_time_stamp"
+                    style="@style/TextView.Style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#999999"
+
                     android:textSize="12dp" />
             </LinearLayout>
 
@@ -84,19 +87,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="70dp"
                     android:text="启动次数"
-                    android:textColor="#999999"
+
                     android:textSize="12dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_app_launch_count"
+                    style="@style/TextView.Style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#999999"
+
                     android:textSize="12dp" />
             </LinearLayout>
 
@@ -105,20 +110,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:minWidth="70dp"
                     android:text="打开次数"
-                    android:textColor="#999999"
+
                     android:textSize="12dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_launch_count"
+                    style="@style/TextView.Style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#999999"
                     android:textSize="12dp" />
             </LinearLayout>
         </LinearLayout>

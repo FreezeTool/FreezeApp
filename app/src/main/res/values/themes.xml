@@ -1,19 +1,79 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-
+    <!-- https://www.jianshu.com/p/d9b486074485 -->
     <!-- https://blog.csdn.net/jzlhll123/article/details/138605116 -->
-    <style name="Theme.FreezeApp" parent="Theme.Material3.Light.NoActionBar">
+    <style name="Theme.FreezeApp.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- PrimaryColor：主题颜色。app的主要颜色，即整个屏幕和所有控件的主要颜色，首选颜色。 -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/white</item>
-        <item name="colorSecondary">@color/colorSecondary</item>
+        <!--应用的主要暗色调，statusBarColor默认使用该颜色；-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- CheckBox，RadioButton，SwitchCompat 等一般控件的选中效果默认采用该颜色；-->
         <item name="colorAccent">@color/colorAccent</item>
-        <!--状态栏颜色-->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:statusBarColor">@color/white</item>
+        <!--背景颜色-->
         <item name="android:windowBackground">@color/white</item>
         <!--底部navigationBar颜色-->
         <item name="android:navigationBarColor">@color/white</item>
-        <!-- Customize your theme here. -->
+        <!-- switch -->
+        <item name="colorSwitchThumbNormal">@color/colorAccent</item>
+        <!--CheckBox，RadioButton，SwitchCompat 等默认状态的颜色；-->
+        <!--        <item name="colorControlNormal">@color/colorAccent</item>-->
+        <!--默认按钮的背景颜色；-->
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <!--RadioButton、Checkbox 等控件的文字；-->
+        <item name="android:textColorPrimaryDisableOnly">@color/textColorPrimary</item>
+        <!--文字主要颜色-->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <!--文字次要颜色-->
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <!--文字更次要颜色-->
+        <item name="android:textColorTertiary">@color/textColorTertiary</item>
+        <!--status bar中的文字-->
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="android:colorBackgroundFloating">@color/colorSecondary</item>
     </style>
+
+    <style name="Theme.FreezeApp.DayNight" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- PrimaryColor：主题颜色。app的主要颜色，即整个屏幕和所有控件的主要颜色，首选颜色。 -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <!--应用的主要暗色调，statusBarColor默认使用该颜色；-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!-- CheckBox，RadioButton，SwitchCompat 等一般控件的选中效果默认采用该颜色；-->
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:statusBarColor">@color/black</item>
+        <!--背景颜色-->
+        <item name="android:windowBackground">@color/black</item>
+        <!--底部navigationBar颜色-->
+        <item name="android:navigationBarColor">@color/black</item>
+        <!-- switch -->
+        <item name="colorSwitchThumbNormal">@color/colorAccent</item>
+        <!--CheckBox，RadioButton，SwitchCompat 等默认状态的颜色；-->
+        <!--        <item name="colorControlNormal">@color/colorAccent</item>-->
+        <!--默认按钮的背景颜色；-->
+        <item name="colorButtonNormal">@color/colorAccent</item>
+        <!--RadioButton、Checkbox 等控件的文字；-->
+        <item name="android:textColorPrimaryDisableOnly">@color/textColorPrimary</item>
+        <!--文字主要颜色-->
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <!--文字次要颜色-->
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <!--文字更次要颜色-->
+        <item name="android:textColorTertiary">@color/textColorTertiary</item>
+        <!--status bar中的文字-->
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:colorBackgroundFloating">@color/colorSecondary</item>
+    </style>
+
+
+    <style name="TextView.Style.DayNight">
+        <item name="android:textColor">@color/textColorSecondary</item>
+    </style>
+
+    <style name="TextView.Style.Light">
+        <item name="android:textColor">@color/textColorSecondary</item>
+    </style>
+
 </resources>

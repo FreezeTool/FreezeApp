@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_operate"
-        android:textColor="#333333"
-        android:textSize="10dp"
-        android:text="allow"
-        android:padding="15dp"
+        style="@style/TextView.Style"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:padding="15dp"
+        android:text="allow"
+        android:textSize="10dp" />
+
     <View
-        android:background="#eeeeee"
+
         android:layout_width="match_parent"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp" />
 </LinearLayout>

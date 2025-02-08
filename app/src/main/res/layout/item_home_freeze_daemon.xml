@@ -26,7 +26,7 @@
 
                 android:orientation="horizontal">
 
-                <ImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_icon"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -36,10 +36,11 @@
 
 
                 <LinearLayout
-                    android:minHeight="40dp"
-                    android:gravity="center_vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:minHeight="40dp">
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -48,23 +49,24 @@
                         android:layout_toRightOf="@+id/iv_icon"
                         android:orientation="vertical">
 
-                        <TextView
-                            android:visibility="visible"
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_title"
+                            style="@style/TextView.Style"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="1111111"
-                            android:textColor="#000000"
-                            android:textSize="18dp" />
+                            android:textSize="18dp"
+                            android:visibility="visible" />
 
-                        <TextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_subtitle"
+                            style="@style/TextView.Style"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:lineSpacingExtra="5dp"
                             android:paddingTop="5dp"
                             android:text="11111111"
-                            android:lineSpacingExtra="5dp"
-                            android:textColor="#333333"
+
                             android:textSize="15dp"
                             android:visibility="visible" />
 
@@ -75,50 +77,50 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_content"
+                style="@style/TextView.Style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:lineSpacingExtra="5dp"
                 android:text="11111111111111111"
-                android:textColor="#444444"
                 android:textSize="15dp"
                 android:visibility="visible" />
 
             <RelativeLayout
-                android:visibility="visible"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:visibility="visible">
 
-                <com.google.android.material.button.MaterialButton
-                    android:layout_marginTop="10dp"
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_right"
-                    android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
                     android:layout_height="45dp"
+                    android:layout_alignParentRight="true"
                     android:layout_gravity="right"
+                    android:layout_marginTop="10dp"
                     android:drawableLeft="@drawable/ic_vector_start"
                     android:drawablePadding="5dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:text="@string/main_start_app_process"
-                    android:textColor="@color/white"
+                    android:textColor="@color/homeButtonColor"
                     android:textSize="12dp"
                     android:visibility="visible"
                     app:cornerRadius="300dp" />
 
 
-                <com.google.android.material.button.MaterialButton
-                    android:layout_marginTop="10dp"
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/btn_left"
                     android:layout_width="wrap_content"
                     android:layout_height="45dp"
                     android:layout_gravity="right"
+                    android:layout_marginTop="10dp"
                     android:drawableLeft="@drawable/ic_vector_start"
                     android:drawablePadding="5dp"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:text="@string/main_start_app_process"
-                    android:textColor="@color/white"
+                    android:textColor="@color/homeButtonColor"
                     android:textSize="12dp"
                     android:visibility="gone"
                     app:cornerRadius="300dp" />

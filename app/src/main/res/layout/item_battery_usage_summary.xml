@@ -5,9 +5,9 @@
     android:orientation="vertical">
 
     <LinearLayout
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
         android:background="@drawable/tip_background"
         android:orientation="vertical"
         android:padding="20dp">
@@ -20,24 +20,28 @@
 
         -->
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_time"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_capacity"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_computed_drain"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_actual_drain"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

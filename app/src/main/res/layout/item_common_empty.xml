@@ -11,14 +11,15 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:text="启动FreezeApp服务手使用～"
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_empty_content"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
-            android:textColor="#666666"
-            android:textSize="16dp"
-            android:gravity="center" />
+            android:gravity="center"
+
+            android:text="启动FreezeApp服务手使用～"
+            android:textSize="16dp" />
     </LinearLayout>
 </LinearLayout>

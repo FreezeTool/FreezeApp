@@ -9,19 +9,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="5dp"
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
-        app:cardBackgroundColor="@color/white">
+        app:cardBackgroundColor="@color/colorSecondary"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
             android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:paddingTop="5dp"
+            android:paddingRight="20dp"
+            android:paddingBottom="5dp">
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -29,22 +29,24 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="总计"
-                    android:textColor="#999999"
+
                     android:textSize="16dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_total"
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="12.17GB"
-                    android:textColor="#999999"
+
                     android:textSize="14dp" />
 
 
@@ -56,22 +58,24 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="应用大小"
-                    android:textColor="#999999"
+
                     android:textSize="16dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_code"
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="12.17GB"
-                    android:textColor="#999999"
+
                     android:textSize="14dp" />
 
 
@@ -83,22 +87,24 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="用户数据"
-                    android:textColor="#333333"
+
                     android:textSize="16dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_user_data"
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="12.17GB"
-                    android:textColor="#333333"
+
                     android:textSize="14dp" />
 
 
@@ -110,22 +116,24 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="缓存"
-                    android:textColor="#333333"
+
                     android:textSize="16dp" />
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_cache"
+                    style="@style/TextView.Style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:text="12.17GB"
-                    android:textColor="#333333"
+
                     android:textSize="14dp" />
 
 
@@ -136,35 +144,35 @@
     </androidx.cardview.widget.CardView>
 
     <LinearLayout
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
 
-        android:orientation="horizontal">
+        android:visibility="gone">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:layout_margin="10dp"
             android:id="@+id/btn_clear_all"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_marginRight="5dp"
             android:layout_weight="1"
             android:background="@drawable/btn_background"
             android:text="清除全部数据"
-            android:textColor="@color/white"
+            android:textColor="@color/homeButtonColor"
             android:textSize="14dp" />
 
         <androidx.appcompat.widget.AppCompatButton
-            android:layout_margin="10dp"
             android:id="@+id/btn_clear_cache"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_marginLeft="5dp"
             android:layout_weight="1"
             android:background="@drawable/btn_background"
             android:text="清除缓存"
-            android:textColor="@color/white"
+            android:textColor="@color/homeButtonColor"
             android:textSize="14dp" />
     </LinearLayout>
 
@@ -177,14 +185,14 @@
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:layout_margin="10dp"
             android:id="@+id/btn_manager"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="1"
             android:background="@drawable/btn_background"
             android:text="管理"
-            android:textColor="@color/white"
+            android:textColor="@color/homeButtonColor"
             android:textSize="14dp" />
 
     </LinearLayout>

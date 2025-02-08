@@ -144,7 +144,7 @@ public class MiMixFlipSettingActivity extends ToolbarSearchActivity {
 
     private void showScaleDialog(Context context, MiMixFlipAppData data) {
         WheelPicker wheelPicker = new WheelPicker(context);
-        wheelPicker.setSelectedItemTextColor(context.getColor(R.color.purple_200));
+        wheelPicker.setSelectedItemTextColor(context.getColor(R.color.colorAccent));
         List<String> list = Arrays.asList(scaleValues);
         wheelPicker.setData(list);
         int index = list.indexOf(data.scale);

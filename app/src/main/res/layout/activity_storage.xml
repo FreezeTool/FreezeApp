@@ -3,11 +3,11 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
+     <androidx.appcompat.widget.AppCompatTextView
+        style="@style/TextView.Style"
         android:id="@+id/tip"
         android:padding="10dp"
         android:textSize="12dp"
-        android:background="@color/colorSecondary"
         android:text="正在计算中，计算完成后会按照缓存大小进行排序～"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

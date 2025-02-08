@@ -8,8 +8,9 @@
         android:layout_width="match_parent"
         android:layout_height="30dp">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_process_name"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -17,8 +18,9 @@
             android:text="processName"
             android:textSize="10dp" />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_process_time"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

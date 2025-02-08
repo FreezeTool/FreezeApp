@@ -13,7 +13,7 @@
         android:layout_marginRight="10dp"
         android:layout_marginBottom="5dp"
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/colorSecondary"
         app:cardCornerRadius="10dp">
 
         <LinearLayout
@@ -30,17 +30,17 @@
                 android:id="@+id/iv_icon"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
-                android:background="@color/teal_200"
                 android:scaleType="center"
                 android:src="@drawable/ic_vector_apps" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_title"
+                style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:text="@string/main_manager_app"
-                android:textColor="#333333"
+
                 android:textSize="16dp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>

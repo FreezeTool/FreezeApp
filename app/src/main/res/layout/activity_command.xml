@@ -18,7 +18,7 @@
         android:layout_margin="10dp"
         android:orientation="horizontal">
 
-        <EditText
+        <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/et_command"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -26,17 +26,16 @@
             android:background="@drawable/tip_background"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:textColor="#333333"
             android:textSize="14dp" />
 
-        <com.google.android.material.button.MaterialButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/command_send"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            app:cornerRadius="300dp"
             android:text="@string/command_btn_execute"
-            android:textColor="@color/white" />
+            android:textColor="@color/homeButtonColor"
+            app:cornerRadius="300dp" />
 
     </LinearLayout>
 
@@ -54,12 +53,12 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp">
 
-                <TextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/command_result"
+                    style="@style/TextView.Style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textColor="#666666" />
+                    android:text="" />
             </LinearLayout>
         </ScrollView>
     </FrameLayout>

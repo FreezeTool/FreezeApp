@@ -13,13 +13,13 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_image"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_centerVertical="true" />
 
-        <ImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_arrow_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -27,32 +27,33 @@
             android:layout_centerVertical="true"
             android:src="@drawable/ic_vector_arrow_right" />
 
-        <TextView
-            android:layout_toLeftOf="@+id/iv_arrow_right"
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_cache"
-            android:textColor="#999999"
-            android:textSize="14dp"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
+
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:text="20MB" />
+            android:layout_toLeftOf="@+id/iv_arrow_right"
+            android:text="20MB"
+            android:textSize="14dp" />
 
-        <TextView
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@+id/tv_cache"
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_name"
+            style="@style/TextView.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@+id/tv_cache"
             android:layout_toRightOf="@+id/iv_image"
             android:text="" />
     </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#eeeeee" />
+        android:layout_height="1dp" />
 
 </LinearLayout>

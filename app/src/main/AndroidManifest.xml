@@ -23,9 +23,8 @@
         android:icon="@mipmap/ic_app_icon"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_app_icon"
-
         android:supportsRtl="true"
-        android:theme="@style/Theme.FreezeApp"
+        android:theme="@style/AppTheme"
         tools:targetApi="33">
 
         <activity
@@ -65,13 +64,6 @@
 
         <activity
             android:name=".CommandActivity"
-            android:configChanges="orientation|screenLayout|screenSize"
-            android:launchMode="singleTask">
-
-        </activity>
-
-        <activity
-            android:name=".DaemonStartActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:launchMode="singleTask">
 
