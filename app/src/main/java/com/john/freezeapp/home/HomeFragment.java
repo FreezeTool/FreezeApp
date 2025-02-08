@@ -83,6 +83,10 @@ public class HomeFragment extends BaseFragment {
             return true;
         } else if (R.id.menu_developer == itemId) {
             FreezeUtil.toDevelopPage(getContext());
+            return true;
+        } else if (R.id.menu_settings == itemId) {
+            FreezeUtil.openFreezeAppSettings(getContext());
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

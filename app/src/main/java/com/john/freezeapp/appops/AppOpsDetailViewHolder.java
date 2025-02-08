@@ -73,6 +73,7 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
         for (Pair<Integer, Integer> mode : modes) {
             View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_app_ops_popwindow, linearLayout, false);
             TextView tvOperate = itemView.findViewById(R.id.tv_operate);
+            tvOperate.setTextColor(getContext().getColor(R.color.textColorPrimary));
             tvOperate.setText(AppOps.getModelStr(mode.first));
             tvOperate.setOnClickListener(v -> {
                 AppOps.setUidMode(data.op, mode.second, data.uid, data.packageName);

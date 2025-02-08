@@ -18,6 +18,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_vector_settings"
+        android:title="设置"
+        app:showAsAction="always" />
+
+    <item
         android:id="@+id/menu_developer"
         android:title="开发者选项" />
     <item

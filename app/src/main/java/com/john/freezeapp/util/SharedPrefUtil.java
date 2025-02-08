@@ -13,6 +13,7 @@ public class SharedPrefUtil {
     public static final String KEY_FIRST_UNBIND_DAEMON = "KEY_FIRST_UNBIND_DAEMON";
     public static final String KEY_APP_MONITOR_SWITCHER = "key_app_monitor_switcher";
     public static final String KEY_APP_MONITOR_TEXT_SIZE = "key_app_monitor_text_size";
+    public static final String KEY_SETTING_NIGHT_MODE = "key_setting_night_mode";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);

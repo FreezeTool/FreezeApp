@@ -13,6 +13,7 @@
     <string name="storage_name">App Storage</string>
     <string name="storage_detail_name">App Storage Detail</string>
     <string name="manage_space_name">App Manage Space</string>
+    <string name="setting_name">App Setting</string>
 
 
     <string name="main_app_server_active">Freeze服务正在运行</string>

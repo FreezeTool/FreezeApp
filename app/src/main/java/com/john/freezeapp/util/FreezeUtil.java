@@ -22,6 +22,7 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.setting.SettingActivity;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -162,6 +163,12 @@ public class FreezeUtil {
         }
     }
 
+    public static void openFreezeAppSettings(Context context) {
+        Intent intent = new Intent(context, SettingActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
     public static void allowSystemAlertWindow() {
         try {
             AppOps.setUidMode(AppOpsManagerHidden.OP_SYSTEM_ALERT_WINDOW, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
@@ -193,7 +200,7 @@ public class FreezeUtil {
             Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
             intent.setData(Uri.parse("package:" + packageName));
             context.startActivity(intent);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

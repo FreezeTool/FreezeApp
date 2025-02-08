@@ -3,8 +3,12 @@ package com.john.freezeapp;
 import android.app.Application;
 import android.content.Context;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import com.john.freezeapp.monitor.AppMonitorManager;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.SettingUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
@@ -26,6 +30,7 @@ public class App extends Application {
             HiddenApiBypass.addHiddenApiExemptions("L");
         }
         AppMonitorManager.startAppMonitor(getApp());
+        AppCompatDelegate.setDefaultNightMode(SettingUtil.getNightMode());
 
     }
 
