@@ -84,6 +84,15 @@ public class LogFragment extends BaseFragment {
             @Override
             public void run() {
                 if (isDaemonActive()) {
+
+                    List<Object> items = homeAdapter.getItems();
+                    if (items.size() == 1) {
+                        Object object = items.get(0);
+                        if (object instanceof CommonEmptyData) {
+                            items.clear();
+                        }
+                    }
+
                     homeAdapter.addData(new FreezeHomeLogData(msg));
                 }
             }
@@ -112,11 +121,11 @@ public class LogFragment extends BaseFragment {
             public void run() {
                 List<CardData> list = new ArrayList<>();
 
-                if(!isDaemonActive()) {
+                if (!isDaemonActive()) {
                     list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_daemon_not_active_content)));
                 } else {
                     List<ClientLogBinderManager.LogData> logList = new ArrayList<>(ClientLogBinderManager.getLogData());
-                    if(logList.isEmpty()) {
+                    if (logList.isEmpty()) {
                         list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
                     } else {
                         for (ClientLogBinderManager.LogData logData : logList) {
