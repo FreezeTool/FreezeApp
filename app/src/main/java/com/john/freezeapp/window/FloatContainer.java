@@ -69,7 +69,7 @@ public class FloatContainer extends FrameLayout {
                     onFloatListener.onStart();
                 }
                 handler.removeCallbacks(longClickRunnable);
-                handler.postDelayed(longClickRunnable, 1500);
+                handler.postDelayed(longClickRunnable, 1000);
                 break;
             case MotionEvent.ACTION_MOVE:
                 moveX = event.getRawX() - rawX;

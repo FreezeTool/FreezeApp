@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_vector_home"
         android:title="@string/main_home_menu" />
     <item
-        android:id="@+id/navigation_func"
+        android:id="@+id/navigation_tool"
         android:icon="@drawable/ic_vector_tool"
         android:title="@string/main_home_func" />
 

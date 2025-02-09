@@ -10,11 +10,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.IDaemonBinder;
+import com.john.freezeapp.MainActivity;
 import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientLogBinderManager;
 import com.john.freezeapp.recyclerview.CardData;
@@ -122,11 +124,20 @@ public class LogFragment extends BaseFragment {
                 List<CardData> list = new ArrayList<>();
 
                 if (!isDaemonActive()) {
-                    list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_daemon_not_active_content)));
+                    CommonEmptyData commonEmptyData = new CommonEmptyData();
+                    commonEmptyData.type = CommonEmptyData.TYPE_NOT_BIND;
+                    commonEmptyData.content = getContext().getString(R.string.main_home_daemon_not_active_content);
+                    commonEmptyData.height = recyclerView.getMeasuredHeight();
+                    commonEmptyData.onClickListener = v -> switchHomeFragment();
+                    list.add(commonEmptyData);
                 } else {
                     List<ClientLogBinderManager.LogData> logList = new ArrayList<>(ClientLogBinderManager.getLogData());
                     if (logList.isEmpty()) {
-                        list.add(new CommonEmptyData(recyclerView.getMeasuredHeight(), getContext().getString(R.string.main_home_empty_content)));
+                        CommonEmptyData commonEmptyData = new CommonEmptyData();
+                        commonEmptyData.type = CommonEmptyData.TYPE_EMPTY;
+                        commonEmptyData.content = getContext().getString(R.string.main_home_empty_content);
+                        commonEmptyData.height = recyclerView.getMeasuredHeight();
+                        list.add(commonEmptyData);
                     } else {
                         for (ClientLogBinderManager.LogData logData : logList) {
                             list.add(new FreezeHomeLogData(logData.msg));
@@ -136,5 +147,12 @@ public class LogFragment extends BaseFragment {
                 homeAdapter.updateData(list);
             }
         });
+    }
+
+    private void switchHomeFragment() {
+        FragmentActivity activity = getActivity();
+        if (activity instanceof MainActivity) {
+            ((MainActivity) activity).switchHomeFragment();
+        }
     }
 }

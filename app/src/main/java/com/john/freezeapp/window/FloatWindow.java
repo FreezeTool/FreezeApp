@@ -6,6 +6,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+
 import com.john.freezeapp.util.ScreenUtils;
 
 public class FloatWindow implements IFloatWindow {

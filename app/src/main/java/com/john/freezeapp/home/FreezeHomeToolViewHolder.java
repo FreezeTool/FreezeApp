@@ -12,19 +12,19 @@ import android.widget.TextView;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 
-public class FreezeHomeFuncViewHolder extends CardViewHolder<FreezeHomeFuncData> {
+public class FreezeHomeToolViewHolder extends CardViewHolder<FreezeHomeToolData> {
 
     TextView tvTitle;
     ImageView ivIcon;
 
-    public static FreezeHomeFuncViewHolder.Creator<FreezeHomeFuncData> CREATOR = new FreezeHomeFuncViewHolder.Creator<FreezeHomeFuncData>() {
+    public static FreezeHomeToolViewHolder.Creator<FreezeHomeToolData> CREATOR = new FreezeHomeToolViewHolder.Creator<FreezeHomeToolData>() {
         @Override
-        public FreezeHomeFuncViewHolder createViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            return new FreezeHomeFuncViewHolder(inflater.inflate(R.layout.item_home_func, parent, false));
+        public FreezeHomeToolViewHolder createViewHolder(LayoutInflater inflater, ViewGroup parent) {
+            return new FreezeHomeToolViewHolder(inflater.inflate(R.layout.item_home_func, parent, false));
         }
     };
 
-    public FreezeHomeFuncViewHolder(View itemView) {
+    public FreezeHomeToolViewHolder(View itemView) {
         super(itemView);
         tvTitle = itemView.findViewById(R.id.tv_title);
         ivIcon = itemView.findViewById(R.id.iv_icon);
@@ -33,7 +33,7 @@ public class FreezeHomeFuncViewHolder extends CardViewHolder<FreezeHomeFuncData>
     @Override
     public void onBind() {
         super.onBind();
-        FreezeHomeFuncData data = getData();
+        FreezeHomeToolData data = getData();
         tvTitle.setText(data.text);
         ivIcon.setImageResource(data.icon);
         ivIcon.setBackground(getBackgroundDrawable(data.bgColor));

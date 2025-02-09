@@ -7,19 +7,14 @@ import android.app.smartspace.SmartspaceTarget;
 import android.app.smartspace.SmartspaceTargetEvent;
 import android.app.smartspace.uitemplatedata.BaseTemplateData;
 import android.app.smartspace.uitemplatedata.Text;
-import android.app.usage.IStorageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.IInstalld;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.UserHandle;
-import android.os.storage.IStorageManager;
-import android.os.storage.StorageVolume;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
@@ -29,7 +24,6 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
@@ -43,13 +37,13 @@ import java.util.List;
 import java.util.UUID;
 
 public class FreezeHomeToolHelper {
-    public static List<FreezeHomeFuncData> getFreezeHomeFuncData(Context context) {
+    public static List<FreezeHomeToolData> getFreezeHomeFuncData(Context context) {
         if (!ClientBinderManager.isActive()) {
             return null;
         }
 
-        List<FreezeHomeFuncData> list = new ArrayList<>();
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_manager_app),
+        List<FreezeHomeToolData> list = new ArrayList<>();
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_manager_app),
                 R.drawable.ic_vector_apps,
                 0xffF2C8F8,
                 v -> {
@@ -58,7 +52,7 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_usage),
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_usage),
                 R.drawable.ic_vector_usage_stats,
                 0xffACD4EB,
                 v -> {
@@ -69,7 +63,7 @@ public class FreezeHomeToolHelper {
 
         IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
         if (batteryStats != null && FreezeUtil.atLeast31()) {
-            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_battery_usage),
+            list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_battery_usage),
                     R.drawable.ic_vector_battery,
                     0xffB5EBDA,
                     v -> {
@@ -79,7 +73,7 @@ public class FreezeHomeToolHelper {
                     }));
         }
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_ops_name),
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_ops_name),
                 R.drawable.ic_vector_key,
                 0xffC1B790,
                 v -> {
@@ -88,7 +82,7 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_app_monitor),
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_monitor),
                 R.drawable.ic_vector_window,
                 0xffEFAAB1,
                 v -> {
@@ -99,7 +93,7 @@ public class FreezeHomeToolHelper {
 
         if (ClientBinderManager.isActive()) {
             if (TextUtils.equals("Xiaomi MIX Flip", ClientBinderManager.getConfig(DaemonHelper.DAEMON_MODULE_SYSTEM_PROPERTIES, "ro.product.marketname"))) {
-                list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_mi_flip_setting),
+                list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_mi_flip_setting),
                         R.drawable.ic_vector_display,
                         0xff9986A4,
                         v -> {
@@ -111,7 +105,7 @@ public class FreezeHomeToolHelper {
         }
 
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_storage_name),
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_storage_name),
                 R.drawable.ic_vector_storage,
                 0xffBC9DEB,
                 v -> {
@@ -121,7 +115,7 @@ public class FreezeHomeToolHelper {
                 }));
 
 
-        list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_command_app),
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,
                 0xffF4E1B9,
                 v -> {
@@ -132,7 +126,7 @@ public class FreezeHomeToolHelper {
 
 
         if (BuildConfig.DEBUG) {
-            list.add(new FreezeHomeFuncData(context.getResources().getString(R.string.main_test),
+            list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_test),
                     R.drawable.ic_vector_window,
                     0xffD0ACA3,
                     v -> toTest3(context)));

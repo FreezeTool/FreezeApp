@@ -7,8 +7,8 @@
     <color name="colorSecondary">#222222</color>
     <color name="colorAccent">#bdbffa</color>
     <color name="textColorPrimary">#ffffff</color>
-    <color name="textColorSecondary">#dddddd</color>
-    <color name="textColorTertiary">#cccccc</color>
+    <color name="textColorSecondary">#cccccc</color>
+    <color name="textColorTertiary">#aaaaaa</color>
     <color name="homeIconColor">#FFFFFF</color>
     <color name="homeIconBgColor">#304EF6</color>
     <color name="homeButtonColor">#2B3CA2</color>

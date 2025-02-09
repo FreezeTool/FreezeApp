@@ -35,6 +35,7 @@ public class CommonEmptyViewHolder extends CardViewHolder<CommonEmptyData> {
         CommonEmptyData data = getData();
         tvEmptyContent.setText(!TextUtils.isEmpty(data.content) ? data.content : "");
         llEmptyContainer.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, data.height));
+        tvEmptyContent.setOnClickListener(data.onClickListener);
     }
 
 }

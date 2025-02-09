@@ -18,7 +18,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:gravity="center"
-
             android:text="启动FreezeApp服务手使用～"
             android:textSize="16dp" />
     </LinearLayout>

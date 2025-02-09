@@ -1,14 +1,11 @@
 package com.john.freezeapp;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -18,7 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.john.freezeapp.client.ClientLog;
-import com.john.freezeapp.home.FuncFragment;
+import com.john.freezeapp.home.ToolFragment;
 import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
 import com.john.freezeapp.util.FreezeAppManager;
@@ -59,7 +56,7 @@ public class MainActivity extends ToolbarActivity {
 
         FreezeUtil.generateShell(this);
         tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));
-        tabs.add(new Tab(R.id.navigation_func, new FuncFragment()));
+        tabs.add(new Tab(R.id.navigation_tool, new ToolFragment()));
         tabs.add(new Tab(R.id.navigation_log, new LogFragment()));
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -136,7 +133,7 @@ public class MainActivity extends ToolbarActivity {
             postUI(new Runnable() {
                 @Override
                 public void run() {
-                    viewPager.setCurrentItem(1);
+                    switchToolFragment();
                 }
             });
             SharedPrefUtil.setFirstBindDaemon();
@@ -183,10 +180,28 @@ public class MainActivity extends ToolbarActivity {
 //        if (SharedPrefUtil.isFirstUnbindDaemon()) {
 //            SharedPrefUtil.setFirstUnbindDaemon();
 //        }
+        switchHomeFragment();
+    }
+
+    public void switchHomeFragment() {
+        switchFragment(R.id.navigation_home);
+    }
+
+    public void switchToolFragment() {
+        switchFragment(R.id.navigation_tool);
+    }
+
+    private void switchFragment(int menu) {
         postUI(new Runnable() {
             @Override
             public void run() {
-                viewPager.setCurrentItem(0);
+                for (int i = 0; i < tabs.size(); i++) {
+                    Tab tab = tabs.get(i);
+                    if (tab.menuId == menu) {
+                        viewPager.setCurrentItem(i);
+                    }
+                }
+
             }
         });
     }
