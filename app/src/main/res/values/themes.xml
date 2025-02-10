@@ -63,7 +63,7 @@
         <!--文字更次要颜色-->
         <item name="android:textColorTertiary">@color/textColorTertiary</item>
         <!--status bar中的文字-->
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:colorBackgroundFloating">@color/colorSecondary</item>
     </style>
 
