@@ -27,6 +27,7 @@ import com.john.freezeapp.setting.SettingActivity;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -341,20 +342,15 @@ public class FreezeUtil {
         return result;
     }
 
+    private final static String[] UNITS = new String[]{"B", "KB", "MB", "GB", "TB"};
 
-    private static String[] SIZE_LABEL = {"B", "KB", "MB", "GB"};
 
     public static String getSizeText(long cacheBytes) {
-        int index = 0;
-        while (cacheBytes > 1024) {
-            index++;
-            cacheBytes /= 1024;
-        }
-        if (index < SIZE_LABEL.length) {
-            return String.format("%d%s", cacheBytes, SIZE_LABEL[index]);
-        }
-        return "";
+        if (cacheBytes <= 0) return "0B";
+        int digitGroups = (int) (Math.log10(cacheBytes) / Math.log10(1024));
+        return new DecimalFormat("#,##0.##").format(cacheBytes / Math.pow(1024, digitGroups)) + " " + UNITS[digitGroups];
     }
+
 
 
 }
