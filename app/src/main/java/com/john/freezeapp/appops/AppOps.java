@@ -7,6 +7,7 @@ import com.john.freezeapp.App;
 import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.lang.reflect.Field;
@@ -503,7 +504,7 @@ public class AppOps {
     }
 
     public static List<AppOpsDetail> getAppOpDetail(String packageName) {
-        IAppOpsService appOpsService = ClientBinderManager.getAppOpsService();
+        IAppOpsService appOpsService = ClientSystemService.getAppOpsService();
         if (appOpsService != null) {
             List<AppOpInfo> appOpInfoList = getAppOpInfoList();
             int[] ops = new int[appOpInfoList.size()];
@@ -607,7 +608,7 @@ public class AppOps {
 
     public static boolean setUidMode(int op, int mode, int uid, String packageName) {
         try {
-            IAppOpsService appOpsService = ClientBinderManager.getAppOpsService();
+            IAppOpsService appOpsService = ClientSystemService.getAppOpsService();
             if (appOpsService != null) {
                 appOpsService.setMode(op, uid, packageName, mode);
                 appOpsService.setUidMode(op, uid, mode);
@@ -623,7 +624,7 @@ public class AppOps {
 
     public static int checkOperation(int op, String packageName) {
         try {
-            IAppOpsService appOpsService = ClientBinderManager.getAppOpsService();
+            IAppOpsService appOpsService = ClientSystemService.getAppOpsService();
             if (appOpsService != null) {
                 int packageUid = getPackageUid(packageName);
                 return appOpsService.checkOperation(op, packageUid, packageName);
@@ -638,11 +639,11 @@ public class AppOps {
         int packageUid = 0;
         try {
             if (FreezeUtil.atLeast33()) {
-                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0L, 0);
+                packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0L, 0);
             } else if (FreezeUtil.atLeast24()) {
-                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0, 0);
+                packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0, 0);
             } else {
-                packageUid = ClientBinderManager.getPackageManager().getPackageUid(packageName, 0);
+                packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -653,11 +654,11 @@ public class AppOps {
     public static PermissionInfo getPermissionInfo(String permission, String packageName) throws RemoteException {
         PermissionInfo permissionInfo;
         if (FreezeUtil.atLeast30()) {
-            permissionInfo = ClientBinderManager.getPermissionManager().getPermissionInfo(permission, packageName, 0);
+            permissionInfo = ClientSystemService.getPermissionManager().getPermissionInfo(permission, packageName, 0);
         } else if (FreezeUtil.atLeast26()) {
-            permissionInfo = ClientBinderManager.getPackageManager().getPermissionInfo(permission, packageName, 0);
+            permissionInfo = ClientSystemService.getPackageManager().getPermissionInfo(permission, packageName, 0);
         } else {
-            permissionInfo = ClientBinderManager.getPackageManager().getPermissionInfo(permission, 0);
+            permissionInfo = ClientSystemService.getPackageManager().getPermissionInfo(permission, 0);
         }
         return permissionInfo;
     }
@@ -665,7 +666,7 @@ public class AppOps {
 
     public static int checkUidPermission(String permission, int uid) {
         try {
-            return ClientBinderManager.getPackageManager().checkUidPermission(permission, uid);
+            return ClientSystemService.getPackageManager().checkUidPermission(permission, uid);
         } catch (RemoteException e) {
             return PackageManager.PERMISSION_DENIED;
         }
@@ -674,7 +675,7 @@ public class AppOps {
 
     public static int checkPermission(String permission, int uid, String packageName) {
         try {
-            return ClientBinderManager.getPackageManager().checkPermission(permission, packageName, uid);
+            return ClientSystemService.getPackageManager().checkPermission(permission, packageName, uid);
         } catch (RemoteException e) {
             return PackageManager.PERMISSION_DENIED;
         }

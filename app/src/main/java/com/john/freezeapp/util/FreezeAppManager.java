@@ -16,6 +16,7 @@ import androidx.annotation.IntDef;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 
 import java.io.DataOutputStream;
@@ -143,7 +144,7 @@ public class FreezeAppManager {
     public static void requestForceStopApp(String packageName, Callback2 callback) {
         ThreadPool.execute(() -> {
             try {
-                ClientBinderManager.getActivityManager().forceStopPackage(packageName, 0);
+                ClientSystemService.getActivityManager().forceStopPackage(packageName, 0);
                 if (callback != null) {
                     callback.success();
                 }
@@ -160,7 +161,7 @@ public class FreezeAppManager {
     public static void requestDefrostApp(String packageName, Callback2 callback) {
         ThreadPool.execute(() -> {
             try {
-                ClientBinderManager.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0, 0, "");
+                ClientSystemService.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, 0, 0, "");
                 callback.success();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -176,7 +177,7 @@ public class FreezeAppManager {
             @Override
             public void run() {
                 try {
-                    ClientBinderManager.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER, 0, 0, "");
+                    ClientSystemService.getPackageManager().setApplicationEnabledSetting(packageName, PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER, 0, 0, "");
                     callback.success();
                 } catch (RemoteException e) {
                     e.printStackTrace();
@@ -261,7 +262,7 @@ public class FreezeAppManager {
     private static void requestRunningProcess2(Context context, Callback3 callback) {
         ThreadPool.execute(() -> {
             try {
-                List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = ClientBinderManager.getActivityManager().getRunningAppProcesses();
+                List<ActivityManager.RunningAppProcessInfo> runningAppProcesses = ClientSystemService.getActivityManager().getRunningAppProcesses();
                 Map<String, RunningModel> runningModelMap = new HashMap<>();
                 for (ActivityManager.RunningAppProcessInfo runningAppProcess : runningAppProcesses) {
                     ProcessModel processModel = new ProcessModel();
@@ -336,7 +337,7 @@ public class FreezeAppManager {
     }
 
     private static ApplicationInfo getApplicationInfo(String packageName) throws RemoteException {
-        IPackageManager iPackageManager = ClientBinderManager.getPackageManager();
+        IPackageManager iPackageManager = ClientSystemService.getPackageManager();
         ApplicationInfo applicationInfo;
         if (FreezeUtil.atLeast33()) {
             applicationInfo = iPackageManager.getApplicationInfo(packageName, 0L, 0);
@@ -355,9 +356,9 @@ public class FreezeAppManager {
             List<PackageInfo> packageInfos = new ArrayList<>();
             ParceledListSlice<PackageInfo> installedPackages = null;
             if (FreezeUtil.atLeast33()) {
-                installedPackages = ClientBinderManager.getPackageManager().getInstalledPackages(0L, 0);
+                installedPackages = ClientSystemService.getPackageManager().getInstalledPackages(0L, 0);
             } else {
-                installedPackages = ClientBinderManager.getPackageManager().getInstalledPackages(0, 0);
+                installedPackages = ClientSystemService.getPackageManager().getInstalledPackages(0, 0);
             }
             if (installedPackages != null) {
                 for (PackageInfo packageInfo : installedPackages.getList()) {

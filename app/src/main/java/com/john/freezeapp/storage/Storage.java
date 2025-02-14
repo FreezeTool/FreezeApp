@@ -20,8 +20,10 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientDaemonService;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
@@ -62,9 +64,9 @@ public class Storage {
                 List<PackageInfo> installApp = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ENABLE_APP, true);
                 StorageVolume storageVolume = getStorageVolume(context);
                 List<Model> models = new ArrayList<>();
-                String daemonPackageName = ClientBinderManager.getDaemonPackageName();
+                String daemonPackageName = ClientDaemonService.getDaemonPackageName();
                 if (storageVolume != null && installApp != null) {
-                    IStorageStatsManager storageStatsManager = ClientBinderManager.getStorageStatsManager();
+                    IStorageStatsManager storageStatsManager = ClientSystemService.getStorageStatsManager();
                     for (PackageInfo packageInfo : installApp) {
                         StorageStats storageStats = storageStatsManager.queryStatsForPackage(storageVolume.getUuid(), packageInfo.packageName, 0, daemonPackageName);
                         if (storageStats != null) {
@@ -107,9 +109,9 @@ public class Storage {
                 if (callback != null) {
                     callback.updatePackageInfo(packageInfos);
                 }
-                String daemonPackageName = ClientBinderManager.getDaemonPackageName();
+                String daemonPackageName = ClientDaemonService.getDaemonPackageName();
                 StorageVolume storageVolume = getStorageVolume(context);
-                IStorageStatsManager storageStatsManager = ClientBinderManager.getStorageStatsManager();
+                IStorageStatsManager storageStatsManager = ClientSystemService.getStorageStatsManager();
                 if (storageVolume != null) {
                     for (PackageInfo packageInfo : packageInfos) {
                         StorageStats storageStats = storageStatsManager.queryStatsForPackage(storageVolume.getUuid(), packageInfo.packageName, 0, daemonPackageName);
@@ -182,9 +184,9 @@ public class Storage {
             @Override
             public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
                 if (!TextUtils.isEmpty(commandResult.successMsg)) {
-                    String daemonPackageName = ClientBinderManager.getDaemonPackageName();
+                    String daemonPackageName = ClientDaemonService.getDaemonPackageName();
                     StorageVolume storageVolume = getStorageVolume(context);
-                    IStorageStatsManager storageStatsManager = ClientBinderManager.getStorageStatsManager();
+                    IStorageStatsManager storageStatsManager = ClientSystemService.getStorageStatsManager();
                     if (storageStatsManager != null) {
                         StorageStats storageStats = storageStatsManager.queryStatsForPackage(storageVolume.getUuid(), packageName, 0, daemonPackageName);
                         if (storageStats != null) {
@@ -205,15 +207,15 @@ public class Storage {
 
     public static void clearCache(Context context, String packageName, Callback3 callback) {
         ThreadPool.execute(() -> {
-            String daemonPackageName = ClientBinderManager.getDaemonPackageName();
+            String daemonPackageName = ClientDaemonService.getDaemonPackageName();
             StorageVolume storageVolume = getStorageVolume(context);
             if (storageVolume != null) {
                 int runClear = translateUserId(2000, UserHandleHidden.USER_NULL, "runClear");
-                ClientBinderManager.getPackageManager().deleteApplicationCacheFiles(packageName, new IPackageDataObserver.Stub() {
+                ClientSystemService.getPackageManager().deleteApplicationCacheFiles(packageName, new IPackageDataObserver.Stub() {
                     @Override
                     public void onRemoveCompleted(String packageName, boolean succeeded) {
                         if (succeeded) {
-                            IStorageStatsManager storageStatsManager = ClientBinderManager.getStorageStatsManager();
+                            IStorageStatsManager storageStatsManager = ClientSystemService.getStorageStatsManager();
                             if (storageStatsManager != null) {
                                 StorageStats storageStats = storageStatsManager.queryStatsForPackage(storageVolume.getUuid(), packageName, 0, daemonPackageName);
                                 if (storageStats != null) {
@@ -237,10 +239,10 @@ public class Storage {
         ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
-                String daemonPackageName = ClientBinderManager.getDaemonPackageName();
+                String daemonPackageName = ClientDaemonService.getDaemonPackageName();
                 StorageVolume storageVolume = getStorageVolume(context);
                 if (storageVolume != null) {
-                    IStorageStatsManager storageStatsManager = ClientBinderManager.getStorageStatsManager();
+                    IStorageStatsManager storageStatsManager = ClientSystemService.getStorageStatsManager();
                     if (storageStatsManager != null) {
                         StorageStats storageStats = storageStatsManager.queryStatsForPackage(storageVolume.getUuid(), packageName, 0, daemonPackageName);
                         if (storageStats != null) {
@@ -262,7 +264,7 @@ public class Storage {
     private static int translateUserId(int userId, int allUserId, String logContext) {
 
         final boolean allowAll = (allUserId != UserHandleHidden.USER_NULL);
-        final int translatedUserId = ClientBinderManager.getActivityManager().handleIncomingUser(ClientBinderManager.getDaemonPid(), ClientBinderManager.getDaemonUid(), userId, allowAll, true, logContext, "pm command");
+        final int translatedUserId = ClientSystemService.getActivityManager().handleIncomingUser(ClientDaemonService.getDaemonPid(), ClientDaemonService.getDaemonUid(), userId, allowAll, true, logContext, "pm command");
         return translatedUserId == UserHandleHidden.USER_ALL ? allUserId : translatedUserId;
 
     }

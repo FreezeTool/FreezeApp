@@ -7,6 +7,7 @@ import android.content.pm.ParceledListSlice;
 import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.hidden.api.ReplaceRef;
@@ -47,7 +48,7 @@ public final class UsageStats {
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
-        ParceledListSlice<android.app.usage.UsageStats> parceledListSlice = ClientBinderManager.getUsageStatsManager().queryUsageStats(UsageStatsManager.INTERVAL_DAILY, calendar.getTimeInMillis(), System.currentTimeMillis(), null, 0);
+        ParceledListSlice<android.app.usage.UsageStats> parceledListSlice = ClientSystemService.getUsageStatsManager().queryUsageStats(UsageStatsManager.INTERVAL_DAILY, calendar.getTimeInMillis(), System.currentTimeMillis(), null, 0);
         List<android.app.usage.UsageStats> list = parceledListSlice.getList();
         List<UsageStatsData> usageStatsDatas = new ArrayList<>();
         for (android.app.usage.UsageStats usageStats : list) {

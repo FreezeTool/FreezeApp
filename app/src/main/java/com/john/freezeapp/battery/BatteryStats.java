@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi;
 
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
@@ -117,7 +118,7 @@ public class BatteryStats {
             @SuppressLint("BlockedPrivateApi")
             @Override
             public void run() {
-                IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
+                IBatteryStats batteryStats = ClientSystemService.getBatteryStats();
                 if (batteryStats == null) {
                     callback.fail();
                     return;
@@ -145,7 +146,7 @@ public class BatteryStats {
                 try {
                     List<BatteryUsageData> list = new ArrayList<>();
                     list.add(new BatteryUsageTitleData("Estimated power use (mAh)"));
-                    List<BatteryUsageStats> batteryUsageStatsList = ClientBinderManager.getBatteryStats().getBatteryUsageStats(Collections.singletonList(query));
+                    List<BatteryUsageStats> batteryUsageStatsList = ClientSystemService.getBatteryStats().getBatteryUsageStats(Collections.singletonList(query));
                     if (batteryUsageStatsList != null && !batteryUsageStatsList.isEmpty()) {
                         BatteryUsageStats batteryUsageStats = batteryUsageStatsList.get(0);
                         final Range<Double> dischargedPowerRange = batteryUsageStats.getDischargedPowerRange();
@@ -326,7 +327,7 @@ public class BatteryStats {
                             batteryUsageAppData.uid = uidBatteryConsumer.getUid();
                             batteryUsageAppData.packageName = uidBatteryConsumer.getPackageWithHighestDrain();
                             if (TextUtils.isEmpty(batteryUsageAppData.packageName)) {
-                                String[] packages = ClientBinderManager.getPackageManager().getPackagesForUid(batteryUsageAppData.uid);
+                                String[] packages = ClientSystemService.getPackageManager().getPackagesForUid(batteryUsageAppData.uid);
                                 if (packages != null && packages.length > 0) {
                                     batteryUsageAppData.packageName = packages[0];
                                 }

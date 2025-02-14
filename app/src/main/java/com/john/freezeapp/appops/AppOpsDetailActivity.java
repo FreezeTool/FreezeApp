@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.util.FreezeUtil;
 
@@ -92,9 +93,9 @@ public class AppOpsDetailActivity extends BaseActivity {
         try {
             ApplicationInfo applicationInfo;
             if (FreezeUtil.atLeast33()) {
-                applicationInfo = ClientBinderManager.getPackageManager().getApplicationInfo(packageName, 0L, 0);
+                applicationInfo = ClientSystemService.getPackageManager().getApplicationInfo(packageName, 0L, 0);
             } else {
-                applicationInfo = ClientBinderManager.getPackageManager().getApplicationInfo(packageName, 0, 0);
+                applicationInfo = ClientSystemService.getPackageManager().getApplicationInfo(packageName, 0, 0);
             }
 
             appOpsPackageDetailData.uid = applicationInfo.uid;
@@ -102,9 +103,9 @@ public class AppOpsDetailActivity extends BaseActivity {
 
             PackageInfo packageInfo;
             if (FreezeUtil.atLeast33()) {
-                packageInfo = ClientBinderManager.getPackageManager().getPackageInfo(packageName, 0L, 0);
+                packageInfo = ClientSystemService.getPackageManager().getPackageInfo(packageName, 0L, 0);
             } else {
-                packageInfo = ClientBinderManager.getPackageManager().getPackageInfo(packageName, 0, 0);
+                packageInfo = ClientSystemService.getPackageManager().getPackageInfo(packageName, 0, 0);
             }
 
             appOpsPackageDetailData.versionName = packageInfo.versionName;

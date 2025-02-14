@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.monitor.DaemonAppMonitorConfig;
 import com.john.freezeapp.daemon.monitor.IDaemonAppMonitorBinder;
@@ -92,7 +93,7 @@ public class AppMonitorManager {
             return;
         }
 
-        IActivityManager activityManager = ClientBinderManager.getActivityManager();
+        IActivityManager activityManager = ClientSystemService.getActivityManager();
         if (activityManager != null) {
             try {
 

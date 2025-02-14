@@ -24,6 +24,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
@@ -61,7 +62,7 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
-        IBatteryStats batteryStats = ClientBinderManager.getBatteryStats();
+        IBatteryStats batteryStats = ClientSystemService.getBatteryStats();
         if (batteryStats != null && FreezeUtil.atLeast31()) {
             list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_battery_usage),
                     R.drawable.ic_vector_battery,
@@ -147,7 +148,7 @@ public class FreezeHomeToolHelper {
      */
     private static void toTest2(Context context) {
         try {
-            ISmartspaceManager smartspaceManager = ClientBinderManager.getSmartspaceManager();
+            ISmartspaceManager smartspaceManager = ClientSystemService.getSmartspaceManager();
             if (smartspaceManager != null) {
                 UserHandle userHandle = UserHandle.getUserHandleForUid(Process.myUid());
                 SmartspaceSessionId sessionId = new SmartspaceSessionId(context.getPackageName() + ":" + UUID.randomUUID().toString(), userHandle);
