@@ -78,7 +78,7 @@ public class AdbPairActivity extends BaseActivity {
         try {
             startForegroundService(intent);
         } catch (Throwable e) {
-            Log.e(ClientLog.TAG, "startForegroundService", e);
+            ClientLog.error( "startForegroundService", e);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && e instanceof ForegroundServiceStartNotAllowedException) {
                 AppOpsManager appOpsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);

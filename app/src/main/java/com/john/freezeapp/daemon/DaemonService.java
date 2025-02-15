@@ -2,6 +2,8 @@ package com.john.freezeapp.daemon;
 
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
+import android.content.Context;
+import android.content.IClipboard;
 import android.content.pm.ILauncherApps;
 import android.content.pm.IPackageManager;
 import android.hardware.display.IDisplayManager;
@@ -17,17 +19,27 @@ import com.android.internal.app.IAppOpsService;
 import com.john.freezeapp.util.FreezeUtil;
 
 public class DaemonService {
-    public static final IAppOpsService appOps;
-    public static final IActivityManager activityManager;
-    public static final IUserManager userManager;
-    public static final IPackageManager packageManager;
-    public static final IPermissionManager permissionManager;
-    public static final IDeviceIdleController deviceIdleController;
-    public static final IDisplayManager displayManager;
-    public static final IBatteryPropertiesRegistrar batteryPropertiesRegistrar;
-    public static final ILauncherApps launcherApps;
-    public static final IWindowManager windowManager;
+    private static final IAppOpsService appOps;
+    private static final IActivityManager activityManager;
+    private static final IUserManager userManager;
+    private static final IPackageManager packageManager;
+    private static final IPermissionManager permissionManager;
+    private static final IDeviceIdleController deviceIdleController;
+    private static final IDisplayManager displayManager;
+    private static final IBatteryPropertiesRegistrar batteryPropertiesRegistrar;
+    private static final ILauncherApps launcherApps;
+    private static final IWindowManager windowManager;
+    private static final IClipboard iClipboard;
 
+
+    public static IActivityManager getActivityManager() {
+        return activityManager;
+    }
+
+
+    public static IClipboard getClipboard() {
+        return iClipboard;
+    }
 
     static {
         appOps = IAppOpsService.Stub.asInterface(ServiceManager.getService("appops"));
@@ -58,5 +70,7 @@ public class DaemonService {
         batteryPropertiesRegistrar = IBatteryPropertiesRegistrar.Stub.asInterface(ServiceManager.getService("batteryproperties"));
         launcherApps = ILauncherApps.Stub.asInterface(ServiceManager.getService("launcherapps"));
         windowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
+
+        iClipboard = IClipboard.Stub.asInterface(ServiceManager.getService(Context.CLIPBOARD_SERVICE));
     }
 }

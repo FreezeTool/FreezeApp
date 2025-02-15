@@ -46,7 +46,9 @@ public class FreezeUtil {
 
     public static String getShellFilePath(Context context) {
         File externalFilesDir = context.getExternalFilesDir(null);
-        externalFilesDir.mkdirs();
+        if (!externalFilesDir.exists()) {
+            externalFilesDir.mkdirs();
+        }
         File file = new File(externalFilesDir.getAbsolutePath() + "/start.sh");
         return file.getAbsolutePath();
     }
@@ -350,7 +352,6 @@ public class FreezeUtil {
         int digitGroups = (int) (Math.log10(cacheBytes) / Math.log10(1024));
         return new DecimalFormat("#,##0.##").format(cacheBytes / Math.pow(1024, digitGroups)) + " " + UNITS[digitGroups];
     }
-
 
 
 }

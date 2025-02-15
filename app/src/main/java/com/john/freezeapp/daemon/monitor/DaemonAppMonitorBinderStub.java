@@ -1,6 +1,5 @@
 package com.john.freezeapp.daemon.monitor;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,9 +7,7 @@ import android.os.RemoteException;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.widget.TextView;
-
 import com.john.freezeapp.App;
-import com.john.freezeapp.R;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonLog;
 import com.john.freezeapp.monitor.AppMonitorActivity;

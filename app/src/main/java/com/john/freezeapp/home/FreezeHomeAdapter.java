@@ -14,6 +14,7 @@ public class FreezeHomeAdapter extends CardRecyclerViewAdapter<ClassCreatorPool>
         getCreatorPool().putRule(FreezeHomeDaemonData.class, FreezeHomeDaemonViewHolder.CREATOR);
         getCreatorPool().putRule(CommonEmptyData.class, CommonEmptyViewHolder.CREATOR);
         getCreatorPool().putRule(FreezeHomeLogData.class, FreezeHomeLogViewHolder.CREATOR);
+        getCreatorPool().putRule(FreezeHomeDeviceInfoData.class, FreezeHomeDeviceInfoViewHolder.CREATOR);
         setHasStableIds(true);
     }
 

@@ -7,6 +7,7 @@ import android.system.Os;
 import android.text.TextUtils;
 
 import com.john.freezeapp.BuildConfig;
+import com.john.freezeapp.daemon.util.DaemonUtil;
 import com.john.freezeapp.util.UserHandleCompat;
 
 public class DaemonConfig {
@@ -14,16 +15,7 @@ public class DaemonConfig {
         if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_VERSION)) {
             return BuildConfig.VERSION_NAME;
         } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_PACKAGE_NAME)) {
-            String[] packagesNames;
-            try {
-                packagesNames = ActivityThread.getPackageManager().getPackagesForUid(Process.myUid());
-                if (packagesNames != null && packagesNames.length > 0) {
-                    return packagesNames[0];
-                }
-            } catch (Exception e) {
-                //
-            }
-            return DaemonHelper.DAEMON_SHELL_PACKAGE;
+            return DaemonUtil.getDaemonPackageName();
         } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_PID)) {
             return String.valueOf(android.os.Process.myPid());
         } else if (TextUtils.equals(key, DaemonHelper.KEY_DAEMON_UID)) {

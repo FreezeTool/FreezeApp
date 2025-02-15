@@ -372,20 +372,20 @@ public class HomeFragment extends BaseFragment {
     private FreezeHomeDeviceData getDeviceData() {
         FreezeHomeDeviceData freezeDeviceData = new FreezeHomeDeviceData();
         // 设备
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("设备", FreezeUtil.getDevice()));
+        freezeDeviceData.add(new FreezeHomeDeviceInfoData("设备", FreezeUtil.getDevice()));
         // 版本
         String androidVersion = Build.VERSION.PREVIEW_SDK_INT != 0 ? Build.VERSION.CODENAME : Build.VERSION.RELEASE;
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("版本", String.format("Android %s (%s)", androidVersion, Build.VERSION.SDK_INT)));
+        freezeDeviceData.add(new FreezeHomeDeviceInfoData("版本", String.format("Android %s (%s)", androidVersion, Build.VERSION.SDK_INT)));
         // 架构
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("架构", Build.SUPPORTED_ABIS[0]));
+        freezeDeviceData.add(new FreezeHomeDeviceInfoData("架构", Build.SUPPORTED_ABIS[0]));
         // User
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("USER", Build.USER));
+        freezeDeviceData.add(new FreezeHomeDeviceInfoData("USER", Build.USER));
         // Build号
-        freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("Build号", Build.ID));
+        freezeDeviceData.add(new FreezeHomeDeviceInfoData("Build号", Build.ID));
         // 内核
         String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
         if (!TextUtils.isEmpty(kernelVersion)) {
-            freezeDeviceData.add(new FreezeHomeDeviceData.DeviceInfo("内核", kernelVersion));
+            freezeDeviceData.add(new FreezeHomeDeviceInfoData("内核", kernelVersion));
         }
 
         return freezeDeviceData;

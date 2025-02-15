@@ -1,0 +1,176 @@
+package com.john.freezeapp.daemon.clipboard;
+
+import android.content.ClipData;
+import android.content.IClipboard;
+import android.content.IOnPrimaryClipChangedListener;
+import android.os.RemoteException;
+import android.text.TextUtils;
+
+import com.john.freezeapp.daemon.Daemon;
+import com.john.freezeapp.daemon.DaemonLog;
+import com.john.freezeapp.daemon.DaemonService;
+import com.john.freezeapp.daemon.util.DaemonUtil;
+import com.john.freezeapp.util.FreezeUtil;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.Stub {
+
+    Map<String, ClipboardData> mClipboardDataMap = new LinkedHashMap<>();
+
+    ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+
+    IOnPrimaryClipChangedListener.Stub iOnPrimaryClipChangedListener = new IOnPrimaryClipChangedListener.Stub() {
+        @Override
+        public void dispatchPrimaryClipChanged() {
+            mExecutor.execute(() -> updateClipData());
+        }
+    };
+
+    private synchronized void updateClipData() {
+        IClipboard clipboard = getClipboard();
+        String daemonPackageName = DaemonUtil.getDaemonPackageName();
+        if (clipboard != null) {
+
+            ClipData primaryClipData;
+            String primaryClipSource;
+            if (FreezeUtil.atLeast34()) {
+                if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0, 0)) {
+                    return;
+                }
+                primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0, 0);
+                primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0, 0);
+            } else {
+                if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0)) {
+                    return;
+                }
+                primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0);
+                primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0);
+            }
+
+            if (primaryClipData != null) {
+                if (primaryClipData.getItemCount() > 0) {
+                    CharSequence text = primaryClipData.getItemAt(0).coerceToText(Daemon.getDaemon().mActivityThread.getApplication());
+//                        DaemonLog.log(String.format("dispatchPrimaryClipChanged text=%s", text));
+                    if (text != null) {
+                        String id = DaemonUtil.md5(text.toString());
+                        if (!TextUtils.isEmpty(id) && !mClipboardDataMap.containsKey(id)) {
+                            ClipboardData clipboardData = new ClipboardData();
+                            clipboardData.id = id;
+                            clipboardData.packageName = primaryClipSource;
+                            clipboardData.content = text.toString();
+                            mClipboardDataMap.put(id, clipboardData);
+                            DaemonLog.log(String.format("dispatchPrimaryClipChanged add %s", clipboardData));
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    private static final String TAG = "FreezeApp_";
+
+    IClipboard iClipboard;
+
+
+    public IClipboard getClipboard() {
+        if (iClipboard == null) {
+            iClipboard = DaemonService.getClipboard();
+        }
+        return iClipboard;
+    }
+
+    boolean isActive = false;
+
+    @Override
+    public void startMonitor() throws RemoteException {
+        DaemonLog.log("startMonitor");
+        if (isActive) {
+            return;
+        }
+        DaemonLog.log("startMonitor start");
+        try {
+            IClipboard clipboard = getClipboard();
+            if (clipboard != null) {
+                if (FreezeUtil.atLeast34()) {
+                    clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0, 0);
+                } else {
+                    clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0);
+                }
+            }
+            isActive = true;
+        } catch (Throwable e) {
+            DaemonLog.e(e, "startMonitor");
+        }
+    }
+
+    @Override
+    public void endMonitor() throws RemoteException {
+        DaemonLog.log("endMonitor");
+        if (!isActive) {
+            return;
+        }
+        DaemonLog.log("endMonitor start");
+        try {
+            IClipboard clipboard = getClipboard();
+            if (clipboard != null) {
+                if (FreezeUtil.atLeast34()) {
+                    clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0, 0);
+                } else {
+                    clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0);
+                }
+            }
+            isActive = false;
+        } catch (Throwable e) {
+            DaemonLog.e(e, "endMonitor");
+        }
+    }
+
+    @Override
+    public List<ClipboardData> getClipboardData() throws RemoteException {
+        return new ArrayList<>(mClipboardDataMap.values());
+    }
+
+    @Override
+    public void removeClipboardData(String id) throws RemoteException {
+        mExecutor.execute(() -> mClipboardDataMap.remove(id));
+    }
+
+    @Override
+    public void clearClipboardData() throws RemoteException {
+        mExecutor.execute(() -> mClipboardDataMap.clear());
+    }
+
+    @Override
+    public boolean setClipboardData(String id) throws RemoteException {
+
+        ClipboardData clipboardData = mClipboardDataMap.get(id);
+        if (clipboardData == null) {
+            return false;
+        }
+
+        IClipboard clipboard = getClipboard();
+        if (clipboard != null) {
+            ClipData clipData = ClipData.newPlainText(TAG, clipboardData.content);
+            String daemonPackageName = DaemonUtil.getDaemonPackageName();
+            if (FreezeUtil.atLeast34()) {
+                clipboard.setPrimaryClip(clipData, daemonPackageName, null, 0, 0);
+            } else {
+                clipboard.setPrimaryClip(clipData, daemonPackageName, null, 0);
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean isMonitor() throws RemoteException {
+        return isActive;
+    }
+}

@@ -1,0 +1,44 @@
+package com.john.freezeapp.daemon.util;
+
+import android.app.ActivityThread;
+import android.os.Process;
+
+import com.john.freezeapp.daemon.DaemonHelper;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+
+public class DaemonUtil {
+    public static String getDaemonPackageName() {
+        String[] packagesNames;
+        try {
+            packagesNames = ActivityThread.getPackageManager().getPackagesForUid(Process.myUid());
+            if (packagesNames != null && packagesNames.length > 0) {
+                return packagesNames[0];
+            }
+        } catch (Exception e) {
+            //
+        }
+        return DaemonHelper.DAEMON_SHELL_PACKAGE;
+    }
+
+
+    public static String md5(String plainString) {
+        String cipherString = null;
+        try {
+            // 获取实例
+            MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+            // 计算摘要
+            byte[] cipherBytes = messageDigest.digest(plainString.getBytes(StandardCharsets.UTF_8));
+            // 输出为16进制字符串
+            StringBuilder sb = new StringBuilder();
+            for (byte b : cipherBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            cipherString = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cipherString;
+    }
+}

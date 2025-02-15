@@ -25,6 +25,7 @@ import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.clipboard.ClipboardActivity;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
@@ -116,6 +117,16 @@ public class FreezeHomeToolHelper {
                 }));
 
 
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_clipboard_name),
+                R.drawable.ic_vector_storage,
+                0xffBC9DEB,
+                v -> {
+                    Intent intent = new Intent(context, ClipboardActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }));
+
+
         list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,
                 0xffF4E1B9,
@@ -138,7 +149,6 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
-        // /sdcard/Android/data/com.autonavi.minimap/files/vui_autotest/case_今天天气怎么样_1738815442203.json
     }
 
     /**

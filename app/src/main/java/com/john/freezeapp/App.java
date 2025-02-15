@@ -26,7 +26,6 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
         if (FreezeUtil.atLeast28()) {
             HiddenApiBypass.addHiddenApiExemptions("L");
         }

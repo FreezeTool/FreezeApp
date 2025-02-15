@@ -134,6 +134,12 @@
 
         </activity>
 
+        <activity
+            android:name=".clipboard.ClipboardActivity"
+            android:launchMode="singleTask">
+
+        </activity>
+
         <service android:name=".monitor.AppMonitorService" />
 
         <service

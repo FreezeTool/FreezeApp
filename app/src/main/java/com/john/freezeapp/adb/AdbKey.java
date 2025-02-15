@@ -1,13 +1,13 @@
 package com.john.freezeapp.adb;
 
-import static com.john.freezeapp.daemon.DaemonLog.TAG;
-
 import android.content.SharedPreferences;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
+
+import com.john.freezeapp.client.ClientLog;
 
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
@@ -112,8 +112,7 @@ public class AdbKey {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        Log.d(TAG, privateKey.toString());
+        ClientLog.log(privateKey.toString());
 
     }
 
@@ -151,7 +150,7 @@ public class AdbKey {
 
                         @Override
                         public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-                            Log.d(TAG, "chooseClientAlias: keyType=${keyTypes.contentToString()}, issuers=${issuers?.contentToString()}");
+                            ClientLog.log("chooseClientAlias: keyType=${keyTypes.contentToString()}, issuers=${issuers?.contentToString()}");
                             for (String s : keyType) {
                                 if (TextUtils.equals("RSA", s)) return alias;
                             }
@@ -170,7 +169,7 @@ public class AdbKey {
 
                         @Override
                         public X509Certificate[] getCertificateChain(String alias) {
-                            Log.d(TAG, "getCertificateChain: alias=$alias");
+                            ClientLog.log("getCertificateChain: alias=$alias");
                             return TextUtils.equals(alias, this.alias) ? new X509Certificate[]{
                                     certificate
                             } : null;
@@ -178,7 +177,7 @@ public class AdbKey {
 
                         @Override
                         public PrivateKey getPrivateKey(String alias) {
-                            Log.d(TAG, "getPrivateKey: alias=$alias");
+                            ClientLog.log("getPrivateKey: alias=$alias");
                             return TextUtils.equals(alias, this.alias) ? privateKey : null;
                         }
                     }

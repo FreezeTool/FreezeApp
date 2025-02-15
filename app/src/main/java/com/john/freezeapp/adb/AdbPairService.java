@@ -20,6 +20,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.john.freezeapp.R;
+import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.util.SharedPrefUtil;
 import com.john.freezeapp.util.ThreadPool;
 
@@ -29,8 +30,6 @@ import java.net.ConnectException;
 public class AdbPairService extends Service {
 
     public static final String notificationChannelId = "adb_pairing";
-
-    private String tag = "AdbPairingService";
 
     private static final int notificationId = 1;
     private static final int replyRequestId = 1;
@@ -151,7 +150,7 @@ public class AdbPairService extends Service {
             try {
                 startForeground(notificationId, notification);
             } catch (Throwable e) {
-                Log.e(tag, "startForeground failed", e);
+               ClientLog.error("startForeground failed", e);
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
                         && e instanceof ForegroundServiceStartNotAllowedException) {
@@ -222,7 +221,7 @@ public class AdbPairService extends Service {
 
                     @Override
                     public void run() {
-                        Log.i(tag, "Pairing service port: $port");
+                        ClientLog.i( "Pairing service port: $port");
 
                         // Since the service could be killed before user finishing input,
                         // we need to put the port into Intent

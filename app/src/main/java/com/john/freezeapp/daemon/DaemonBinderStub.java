@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
+import com.john.freezeapp.daemon.clipboard.DaemonClipboardMonitorBinder;
 import com.john.freezeapp.daemon.monitor.DaemonAppMonitorBinderStub;
 import com.john.freezeapp.daemon.process.RemoteProcess;
 import com.john.hidden.api.ReplaceRef;
@@ -37,6 +38,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
     static {
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_FRP, new DaemonFrpBinderStub());
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_APP_MONITOR, new DaemonAppMonitorBinderStub());
+        sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_CLIPBOARD_MONITOR, new DaemonClipboardMonitorBinder());
     }
 
     @Override

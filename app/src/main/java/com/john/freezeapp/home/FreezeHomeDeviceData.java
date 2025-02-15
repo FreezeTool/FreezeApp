@@ -7,7 +7,7 @@ import java.util.List;
 
 public class FreezeHomeDeviceData extends FreezeHomeData {
 
-    public List<DeviceInfo> deviceInfos = new ArrayList<>();
+    public List<FreezeHomeDeviceInfoData> deviceInfos = new ArrayList<>();
     public ViewGroup cacheView;
 
     public FreezeHomeDeviceData() {
@@ -15,18 +15,8 @@ public class FreezeHomeDeviceData extends FreezeHomeData {
     }
 
 
-    public void add(DeviceInfo deviceInfo) {
+    public void add(FreezeHomeDeviceInfoData deviceInfo) {
         deviceInfos.add(deviceInfo);
     }
 
-
-    public static class DeviceInfo {
-        public String type;
-        public String content;
-
-        public DeviceInfo(String type, String content) {
-            this.content = content;
-            this.type = type;
-        }
-    }
 }

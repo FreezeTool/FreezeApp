@@ -1,4 +1,5 @@
 package com.john.freezeapp.client.process;
+
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
@@ -8,6 +9,7 @@ import android.util.ArraySet;
 import android.util.Log;
 
 import com.john.freezeapp.IRemoteProcess;
+import com.john.freezeapp.client.ClientLog;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,7 +37,7 @@ public class ClientRemoteProcess extends Process implements Parcelable {
                 CACHE.remove(ClientRemoteProcess.this);
             }, 0);
         } catch (RemoteException e) {
-            Log.e(TAG, "linkToDeath", e);
+            ClientLog.e(e, "linkToDeath");
         }
 
         // The reference to the binder object must be hold

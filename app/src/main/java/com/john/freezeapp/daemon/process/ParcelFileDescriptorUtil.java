@@ -4,6 +4,8 @@ package com.john.freezeapp.daemon.process;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import com.john.freezeapp.daemon.DaemonLog;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -54,7 +56,7 @@ public class ParcelFileDescriptorUtil {
                     mOut.flush();
                 }
             } catch (IOException e) {
-                Log.e("TransferThread", Log.getStackTraceString(e));
+                DaemonLog.e(e, "TransferThread");
             } finally {
                 try {
                     mIn.close();

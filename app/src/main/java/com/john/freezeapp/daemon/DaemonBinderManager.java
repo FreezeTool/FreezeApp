@@ -128,7 +128,7 @@ public class DaemonBinderManager {
     }
 
     public static IContentProvider getContentProviderExternal(@Nullable String name, int userId, @Nullable IBinder token, @Nullable String tag) throws RemoteException {
-        IActivityManager am = DaemonService.activityManager;
+        IActivityManager am = DaemonService.getActivityManager();
         ContentProviderHolder contentProviderHolder;
         IContentProvider provider;
         if (FreezeUtil.atLeast29()) {

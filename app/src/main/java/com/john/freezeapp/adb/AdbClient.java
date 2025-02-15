@@ -70,7 +70,7 @@ public class AdbClient implements Closeable {
         OutputStream outputStream = getOutputStream();
         outputStream.write(message.toByteArray());
         outputStream.flush();
-        Log.d(ClientLog.TAG, "write=" + message.toStringShort());
+        ClientLog.log("write=" + message.toStringShort());
     }
 
     private void write(int command, int arg0, int arg1, String data) throws IOException {
@@ -98,7 +98,7 @@ public class AdbClient implements Closeable {
         }
         AdbMessage message = new AdbMessage(command, arg0, arg1, dataLength, checksum, magic, data);
         message.validateOrThrow();
-        Log.d(ClientLog.TAG, "read " + message.toStringShort());
+        ClientLog.log( "read " + message.toStringShort());
         return message;
     }
 
@@ -122,7 +122,7 @@ public class AdbClient implements Closeable {
             SSLContext sslContext = key.getSslContext();
             tlsSocket = (SSLSocket) sslContext.getSocketFactory().createSocket(socket, host, port, true);
             tlsSocket.startHandshake();
-            Log.d(ClientLog.TAG, "Handshake succeeded.");
+            ClientLog.log( "Handshake succeeded.");
 
             tlsInputStream = new DataInputStream(tlsSocket.getInputStream());
             tlsOutputStream = new DataOutputStream(tlsSocket.getOutputStream());
