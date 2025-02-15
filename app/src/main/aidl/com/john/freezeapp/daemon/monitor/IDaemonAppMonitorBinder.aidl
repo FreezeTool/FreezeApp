@@ -3,7 +3,9 @@ package com.john.freezeapp.daemon.monitor;
 // Declare any non-default types here with import statements
 import com.john.freezeapp.daemon.monitor.DaemonAppMonitorConfig;
 interface IDaemonAppMonitorBinder {
-    void start();
-    void stop();
-    void update(in DaemonAppMonitorConfig config);
+    boolean start();
+    boolean stop();
+    void updateSize(int size);
+    int getSize();
+    boolean isActive();
 }

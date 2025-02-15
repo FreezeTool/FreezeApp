@@ -140,7 +140,8 @@
 
         </activity>
 
-        <service android:name=".monitor.AppMonitorService" />
+        <service
+            android:name=".monitor.AppMonitorService" />
 
         <service
             android:name=".adb.AdbPairService"

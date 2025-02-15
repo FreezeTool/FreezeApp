@@ -1,96 +1,107 @@
 package com.john.freezeapp.daemon.monitor;
 
-import android.content.Context;
+import android.app.ActivityManager;
+import android.app.IActivityManager;
+import android.app.ITaskStackListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.RemoteException;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.widget.TextView;
-import com.john.freezeapp.App;
+
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonLog;
-import com.john.freezeapp.monitor.AppMonitorActivity;
-import com.john.freezeapp.util.ScreenUtils;
-import com.john.freezeapp.window.FloatWindow;
+import com.john.freezeapp.daemon.DaemonService;
+import com.john.freezeapp.monitor.AppMonitorRemoteService;
+import com.john.freezeapp.monitor.TaskStackListener;
 
 public class DaemonAppMonitorBinderStub extends IDaemonAppMonitorBinder.Stub {
 
-    FloatWindow mFloatWindow;
-    TextView mTextView;
+    private int size;
+    private ActivityManager.RunningTaskInfo runningTaskInfo;
+    private boolean isActive;
 
-    private void showWindow(Context context) {
-        if (mFloatWindow == null) {
-            FloatWindow floatWindow = new FloatWindow(context);
-            floatWindow.setOnLongClickListener(v -> {
-                Intent intent = new Intent(context, AppMonitorActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                App.getApp().startActivity(intent);
-                return false;
-            });
-            TextView textView = new TextView(context);
-            int padding = ScreenUtils.dp2px(context, 10);
-            textView.setPadding(padding, padding, padding, padding);
-            textView.setGravity(Gravity.CENTER);
-            textView.setTextColor(Color.WHITE);
-//            mTextView.setBackgroundResource(R.drawable.mask_background);
-            textView.setBackgroundColor(0x80000000);
-            textView.setText(getShowContent("1111", "111"));
-            floatWindow.setView(textView);
-            mTextView = textView;
-            mFloatWindow = floatWindow;
-
+    private ITaskStackListener.Stub sTaskStackListener = new TaskStackListener() {
+        @Override
+        public void onTaskMovedToFront(ActivityManager.RunningTaskInfo taskInfo) {
+            super.onTaskMovedToFront(taskInfo);
+            runningTaskInfo = taskInfo;
+            updateRemoteTopActivity();
         }
-        mFloatWindow.show();
-    }
 
-    private String getShowContent(String packageName, String className) {
-        return packageName +
-                "\n" +
-                className;
-    }
-
-    private void updateTextViewSize(int size) {
-        if (mTextView != null) {
-            mTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, size);
+        @Override
+        public void onTaskDescriptionChanged(ActivityManager.RunningTaskInfo taskInfo) {
+            super.onTaskDescriptionChanged(taskInfo);
+            runningTaskInfo = taskInfo;
+            updateRemoteTopActivity();
         }
-    }
+    };
 
-    private void hideWindow() {
-        if (mFloatWindow != null) {
-            mFloatWindow.hide();
-        }
-    }
+    private void updateRemoteTopActivity() {
 
-
-    @Override
-    public void start() throws RemoteException {
-        try {
-            showWindow(Daemon.getDaemon().mActivityThread.getApplication());
-        } catch (Exception e) {
-            DaemonLog.e(e, "DaemonAppMonitorBinderStub show");
-        }
-    }
-
-
-    @Override
-    public void stop() throws RemoteException {
-        try {
-            hideWindow();
-        } catch (Exception e) {
-
-        }
     }
 
     @Override
-    public void update(DaemonAppMonitorConfig config) throws RemoteException {
-
+    public boolean start() throws RemoteException {
+        if (isActive) {
+            return false;
+        }
         try {
-            if (config != null) {
-                updateTextViewSize(config.size);
+            IActivityManager activityManager = DaemonService.getActivityManager();
+            if (activityManager != null) {
+                if (sTaskStackListener != null) {
+                    activityManager.unregisterTaskStackListener(sTaskStackListener);
+                }
+
+                activityManager.registerTaskStackListener(sTaskStackListener);
             }
-        } catch (Exception e) {
+            isActive = true;
+            return true;
+        } catch (Throwable e) {
+            DaemonLog.e(e, "start");
+        }
+        return false;
+    }
 
+    @Override
+    public boolean stop() throws RemoteException {
+        if (!isActive) {
+            return false;
+        }
+        try {
+            IActivityManager activityManager = DaemonService.getActivityManager();
+            if (activityManager != null) {
+                activityManager.unregisterTaskStackListener(sTaskStackListener);
+            }
+            isActive = false;
+            return true;
+        } catch (Throwable e) {
+            DaemonLog.e(e, "start");
+        }
+        return false;
+    }
+
+    @Override
+    public void updateSize(int size) throws RemoteException {
+        this.size = size;
+        updateRemoteSize();
+    }
+
+    private void updateRemoteSize() {
+        if (!this.isActive) {
+            return;
         }
     }
+
+    @Override
+    public int getSize() throws RemoteException {
+        return this.size;
+    }
+
+    @Override
+    public boolean isActive() throws RemoteException {
+        return this.isActive;
+    }
+
+    private void connectRemote() {
+
+    }
+
 }

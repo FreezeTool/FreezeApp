@@ -7,7 +7,7 @@ import android.window.TaskSnapshot;
 
 import com.john.freezeapp.client.ClientLog;
 
-public class TaskStackListener extends ITaskStackListener.Stub{
+public class TaskStackListener extends ITaskStackListener.Stub {
     @Override
     public void onTaskStackChanged() {
         ClientLog.log("AppMonitorManager onTaskStackChanged");

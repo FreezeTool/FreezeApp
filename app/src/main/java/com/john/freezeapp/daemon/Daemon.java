@@ -1,6 +1,8 @@
 package com.john.freezeapp.daemon;
 
 import android.app.ActivityThread;
+import android.app.Application;
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
@@ -32,6 +34,14 @@ public class Daemon {
 
     public static Daemon getDaemon() {
         return sDaemon;
+    }
+
+    public Application getApplication() {
+        return mActivityThread.getApplication();
+    }
+
+    public Context getContext() {
+        return mActivityThread.getSystemContext();
     }
 
     private void killOtherDaemon() {
