@@ -144,6 +144,9 @@
             android:name=".monitor.AppMonitorService" />
 
         <service
+            android:name=".clipboard.ClipboardService" />
+
+        <service
             android:name=".adb.AdbPairService"
             android:enabled="true"
             android:exported="false"

@@ -12,26 +12,25 @@
         android:orientation="horizontal">
 
 
-        <TextView
-            android:layout_marginRight="10dp"
-            android:id="@+id/tv_copy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dp"
-            android:text="@string/btn_copy"
-            android:textColor="@color/textColorPrimary" />
+<!--        <TextView-->
+<!--            android:layout_marginRight="10dp"-->
+<!--            android:id="@+id/tv_copy"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentRight="true"-->
+<!--            android:layout_centerVertical="true"-->
+<!--            android:layout_marginLeft="5dp"-->
+<!--            android:text="@string/btn_copy"-->
+<!--            android:textColor="@color/textColorPrimary" />-->
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toLeftOf="@+id/tv_copy"
             android:foreground="?android:attr/selectableItemBackgroundBorderless"
             app:cardBackgroundColor="@color/colorSecondary"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="0dp"
             android:layout_margin="10dp"
-            app:cardElevation="5dp">
+            app:cardElevation="1dp">
 
             <TextView
                 android:padding="10dp"
@@ -39,7 +38,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-
                 android:text="1111111111"
                 android:textColor="@color/textColorPrimary" />
         </androidx.cardview.widget.CardView>

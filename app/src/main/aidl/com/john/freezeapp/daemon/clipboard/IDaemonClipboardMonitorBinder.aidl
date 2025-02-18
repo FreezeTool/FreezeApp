@@ -1,5 +1,6 @@
 package com.john.freezeapp.daemon.clipboard;
 import com.john.freezeapp.daemon.clipboard.ClipboardData;
+import com.john.freezeapp.daemon.clipboard.IDaemonClipboardChange;
 
 interface IDaemonClipboardMonitorBinder {
     void startMonitor();
@@ -9,4 +10,5 @@ interface IDaemonClipboardMonitorBinder {
     void clearClipboardData();
     boolean setClipboardData(String id);
     boolean isMonitor();
+    void addClipboardDataChange(IDaemonClipboardChange iDaemonClipboardChange);
 }

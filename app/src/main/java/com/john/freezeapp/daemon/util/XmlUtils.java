@@ -1246,15 +1246,15 @@ public class XmlUtils {
     private static final Object readThisPrimitiveValueXml(XmlPullParser parser, String tagName)
             throws XmlPullParserException, java.io.IOException {
         if (tagName.equals("int")) {
-            return readIntAttribute(parser, tagName);
+            return readIntAttribute(parser, "value");
         } else if (tagName.equals("long")) {
-            return readLongAttribute(parser, tagName);
+            return readLongAttribute(parser, "value");
         } else if (tagName.equals("float")) {
-            return readFloatAttribute(parser, tagName);
+            return readFloatAttribute(parser, "value");
         } else if (tagName.equals("double")) {
-            return readDoubleAttribute(parser, tagName);
+            return readDoubleAttribute(parser, "value");
         } else if (tagName.equals("boolean")) {
-            return readBooleanAttribute(parser, tagName);
+            return readBooleanAttribute(parser, "value");
         } else {
             return null;
         }

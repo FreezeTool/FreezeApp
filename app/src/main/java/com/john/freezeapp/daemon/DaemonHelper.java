@@ -29,4 +29,7 @@ public class DaemonHelper {
     public static final String DAEMON_BINDER_CLIPBOARD_MONITOR = "daemon_binder_clipboard_monitor";
 
 
+    public static final String DAEMON_CLIPBOARD_PATH = "/sdcard/Android/.freezeapp/clipboard_data.xml";
+    public static final String DAEMON_CONFIG_PATH = "/sdcard/Android/.freezeapp/config.xml";
+    public static final String SP_KEY_CLIPBOARD_SWITCHER = "sp_key_clipboard_switcher";
 }

@@ -1,18 +1,26 @@
 package com.john.freezeapp.daemon.clipboard;
 
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.IClipboard;
 import android.content.IOnPrimaryClipChangedListener;
+import android.content.SharedPreferences;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.john.freezeapp.daemon.Daemon;
+import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonLog;
 import com.john.freezeapp.daemon.DaemonService;
+import com.john.freezeapp.daemon.util.DaemonSharedPrefUtils;
 import com.john.freezeapp.daemon.util.DaemonUtil;
+import com.john.freezeapp.daemon.util.SharedPreferencesImpl;
 import com.john.freezeapp.util.FreezeUtil;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +40,65 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
         }
     };
 
+    SharedPreferences sharedPreferences;
+
+    final List<IDaemonClipboardChange> iDaemonClipboardChanges = new ArrayList<>();
+
+    public DaemonClipboardMonitorBinder() {
+        boolean isOpen = DaemonSharedPrefUtils.getBoolean(DaemonHelper.SP_KEY_CLIPBOARD_SWITCHER, false);
+        DaemonLog.log("DaemonClipboardMonitorBinder isOpen = " + isOpen);
+        if (isOpen) {
+            try {
+                startMonitor();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+        init();
+        return super.onTransact(code, data, reply, flags);
+    }
+
+    public boolean isInit = false;
+
+    private void init() {
+        if (isInit) {
+            return;
+        }
+        isInit = true;
+        File file = new File(DaemonHelper.DAEMON_CLIPBOARD_PATH);
+        sharedPreferences = new SharedPreferencesImpl(file);
+
+        Map<String, ?> all = sharedPreferences.getAll();
+        if (all != null) {
+            List<ClipboardData> clipboardDataList = new ArrayList<>();
+            for (Map.Entry<String, ?> entry : all.entrySet()) {
+                Object value = entry.getValue();
+                if (value instanceof String && !TextUtils.isEmpty((String) value)) {
+                    try {
+                        ClipboardData clipboardData = DaemonUtil.getGson().fromJson((String) value, ClipboardData.class);
+                        clipboardDataList.add(clipboardData);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            Collections.sort(clipboardDataList);
+
+            for (ClipboardData clipboardData : clipboardDataList) {
+                mClipboardDataMap.put(clipboardData.id, clipboardData);
+            }
+        }
+    }
+
+
     private synchronized void updateClipData() {
         IClipboard clipboard = getClipboard();
         String daemonPackageName = DaemonUtil.getDaemonPackageName();
         if (clipboard != null) {
-
             ClipData primaryClipData;
             String primaryClipSource;
             if (FreezeUtil.atLeast34()) {
@@ -54,18 +116,33 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             }
 
             if (primaryClipData != null) {
+
+                ClipDescription description = primaryClipData.getDescription();
+                if (description != null) {
+                    if (TextUtils.equals(description.getLabel(), TAG)) {
+                        return;
+                    }
+                }
                 if (primaryClipData.getItemCount() > 0) {
                     CharSequence text = primaryClipData.getItemAt(0).coerceToText(Daemon.getDaemon().mActivityThread.getApplication());
 //                        DaemonLog.log(String.format("dispatchPrimaryClipChanged text=%s", text));
                     if (text != null) {
                         String id = DaemonUtil.md5(text.toString());
-                        if (!TextUtils.isEmpty(id) && !mClipboardDataMap.containsKey(id)) {
-                            ClipboardData clipboardData = new ClipboardData();
-                            clipboardData.id = id;
-                            clipboardData.packageName = primaryClipSource;
-                            clipboardData.content = text.toString();
-                            mClipboardDataMap.put(id, clipboardData);
-                            DaemonLog.log(String.format("dispatchPrimaryClipChanged add %s", clipboardData));
+
+                        if (!TextUtils.isEmpty(id)) {
+                            ClipboardData clipboardData = mClipboardDataMap.get(id);
+                            if (clipboardData != null) {
+                                clipboardData.timestamp = System.currentTimeMillis();
+                            } else {
+                                clipboardData = new ClipboardData();
+                                clipboardData.id = id;
+                                clipboardData.packageName = primaryClipSource;
+                                clipboardData.content = text.toString();
+                                clipboardData.timestamp = System.currentTimeMillis();
+                            }
+                            put(id, clipboardData);
+                            notifyDaemonClipboardDataChange();
+//                            DaemonLog.log(String.format("dispatchPrimaryClipChanged add %s", clipboardData));
                         }
 
                     }
@@ -73,6 +150,39 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             }
         }
     }
+
+    private void notifyDaemonClipboardDataChange() {
+        synchronized (iDaemonClipboardChanges) {
+            for (IDaemonClipboardChange iDaemonClipboardChange : iDaemonClipboardChanges) {
+                try {
+                    iDaemonClipboardChange.change();
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+
+    public synchronized void put(String id, ClipboardData clipboardData) {
+        mClipboardDataMap.put(id, clipboardData);
+        try {
+            sharedPreferences.edit().putString(id, DaemonUtil.getGson().toJson(clipboardData)).commit();
+        } catch (Throwable e) {
+            DaemonLog.e(e, "put");
+        }
+    }
+
+    private synchronized void remove(String id) {
+        mClipboardDataMap.remove(id);
+        sharedPreferences.edit().putString(id, "").commit();
+    }
+
+    private synchronized void clear() {
+        mClipboardDataMap.clear();
+        sharedPreferences.edit().clear().commit();
+    }
+
 
     private static final String TAG = "FreezeApp_";
 
@@ -105,6 +215,7 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
                 }
             }
             isActive = true;
+            DaemonSharedPrefUtils.setBoolean(DaemonHelper.SP_KEY_CLIPBOARD_SWITCHER, true);
         } catch (Throwable e) {
             DaemonLog.e(e, "startMonitor");
         }
@@ -127,6 +238,7 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
                 }
             }
             isActive = false;
+            DaemonSharedPrefUtils.setBoolean(DaemonHelper.SP_KEY_CLIPBOARD_SWITCHER, false);
         } catch (Throwable e) {
             DaemonLog.e(e, "endMonitor");
         }
@@ -139,12 +251,12 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
 
     @Override
     public void removeClipboardData(String id) throws RemoteException {
-        mExecutor.execute(() -> mClipboardDataMap.remove(id));
+        mExecutor.execute(() -> remove(id));
     }
 
     @Override
     public void clearClipboardData() throws RemoteException {
-        mExecutor.execute(() -> mClipboardDataMap.clear());
+        mExecutor.execute(this::clear);
     }
 
     @Override
@@ -172,5 +284,13 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
     @Override
     public boolean isMonitor() throws RemoteException {
         return isActive;
+    }
+
+    @Override
+    public void addClipboardDataChange(IDaemonClipboardChange iDaemonClipboardChange) throws RemoteException {
+        synchronized (iDaemonClipboardChange) {
+            iDaemonClipboardChanges.add(iDaemonClipboardChange);
+            iDaemonClipboardChange.asBinder().linkToDeath(() -> iDaemonClipboardChanges.remove(iDaemonClipboardChange), 0);
+        }
     }
 }

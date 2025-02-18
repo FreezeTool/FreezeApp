@@ -8,6 +8,10 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/clipboard_floating"
+        android:title="开启悬浮球" />
+
+    <item
         android:id="@+id/clipboard_clear"
         android:title="@string/btn_clear" />
 

@@ -11,6 +11,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Keep;
 
+import java.io.File;
+
 @Keep
 public class Daemon {
 
@@ -25,10 +27,15 @@ public class Daemon {
         DaemonLog.log("Daemon start");
         Looper.prepareMainLooper();
         sDaemon = new Daemon();
+        test();
         Looper.loop();
         DaemonLog.toClient("Daemon close");
         DaemonLog.log("Daemon finish");
         System.exit(0);
+    }
+
+    private static void test() {
+
     }
 
 

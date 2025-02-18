@@ -16,7 +16,7 @@ public class ClipboardViewHolder extends CardViewHolder<ClipboardCardData> {
 
     public ClipboardViewHolder(View itemView) {
         super(itemView);
-        tvCopy = itemView.findViewById(R.id.tv_copy);
+//        tvCopy = itemView.findViewById(R.id.tv_copy);
         tvContent = itemView.findViewById(R.id.tv_content);
 
     }
@@ -26,9 +26,18 @@ public class ClipboardViewHolder extends CardViewHolder<ClipboardCardData> {
         super.onBind();
         ClipboardCardData data = getData();
         tvContent.setText(TextUtils.isEmpty(data.content) ? "" : data.content);
-        tvCopy.setOnClickListener(v -> {
-            boolean copy = Clipboard.copy(data.id);
-            Toast.makeText(getContext(), copy ? "复制成功" : "复制失败", Toast.LENGTH_SHORT).show();
+        tvContent.setOnLongClickListener(v -> {
+            Object listener = getAdapter().getListener();
+            if (listener instanceof ClipboardAdapter.OnItemClick) {
+                ((ClipboardAdapter.OnItemClick) listener).onLongItemClick(data);
+            }
+            return true;
+        });
+        tvContent.setOnClickListener(v -> {
+            Object listener = getAdapter().getListener();
+            if (listener instanceof ClipboardAdapter.OnItemClick) {
+                ((ClipboardAdapter.OnItemClick) listener).onItemClick(data);
+            }
         });
     }
 }

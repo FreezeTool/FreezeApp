@@ -7,6 +7,7 @@ import android.app.smartspace.ISmartspaceManager;
 import android.app.usage.IStorageStatsManager;
 import android.app.usage.IUsageStatsManager;
 import android.content.Context;
+import android.content.IClipboard;
 import android.content.pm.IPackageManager;
 import android.os.Build;
 import android.os.IBinder;
@@ -37,7 +38,6 @@ public class ClientSystemService {
             return IPackageManager.Stub.asInterface(new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService("package")));
         }
     };
-
 
 
     private final static ClientBinderSingleton<IActivityManager> iActivityManager = new ClientBinderSingleton<IActivityManager>() {
@@ -165,8 +165,24 @@ public class ClientSystemService {
             }
 
             IBinder installd = SystemServiceHelper.getSystemService("installd");
-            if(installd != null) {
+            if (installd != null) {
                 return IInstalld.Stub.asInterface(new ClientSystemBinderWrapper(installd));
+            }
+
+            return null;
+        }
+    };
+
+    private final static ClientBinderSingleton<IClipboard> iClipboard = new ClientBinderSingleton<IClipboard>() {
+        @Override
+        protected IClipboard createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            IBinder iBinder = SystemServiceHelper.getSystemService(Context.CLIPBOARD_SERVICE);
+            if (iBinder != null) {
+                return IClipboard.Stub.asInterface(new ClientSystemBinderWrapper(iBinder));
             }
 
             return null;
@@ -219,5 +235,9 @@ public class ClientSystemService {
     @Deprecated
     public static IInstalld getInstalld() {
         return iInstalld.get();
+    }
+
+    public static IClipboard getiClipboard() {
+        return iClipboard.get();
     }
 }

@@ -1,5 +1,7 @@
 package com.john.freezeapp.home;
 
+import android.app.AppOpsManager;
+import android.app.AppOpsManagerHidden;
 import android.app.smartspace.ISmartspaceManager;
 import android.app.smartspace.SmartspaceConfig;
 import android.app.smartspace.SmartspaceSessionId;
@@ -21,12 +23,15 @@ import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.CommandActivity;
 import com.john.freezeapp.MainActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.appops.AppOpsActivity;
 import com.john.freezeapp.battery.BatteryUsageActivity;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.clipboard.ClipboardActivity;
 import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.daemon.util.SharedPreferencesImpl;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
@@ -34,6 +39,7 @@ import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.util.FreezeUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -149,6 +155,11 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
+        AppOps.setUidMode(AppOpsManagerHidden.OP_MANAGE_EXTERNAL_STORAGE, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
+        File file = new File(DaemonHelper.DAEMON_CONFIG_PATH);
+        SharedPreferencesImpl sharedPreferences = new SharedPreferencesImpl(file);
+        boolean aBoolean = sharedPreferences.getBoolean(DaemonHelper.SP_KEY_CLIPBOARD_SWITCHER, false);
+        ClientLog.log("a" + aBoolean);
     }
 
     /**

@@ -1,12 +1,17 @@
 package com.john.freezeapp.clipboard;
 
+import android.content.Context;
 import android.os.IBinder;
 import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.clipboard.ClipboardData;
+import com.john.freezeapp.daemon.clipboard.IDaemonClipboardChange;
 import com.john.freezeapp.daemon.clipboard.IDaemonClipboardMonitorBinder;
+import com.john.freezeapp.monitor.AppMonitorService;
+import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 import java.util.List;
 
@@ -92,6 +97,21 @@ public class Clipboard {
         return false;
     }
 
+    public static void addClipboardChange(ClipboardChange change) {
+        IDaemonClipboardMonitorBinder daemonClipboardMonitorBinder = getDaemonClipboardMonitorBinder();
+        if (daemonClipboardMonitorBinder != null) {
+            try {
+                daemonClipboardMonitorBinder.addClipboardDataChange(change);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    abstract static class ClipboardChange extends IDaemonClipboardChange.Stub {
+
+    }
+
 
     public static IDaemonClipboardMonitorBinder getDaemonClipboardMonitorBinder() {
         try {
@@ -104,4 +124,30 @@ public class Clipboard {
         }
         return null;
     }
+
+
+    public static boolean isClipboardFloating() {
+        return SharedPrefUtil.getBoolean(SharedPrefUtil.KEY_CLIPBOARD_FLOAT_SWITCHER, false);
+    }
+
+    public static void setClipboardFloating(boolean isOpen) {
+        SharedPrefUtil.setBoolean(SharedPrefUtil.KEY_CLIPBOARD_FLOAT_SWITCHER, isOpen);
+    }
+
+
+    public static void startClipboardFloating(Context context) {
+        if (ClientBinderManager.isActive()) {
+            if (!FreezeUtil.isOverlayPermission(context)) {
+                FreezeUtil.allowSystemAlertWindow();
+            }
+            if (isClipboardFloating() && FreezeUtil.isOverlayPermission(context)) {
+                ClipboardService.startClipboardFloating(context);
+            }
+        }
+    }
+
+    public static void stopClipboardFloating(Context context) {
+        ClipboardService.stopClipboardFloating(context);
+    }
+
 }

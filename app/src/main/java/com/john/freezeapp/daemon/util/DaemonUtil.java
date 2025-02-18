@@ -3,6 +3,7 @@ package com.john.freezeapp.daemon.util;
 import android.app.ActivityThread;
 import android.os.Process;
 
+import com.google.gson.Gson;
 import com.john.freezeapp.daemon.DaemonHelper;
 
 import java.nio.charset.StandardCharsets;
@@ -40,5 +41,11 @@ public class DaemonUtil {
             e.printStackTrace();
         }
         return cipherString;
+    }
+
+    private static final Gson sGson = new Gson();
+
+    public static Gson getGson() {
+        return sGson;
     }
 }
