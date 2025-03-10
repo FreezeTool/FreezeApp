@@ -1,5 +1,7 @@
 package com.john.freezeapp.daemon.clipboard;
 
+import android.app.AppOpsManager;
+import android.app.AppOpsManagerHidden;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.IClipboard;
@@ -9,6 +11,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import com.android.internal.app.IAppOpsService;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonLog;
@@ -49,6 +52,7 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
         DaemonLog.log("DaemonClipboardMonitorBinder isOpen = " + isOpen);
         if (isOpen) {
             try {
+                init();
                 startMonitor();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -94,60 +98,102 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
         }
     }
 
+    public static int checkOperation(int op,String packageName) {
+        try {
+            IAppOpsService appOpsService = DaemonService.getAppOps();
+            if (appOpsService != null) {
+                return appOpsService.checkOperation(op, android.os.Process.myUid() , packageName);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+
+    public static int setOperation(int op) {
+        try {
+            IAppOpsService appOpsService = DaemonService.getAppOps();
+            if (appOpsService != null) {
+                appOpsService.setUidMode(op, android.os.Process.myUid(), AppOpsManager.MODE_ALLOWED);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
 
     private synchronized void updateClipData() {
-        IClipboard clipboard = getClipboard();
-        String daemonPackageName = DaemonUtil.getDaemonPackageName();
-        if (clipboard != null) {
-            ClipData primaryClipData;
-            String primaryClipSource;
-            if (FreezeUtil.atLeast34()) {
-                if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0, 0)) {
-                    return;
-                }
-                primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0, 0);
-                primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0, 0);
-            } else {
-                if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0)) {
-                    return;
-                }
-                primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0);
-                primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0);
-            }
-
-            if (primaryClipData != null) {
-
-                ClipDescription description = primaryClipData.getDescription();
-                if (description != null) {
-                    if (TextUtils.equals(description.getLabel(), TAG)) {
+        try {
+            IClipboard clipboard = getClipboard();
+            String daemonPackageName = DaemonUtil.getDaemonPackageName();
+            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - checkOperation - " + checkOperation(AppOpsManagerHidden.OP_READ_CLIPBOARD, daemonPackageName));
+            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - package - " + daemonPackageName);
+            setOperation(AppOpsManagerHidden.OP_READ_CLIPBOARD);
+            if (clipboard != null) {
+                ClipData primaryClipData;
+                String primaryClipSource;
+                if (FreezeUtil.atLeast34()) {
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 2");
+                    if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0, 0)) {
                         return;
                     }
+
+                    primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0, 0);
+                    primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0, 0);
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 3");
+                } else {
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 4");
+                    if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0)) {
+                        return;
+                    }
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 5");
+                    primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0);
+                    primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0);
                 }
-                if (primaryClipData.getItemCount() > 0) {
-                    CharSequence text = primaryClipData.getItemAt(0).coerceToText(Daemon.getDaemon().mActivityThread.getApplication());
-//                        DaemonLog.log(String.format("dispatchPrimaryClipChanged text=%s", text));
-                    if (text != null) {
-                        String id = DaemonUtil.md5(text.toString());
 
-                        if (!TextUtils.isEmpty(id)) {
-                            ClipboardData clipboardData = mClipboardDataMap.get(id);
-                            if (clipboardData != null) {
-                                clipboardData.timestamp = System.currentTimeMillis();
-                            } else {
-                                clipboardData = new ClipboardData();
-                                clipboardData.id = id;
-                                clipboardData.packageName = primaryClipSource;
-                                clipboardData.content = text.toString();
-                                clipboardData.timestamp = System.currentTimeMillis();
-                            }
-                            put(id, clipboardData);
-                            notifyDaemonClipboardDataChange();
-//                            DaemonLog.log(String.format("dispatchPrimaryClipChanged add %s", clipboardData));
+                DaemonLog.log("DaemonClipboardMonitorBinder updateClipData primaryClipSource=" + primaryClipSource);
+                DaemonLog.log("DaemonClipboardMonitorBinder updateClipData primaryClipData=" + primaryClipData);
+
+                if (primaryClipData != null) {
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 6");
+                    ClipDescription description = primaryClipData.getDescription();
+                    if (description != null) {
+                        if (TextUtils.equals(description.getLabel(), TAG)) {
+                            return;
                         }
+                    }
+                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 7");
+                    if (primaryClipData.getItemCount() > 0) {
+                        CharSequence text = primaryClipData.getItemAt(0).coerceToText(Daemon.getDaemon().mActivityThread.getApplication());
+                        DaemonLog.log(String.format("dispatchPrimaryClipChanged text=%s", text));
+                        if (text != null) {
+                            String id = DaemonUtil.md5(text.toString());
 
+                            if (!TextUtils.isEmpty(id)) {
+                                ClipboardData clipboardData = mClipboardDataMap.get(id);
+                                if (clipboardData != null) {
+                                    clipboardData.timestamp = System.currentTimeMillis();
+                                } else {
+                                    clipboardData = new ClipboardData();
+                                    clipboardData.id = id;
+                                    clipboardData.packageName = primaryClipSource;
+                                    clipboardData.content = text.toString();
+                                    clipboardData.timestamp = System.currentTimeMillis();
+                                }
+                                put(id, clipboardData);
+                                notifyDaemonClipboardDataChange();
+//                            DaemonLog.log(String.format("dispatchPrimaryClipChanged add %s", clipboardData));
+                            }
+
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            DaemonLog.e(e, "updateClipData");
         }
     }
 

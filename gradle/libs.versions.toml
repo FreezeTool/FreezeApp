@@ -29,6 +29,7 @@ shisuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shisuk
 shisuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shisuku-version" }
 wheelpicker = { module = "cn.aigestudio.wheelpicker:WheelPicker", version.ref = "wheelpicker" }
 agp = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+camera2 = { module = "androidx.camera:camera-camera2", version.ref ="appcompat"}
 
 [plugins]
 android-library = { id = "com.android.library", version.ref = "agp" }

@@ -41,6 +41,10 @@ public class DaemonService {
         return iClipboard;
     }
 
+    public static IAppOpsService getAppOps() {
+        return appOps;
+    }
+
     static {
         appOps = IAppOpsService.Stub.asInterface(ServiceManager.getService("appops"));
 

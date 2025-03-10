@@ -27,6 +27,8 @@ public class AppOpsManagerHidden {
 
     public static int OP_MANAGE_EXTERNAL_STORAGE;
 
+    public static int OP_READ_CLIPBOARD;
+
     @RequiresApi(Build.VERSION_CODES.Q)
     public static String KEY_HISTORICAL_OPS;
 
