@@ -205,4 +205,10 @@ public class MainActivity extends ToolbarActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ClientLog.log("");
+    }
 }

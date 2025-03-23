@@ -8,6 +8,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.system.Os;
+import android.system.StructUtsname;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +31,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.adb.AdbPairActivity;
 import com.john.freezeapp.adb.AdbStartDialog;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientDaemonService;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
@@ -62,7 +65,6 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestKernelVersion();
         Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
         setHasOptionsMenu(true);
     }
@@ -136,30 +138,6 @@ public class HomeFragment extends BaseFragment {
         if (this.isRoot != isRoot || this.isShizuku != isShizuku) {
             updateData(getContext());
         }
-
-    }
-
-    private void requestKernelVersion() {
-        if (isDaemonActive()) {
-            // 内核
-            String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
-            if (kernelVersion == null) {
-                ClientRemoteShell.execCommand("uname -r", new ClientRemoteShell.RemoteShellCommandResultCallback() {
-                    @Override
-                    public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                        if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
-                            SharedPrefUtil.setString(SharedPrefUtil.KEY_KERNEL_VERSION, commandResult.successMsg.replace("\n", ""));
-                        }
-                        postUI(new Runnable() {
-                            @Override
-                            public void run() {
-                                updateData(getContext());
-                            }
-                        });
-                    }
-                });
-            }
-        }
     }
 
 
@@ -168,7 +146,6 @@ public class HomeFragment extends BaseFragment {
         if (!isAdded()) {
             return;
         }
-
 
         ClientLog.log("checkUI ClientBinder isActive=" + ClientBinderManager.isActive());
         List<FreezeHomeData> list = new ArrayList<>();
@@ -236,11 +213,8 @@ public class HomeFragment extends BaseFragment {
         leftBtnData.text = context.getString(R.string.main_adb_pair);
         leftBtnData.show = !isDaemonActive();
         leftBtnData.icon = R.drawable.ic_vector_link;
-        leftBtnData.onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toAdbPair(getContext());
-            }
+        leftBtnData.onClickListener = v -> {
+            toAdbPair(context);
         };
 
 
@@ -249,8 +223,13 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void wirelessAdb() {
-        AdbStartDialog adbStartDialog = new AdbStartDialog(getContext());
-        adbStartDialog.show();
+        Context context = getContext();
+        if (context != null) {
+            AdbStartDialog adbStartDialog = new AdbStartDialog(context);
+            adbStartDialog.show();
+        }
+
+
     }
 
     private void toAdbPair(Context context) {
@@ -276,17 +255,17 @@ public class HomeFragment extends BaseFragment {
             } catch (RemoteException e) {
                 version = BuildConfig.VERSION_NAME;
             }
+
+            freezeDaemonData.rightInfo = String.format("PID\n%s", ClientDaemonService.getDaemonPid());
+        } else {
+            freezeDaemonData.rightInfo = "";
         }
         freezeDaemonData.isActive = isDaemonActive();
-        freezeDaemonData.version = version;
+        freezeDaemonData.version = String.format("版本 %s , adb", version);
         freezeDaemonData.tip = tip;
         freezeDaemonData.btn = btn;
-        freezeDaemonData.onClickStartDaemon = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                restartDaemon();
-            }
-        };
+        freezeDaemonData.onClickStartDaemon = v -> restartDaemon();
+
         return freezeDaemonData;
     }
 
@@ -300,12 +279,7 @@ public class HomeFragment extends BaseFragment {
         rightBtnData.text = context.getString(R.string.main_start_app_process);
         rightBtnData.show = !isDaemonActive() && this.isRoot;
         rightBtnData.icon = R.drawable.ic_vector_start;
-        rightBtnData.onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toRoot(v);
-            }
-        };
+        rightBtnData.onClickListener = this::toRoot;
         rootDaemonData.rightDaemonBtnData = rightBtnData;
         return rootDaemonData;
     }
@@ -320,12 +294,7 @@ public class HomeFragment extends BaseFragment {
         rightBtnData.text = context.getString(R.string.main_start_app_process);
         rightBtnData.show = !isDaemonActive() && this.isShizuku;
         rightBtnData.icon = R.drawable.ic_vector_start;
-        rightBtnData.onClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toShizuku(v);
-            }
-        };
+        rightBtnData.onClickListener = this::toShizuku;
         shizukuDaemonData.rightDaemonBtnData = rightBtnData;
         return shizukuDaemonData;
     }
@@ -353,20 +322,26 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void restartDaemon() {
-        showLoading();
-        String cmd = "sh " + FreezeUtil.getShellFilePath(getContext());
-        ClientRemoteShell.execCommand(cmd, new ClientRemoteShell.RemoteShellCommandResultCallback() {
-            @Override
-            public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
-                hideLoading();
-            }
-        });
+        Context context = getContext();
+        if (context != null) {
+            showLoading();
+            String cmd = "sh " + FreezeUtil.getShellFilePath(context);
+            ClientRemoteShell.execCommand(cmd, new ClientRemoteShell.RemoteShellCommandResultCallback() {
+                @Override
+                public void callback(ClientRemoteShell.RemoteShellCommandResult commandResult) {
+                    hideLoading();
+                }
+            });
+        }
     }
 
     private void toRoot(View v) {
-        showLoading();
-        hideLoading(2000);
-        FreezeAppManager.toRoot(getContext());
+        Context context = getContext();
+        if (context != null) {
+            showLoading();
+            hideLoading(2000);
+            FreezeAppManager.toRoot(context);
+        }
     }
 
     private FreezeHomeDeviceData getDeviceData() {
@@ -383,9 +358,9 @@ public class HomeFragment extends BaseFragment {
         // Build号
         freezeDeviceData.add(new FreezeHomeDeviceInfoData("Build号", Build.ID));
         // 内核
-        String kernelVersion = SharedPrefUtil.getString(SharedPrefUtil.KEY_KERNEL_VERSION, null);
-        if (!TextUtils.isEmpty(kernelVersion)) {
-            freezeDeviceData.add(new FreezeHomeDeviceInfoData("内核", kernelVersion));
+        StructUtsname uname = Os.uname();
+        if (uname != null) {
+            freezeDeviceData.add(new FreezeHomeDeviceInfoData("内核", uname.release));
         }
 
         return freezeDeviceData;
@@ -396,7 +371,6 @@ public class HomeFragment extends BaseFragment {
         super.bindDaemon(daemonBinder);
         forceHideLoading();
         updateData(getContext());
-        requestKernelVersion();
     }
 
 
@@ -414,21 +388,21 @@ public class HomeFragment extends BaseFragment {
     }
 
     private void showWatchCommandDialog() {
-        String command = String.format("adb shell sh %s", FreezeUtil.getShellFilePath(getContext()));
+
+        Context context = getContext();
+        if (context == null) {
+            return;
+        }
+
+        String command = String.format("adb shell sh %s", FreezeUtil.getShellFilePath(context));
         new AlertDialog.Builder(getContext())
                 .setMessage("$ " + command)
-                .setPositiveButton(R.string.btn_copy, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ClipboardManager clipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-                        clipboardManager.setText(command);
-                    }
+                .setPositiveButton(R.string.btn_copy, (dialog, which) -> {
+                    ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboardManager.setText(command);
                 })
-                .setNegativeButton(R.string.btn_cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                .setNegativeButton(R.string.btn_cancel, (dialog, which) -> {
 
-                    }
                 }).show();
     }
 

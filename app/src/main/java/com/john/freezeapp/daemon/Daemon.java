@@ -7,11 +7,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
+import android.system.Os;
 import android.text.TextUtils;
 
 import androidx.annotation.Keep;
 
+import com.john.freezeapp.util.UserHandleCompat;
+
 import java.io.File;
+import java.util.Objects;
 
 @Keep
 public class Daemon {
@@ -71,26 +75,35 @@ public class Daemon {
     }
 
     public Daemon() {
+        printDaemon();
         killOtherDaemon();
         mHandler = new Handler(Looper.getMainLooper());
         mActivityThread = ActivityThread.systemMain();
         DaemonBinderManager.register(mActivityThread.getSystemContext());
         DaemonBinderManager.sendBinderContainer();
+        printDaemon();
+    }
 
-        try {
-            String[] packageNames = ActivityThread.getPackageManager().getPackagesForUid(
-                    Process.myUid());
-            if (packageNames != null) {
-                for (String packageName : packageNames) {
-                    DaemonLog.log("packageName - " + packageName);
-                }
-            }
+    private void printDaemon() {
+        DaemonLog.log("-----------------------------Daemon-----------------------------");
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("pid=");
+        stringBuilder.append(android.os.Process.myPid());
+        stringBuilder.append("\n");
 
-        } catch (RemoteException e) {
-            throw new RuntimeException(e);
-        }
+        stringBuilder.append("uid=");
+        stringBuilder.append(android.os.Process.myUid());
+        stringBuilder.append("\n");
 
+        stringBuilder.append("userId=");
+        stringBuilder.append(UserHandleCompat.myUserId());
+        stringBuilder.append("\n");
 
+        stringBuilder.append("uname=");
+        stringBuilder.append(Os.uname());
+        stringBuilder.append("\n");
+        DaemonLog.log(stringBuilder.toString());
+        DaemonLog.log("-----------------------------------------------------------------");
     }
 
 

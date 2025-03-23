@@ -36,6 +36,9 @@ public class DaemonService {
         return activityManager;
     }
 
+    public static IPackageManager getPackageManager() {
+        return packageManager;
+    }
 
     public static IClipboard getClipboard() {
         return iClipboard;

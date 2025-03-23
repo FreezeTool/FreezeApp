@@ -7,11 +7,13 @@ import android.content.ClipDescription;
 import android.content.IClipboard;
 import android.content.IOnPrimaryClipChangedListener;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.android.internal.app.IAppOpsService;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonLog;
@@ -20,6 +22,7 @@ import com.john.freezeapp.daemon.util.DaemonSharedPrefUtils;
 import com.john.freezeapp.daemon.util.DaemonUtil;
 import com.john.freezeapp.daemon.util.SharedPreferencesImpl;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.UserHandleCompat;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -98,11 +101,11 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
         }
     }
 
-    public static int checkOperation(int op,String packageName) {
+    public static int checkOperation(int op, String packageName) {
         try {
             IAppOpsService appOpsService = DaemonService.getAppOps();
             if (appOpsService != null) {
-                return appOpsService.checkOperation(op, android.os.Process.myUid() , packageName);
+                return appOpsService.checkOperation(op, android.os.Process.myUid(), packageName);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -111,11 +114,28 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
     }
 
 
-    public static int setOperation(int op) {
+    public static int getPackageUid(String packageName) {
+        int packageUid = 0;
+        try {
+            if (FreezeUtil.atLeast33()) {
+                packageUid = DaemonService.getPackageManager().getPackageUid(packageName, 0L, 0);
+            } else if (FreezeUtil.atLeast24()) {
+                packageUid = DaemonService.getPackageManager().getPackageUid(packageName, 0, 0);
+            } else {
+                packageUid = DaemonService.getPackageManager().getPackageUid(packageName, 0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return packageUid;
+    }
+
+
+    public static int setOperation(int uid, int op) {
         try {
             IAppOpsService appOpsService = DaemonService.getAppOps();
             if (appOpsService != null) {
-                appOpsService.setUidMode(op, android.os.Process.myUid(), AppOpsManager.MODE_ALLOWED);
+                appOpsService.setUidMode(op, uid, AppOpsManager.MODE_ALLOWED);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -127,30 +147,33 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
     private synchronized void updateClipData() {
         try {
             IClipboard clipboard = getClipboard();
-            String daemonPackageName = DaemonUtil.getDaemonPackageName();
-            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - checkOperation - " + checkOperation(AppOpsManagerHidden.OP_READ_CLIPBOARD, daemonPackageName));
-            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - package - " + daemonPackageName);
-            setOperation(AppOpsManagerHidden.OP_READ_CLIPBOARD);
+            String callingPackageName = DaemonUtil.getDaemonPackageName();
+
+            int uid = getPackageUid(DaemonUtil.getDaemonPackageName());
+            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - checkOperation - " + checkOperation(AppOpsManagerHidden.OP_READ_EXTERNAL_STORAGE, callingPackageName));
+            DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 1 - package - " + callingPackageName + "userId=" + UserHandleCompat.myUserId());
+            setOperation(uid, AppOpsManagerHidden.OP_READ_CLIPBOARD);
+            setOperation(uid, AppOpsManagerHidden.OP_READ_EXTERNAL_STORAGE);
             if (clipboard != null) {
                 ClipData primaryClipData;
                 String primaryClipSource;
                 if (FreezeUtil.atLeast34()) {
                     DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 2");
-                    if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0, 0)) {
-                        return;
-                    }
+//                    if (!clipboard.hasPrimaryClip(callingPackageName, null, 0, 0)) {
+//                        return;
+//                    }
 
-                    primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0, 0);
-                    primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0, 0);
+                    primaryClipSource = clipboard.getPrimaryClipSource(callingPackageName, null, 0, 0);
+                    primaryClipData = clipboard.getPrimaryClip(callingPackageName, null, 0, 0);
                     DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 3");
                 } else {
                     DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 4");
-                    if (!clipboard.hasPrimaryClip(daemonPackageName, null, 0)) {
+                    if (!clipboard.hasPrimaryClip(callingPackageName, null, 0)) {
                         return;
                     }
                     DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 5");
-                    primaryClipSource = clipboard.getPrimaryClipSource(daemonPackageName, null, 0);
-                    primaryClipData = clipboard.getPrimaryClip(daemonPackageName, null, 0);
+                    primaryClipSource = clipboard.getPrimaryClipSource(callingPackageName, null, 0);
+                    primaryClipData = clipboard.getPrimaryClip(callingPackageName, null, 0);
                 }
 
                 DaemonLog.log("DaemonClipboardMonitorBinder updateClipData primaryClipSource=" + primaryClipSource);
@@ -251,6 +274,8 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             return;
         }
         DaemonLog.log("startMonitor start");
+
+
         try {
             IClipboard clipboard = getClipboard();
             if (clipboard != null) {

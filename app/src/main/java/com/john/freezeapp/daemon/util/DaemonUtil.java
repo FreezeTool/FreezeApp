@@ -4,6 +4,7 @@ import android.app.ActivityThread;
 import android.os.Process;
 
 import com.google.gson.Gson;
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.daemon.DaemonHelper;
 
 import java.nio.charset.StandardCharsets;
@@ -21,6 +22,16 @@ public class DaemonUtil {
             //
         }
         return DaemonHelper.DAEMON_SHELL_PACKAGE;
+    }
+
+
+
+    public static String getCallingPackageName() {
+
+        if (android.system.Os.getuid() == 2000) {
+            return DaemonHelper.DAEMON_SHELL_PACKAGE;
+        }
+        return BuildConfig.APPLICATION_ID;
     }
 
 

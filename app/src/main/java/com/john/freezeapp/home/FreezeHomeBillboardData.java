@@ -6,7 +6,7 @@ public class FreezeHomeBillboardData extends FreezeHomeData {
     public boolean isActive;
     public String version;
     public View.OnClickListener onClickStartDaemon;
-
     public String tip;
     public String btn;
+    public String rightInfo;
 }

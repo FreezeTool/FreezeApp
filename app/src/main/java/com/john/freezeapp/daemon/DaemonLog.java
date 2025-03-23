@@ -17,7 +17,7 @@ public class DaemonLog {
     public static void e(Throwable e, String msg) {
         Log.d(TAG, msg);
         Log.d(TAG, "----------------------------------------");
-        Log.d(TAG, e.getMessage());
+//        Log.d(TAG, e.getMessage());
         Log.d(TAG, Log.getStackTraceString(e));
         Log.d(TAG, "----------------------------------------");
     }

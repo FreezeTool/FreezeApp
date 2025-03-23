@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -32,9 +32,22 @@
                     android:background="@drawable/tip_background_3"
                     android:scaleType="center"
                     android:src="@drawable/ic_vector_help" />
-
-
+                <TextView
+                    android:visibility="gone"
+                    android:textColor="@color/textColorSecondary"
+                    android:layout_marginLeft="10dp"
+                    android:layout_alignParentRight="true"
+                    android:minHeight="40dp"
+                    android:text="222222"
+                    android:textSize="14dp"
+                    android:gravity="center"
+                    android:lineSpacingExtra="2dp"
+                    android:id="@+id/tv_right"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
                 <LinearLayout
+                    android:layout_toLeftOf="@+id/tv_right"
+                    android:layout_toRightOf="@+id/iv_icon"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -53,8 +66,8 @@
                             android:textColor="@color/textColorPrimary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="1111111"
-                            android:textSize="18dp"
+                            android:text="111111111111111111111111111111111111"
+                            android:textSize="16dp"
                             android:visibility="visible" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -62,8 +75,7 @@
                             android:textColor="@color/textColorSecondary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:lineSpacingExtra="5dp"
-                            android:paddingTop="5dp"
+                            android:lineSpacingExtra="2dp"
                             android:text="11111111"
                             android:textSize="15dp"
                             android:visibility="gone" />
@@ -71,7 +83,7 @@
                     </LinearLayout>
                 </LinearLayout>
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_content"
