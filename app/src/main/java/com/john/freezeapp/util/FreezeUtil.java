@@ -54,7 +54,23 @@ public class FreezeUtil {
     }
 
     public static String getStartShell(Context context) {
-        return String.format("nohup app_process -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
+        String debugArgs = "";
+        if(BuildConfig.DEBUG) {
+            if (FreezeUtil.atLeast30()) {
+                debugArgs = "-Xcompiler-option" + " --debuggable" +
+                        " -XjdwpProvider:adbconnection" +
+                        " -XjdwpOptions:suspend=n,server=y";
+            } else if (FreezeUtil.atLeast28()) {
+                debugArgs = "-Xcompiler-option" + " --debuggable" +
+                        " -XjdwpProvider:internal" +
+                        " -XjdwpOptions:transport=dt_android_adb,suspend=n,server=y";
+            } else {
+                debugArgs = "-Xcompiler-option" + " --debuggable" +
+                        " -agentlib:jdwp=transport=dt_android_adb,suspend=n,server=y";
+            }
+        }
+        return String.format("nohup app_process %s -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
+                debugArgs,
                 context.getApplicationInfo().sourceDir,
                 DaemonHelper.DAEMON_NICKNAME,
                 Daemon.class.getName(),

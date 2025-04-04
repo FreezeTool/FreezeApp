@@ -1,11 +1,13 @@
 package com.john.freezeapp.daemon.util;
 
 import android.app.ActivityThread;
+import android.content.Context;
 import android.os.Process;
 
 import com.google.gson.Gson;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.runas.RunAs;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -58,5 +60,14 @@ public class DaemonUtil {
 
     public static Gson getGson() {
         return sGson;
+    }
+
+
+    public static String getRunAsShell(Context context, String packageName) {
+        return String.format("nohup app_process -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
+                context.getApplicationInfo().sourceDir,
+                DaemonHelper.FREEZE_APP_LABEL + packageName,
+                RunAs.class.getName(),
+                context.getPackageName());
     }
 }

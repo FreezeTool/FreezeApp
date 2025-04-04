@@ -25,22 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * {}
- */
 public class XmlUtils {
-
-    /**
-     * Flatten a Map into an output stream as XML.  The map can later be
-     * read back with readMapXml().
-     *
-     * @param val The map to be flattened.
-     * @param out Where to write the XML data.
-     * @see #writeMapXml(Map, String, XmlSerializer)
-     * @see #writeListXml
-     * @see #writeValueXml
-     * @see #readMapXml
-     */
 
     public static final void writeMapXml(Map val, OutputStream out)
             throws XmlPullParserException, java.io.IOException {
@@ -52,17 +37,7 @@ public class XmlUtils {
         serializer.endDocument();
     }
 
-    /**
-     * Flatten a List into an output stream as XML.  The list can later be
-     * read back with readListXml().
-     *
-     * @param val The list to be flattened.
-     * @param out Where to write the XML data.
-     * @see #writeListXml(List, String, XmlSerializer)
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readListXml
-     */
+
     public static final void writeListXml(List val, OutputStream out)
             throws XmlPullParserException, java.io.IOException {
         XmlSerializer serializer = Xml.newSerializer();
@@ -73,38 +48,13 @@ public class XmlUtils {
         serializer.endDocument();
     }
 
-    /**
-     * Flatten a Map into an XmlSerializer.  The map can later be read back
-     * with readThisMapXml().
-     *
-     * @param val  The map to be flattened.
-     * @param name Name attribute to include with this list's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the map into.
-     * @see #writeMapXml(Map, OutputStream)
-     * @see #writeListXml
-     * @see #writeValueXml
-     * @see #readMapXml
-     */
+
     public static final void writeMapXml(Map val, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
         writeMapXml(val, name, out, null);
     }
 
-    /**
-     * Flatten a Map into an XmlSerializer.  The map can later be read back
-     * with readThisMapXml().
-     *
-     * @param val      The map to be flattened.
-     * @param name     Name attribute to include with this list's tag, or null for
-     *                 none.
-     * @param out      XmlSerializer to write the map into.
-     * @param callback Method to call when an Object type is not recognized.
-     * @see #writeMapXml(Map, OutputStream)
-     * @see #writeListXml
-     * @see #writeValueXml
-     * @see #readMapXml
-     */
+
     public static final void writeMapXml(Map val, String name, XmlSerializer out,
                                          WriteMapCallback callback) throws XmlPullParserException, java.io.IOException {
 
@@ -124,18 +74,7 @@ public class XmlUtils {
         out.endTag(null, "map");
     }
 
-    /**
-     * Flatten a Map into an XmlSerializer.  The map can later be read back
-     * with readThisMapXml(). This method presumes that the start tag and
-     * name attribute have already been written and does not write an end tag.
-     *
-     * @param val The map to be flattened.
-     * @param out XmlSerializer to write the map into.
-     * @see #writeMapXml(Map, OutputStream)
-     * @see #writeListXml
-     * @see #writeValueXml
-     * @see #readMapXml
-     */
+
     public static final void writeMapXml(Map val, XmlSerializer out,
                                          WriteMapCallback callback) throws XmlPullParserException, java.io.IOException {
         if (val == null) {
@@ -151,19 +90,6 @@ public class XmlUtils {
         }
     }
 
-    /**
-     * Flatten a List into an XmlSerializer.  The list can later be read back
-     * with readThisListXml().
-     *
-     * @param val  The list to be flattened.
-     * @param name Name attribute to include with this list's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the list into.
-     * @see #writeListXml(List, OutputStream)
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readListXml
-     */
     public static final void writeListXml(List val, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
         if (val == null) {
@@ -207,17 +133,7 @@ public class XmlUtils {
         out.endTag(null, "set");
     }
 
-    /**
-     * Flatten a byte[] into an XmlSerializer.  The list can later be read back
-     * with readThisByteArrayXml().
-     *
-     * @param val  The byte array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     */
+
     public static final void writeByteArrayXml(byte[] val, String name,
                                                XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
@@ -239,18 +155,7 @@ public class XmlUtils {
         out.endTag(null, "byte-array");
     }
 
-    /**
-     * Flatten an int[] into an XmlSerializer.  The list can later be read back
-     * with readThisIntArrayXml().
-     *
-     * @param val  The int array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readThisIntArrayXml
-     */
+
     public static final void writeIntArrayXml(int[] val, String name,
                                               XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
@@ -278,18 +183,7 @@ public class XmlUtils {
         out.endTag(null, "int-array");
     }
 
-    /**
-     * Flatten a long[] into an XmlSerializer.  The list can later be read back
-     * with readThisLongArrayXml().
-     *
-     * @param val  The long array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readThisIntArrayXml
-     */
+
     public static final void writeLongArrayXml(long[] val, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
 
@@ -316,18 +210,7 @@ public class XmlUtils {
         out.endTag(null, "long-array");
     }
 
-    /**
-     * Flatten a double[] into an XmlSerializer.  The list can later be read back
-     * with readThisDoubleArrayXml().
-     *
-     * @param val  The double array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readThisIntArrayXml
-     */
+
     public static final void writeDoubleArrayXml(double[] val, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
 
@@ -354,18 +237,7 @@ public class XmlUtils {
         out.endTag(null, "double-array");
     }
 
-    /**
-     * Flatten a String[] into an XmlSerializer.  The list can later be read back
-     * with readThisStringArrayXml().
-     *
-     * @param val  The String array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readThisIntArrayXml
-     */
+
     public static final void writeStringArrayXml(String[] val, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
 
@@ -392,18 +264,7 @@ public class XmlUtils {
         out.endTag(null, "string-array");
     }
 
-    /**
-     * Flatten a boolean[] into an XmlSerializer.  The list can later be read back
-     * with readThisBooleanArrayXml().
-     *
-     * @param val  The boolean array to be flattened.
-     * @param name Name attribute to include with this array's tag, or null for
-     *             none.
-     * @param out  XmlSerializer to write the array into.
-     * @see #writeMapXml
-     * @see #writeValueXml
-     * @see #readThisIntArrayXml
-     */
+
     public static final void writeBooleanArrayXml(boolean[] val, String name,
                                                   XmlSerializer out) throws XmlPullParserException, java.io.IOException {
 
@@ -430,42 +291,13 @@ public class XmlUtils {
         out.endTag(null, "boolean-array");
     }
 
-    /**
-     * Flatten an object's value into an XmlSerializer.  The value can later
-     * be read back with readThisValueXml().
-     * <p>
-     * Currently supported value types are: null, String, Integer, Long,
-     * Float, Double Boolean, Map, List.
-     *
-     * @param v    The object to be flattened.
-     * @param name Name attribute to include with this value's tag, or null
-     *             for none.
-     * @param out  XmlSerializer to write the object into.
-     * @see #writeMapXml
-     * @see #writeListXml
-     * @see #readValueXml
-     */
+
     public static final void writeValueXml(Object v, String name, XmlSerializer out)
             throws XmlPullParserException, java.io.IOException {
         writeValueXml(v, name, out, null);
     }
 
-    /**
-     * Flatten an object's value into an XmlSerializer.  The value can later
-     * be read back with readThisValueXml().
-     * <p>
-     * Currently supported value types are: null, String, Integer, Long,
-     * Float, Double Boolean, Map, List.
-     *
-     * @param v        The object to be flattened.
-     * @param name     Name attribute to include with this value's tag, or null
-     *                 for none.
-     * @param out      XmlSerializer to write the object into.
-     * @param callback Handler for Object types not recognized.
-     * @see #writeMapXml
-     * @see #writeListXml
-     * @see #readValueXml
-     */
+
     private static final void writeValueXml(Object v, String name, XmlSerializer out,
                                             WriteMapCallback callback) throws XmlPullParserException, java.io.IOException {
         if (v == null) {
@@ -564,18 +396,6 @@ public class XmlUtils {
         }
     }
 
-    /**
-     * Read a HashMap from an InputStream containing XML.  The stream can
-     * previously have been written by writeMapXml().
-     *
-     * @param in The InputStream from which to read.
-     * @return HashMap The resulting map.
-     * @see #readListXml
-     * @see #readValueXml
-     * @see #readThisMapXml
-     * #see #writeMapXml
-     */
-    @SuppressWarnings("unchecked")
 
     public static final HashMap<String, ?> readMapXml(InputStream in)
             throws XmlPullParserException, java.io.IOException {
@@ -584,17 +404,7 @@ public class XmlUtils {
         return (HashMap<String, ?>) readValueXml(parser, new String[1]);
     }
 
-    /**
-     * Read an ArrayList from an InputStream containing XML.  The stream can
-     * previously have been written by writeListXml().
-     *
-     * @param in The InputStream from which to read.
-     * @return ArrayList The resulting list.
-     * @see #readMapXml
-     * @see #readValueXml
-     * @see #readThisListXml
-     * @see #writeListXml
-     */
+
     public static final ArrayList readListXml(InputStream in)
             throws XmlPullParserException, java.io.IOException {
         XmlPullParser parser = Xml.newPullParser();
@@ -603,18 +413,7 @@ public class XmlUtils {
     }
 
 
-    /**
-     * Read a HashSet from an InputStream containing XML. The stream can
-     * previously have been written by writeSetXml().
-     *
-     * @param in The InputStream from which to read.
-     * @return HashSet The resulting set.
-     * @throws XmlPullParserException
-     * @throws java.io.IOException
-     * @see #readValueXml
-     * @see #readThisSetXml
-     * @see #writeSetXml
-     */
+
     public static final HashSet readSetXml(InputStream in)
             throws XmlPullParserException, java.io.IOException {
         XmlPullParser parser = Xml.newPullParser();
@@ -622,35 +421,13 @@ public class XmlUtils {
         return (HashSet) readValueXml(parser, new String[1]);
     }
 
-    /**
-     * Read a HashMap object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeMapXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the map.
-     *
-     * @param parser The XmlPullParser from which to read the map data.
-     * @param endTag Name of the tag that will end the map, usually "map".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the map's tag.
-     * @return HashMap The newly generated map.
-     * @see #readMapXml
-     */
+
     public static final HashMap<String, ?> readThisMapXml(XmlPullParser parser, String endTag,
                                                           String[] name) throws XmlPullParserException, java.io.IOException {
         return readThisMapXml(parser, endTag, name, null);
     }
 
-    /**
-     * Read a HashMap object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeMapXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the map.
-     *
-     * @param parser The XmlPullParser from which to read the map data.
-     * @param endTag Name of the tag that will end the map, usually "map".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the map's tag.
-     * @return HashMap The newly generated map.
-     * @see #readMapXml
-     */
+
     public static final HashMap<String, ?> readThisMapXml(XmlPullParser parser, String endTag,
                                                           String[] name, ReadMapCallback callback)
             throws XmlPullParserException, java.io.IOException {
@@ -675,9 +452,7 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Like {@link #readThisMapXml}, but returns an ArrayMap instead of HashMap.
-     */
+
     public static final ArrayMap<String, ?> readThisArrayMapXml(XmlPullParser parser,
                                                                 String endTag, String[] name, ReadMapCallback callback)
             throws XmlPullParserException, java.io.IOException {
@@ -702,35 +477,13 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read an ArrayList object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeListXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "list".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return HashMap The newly generated list.
-     * @see #readListXml
-     */
+
     public static final ArrayList readThisListXml(XmlPullParser parser, String endTag,
                                                   String[] name) throws XmlPullParserException, java.io.IOException {
         return readThisListXml(parser, endTag, name, null, false);
     }
 
-    /**
-     * Read an ArrayList object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeListXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "list".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return HashMap The newly generated list.
-     * @see #readListXml
-     */
+
     private static final ArrayList readThisListXml(XmlPullParser parser, String endTag,
                                                    String[] name, ReadMapCallback callback, boolean arrayMap)
             throws XmlPullParserException, java.io.IOException {
@@ -756,39 +509,13 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a HashSet object from an XmlPullParser. The XML data could previously
-     * have been generated by writeSetXml(). The XmlPullParser must be positioned
-     * <em>after</em> the tag that begins the set.
-     *
-     * @param parser The XmlPullParser from which to read the set data.
-     * @param endTag Name of the tag that will end the set, usually "set".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the set's tag.
-     * @return HashSet The newly generated set.
-     * @throws XmlPullParserException
-     * @throws java.io.IOException
-     * @see #readSetXml
-     */
+
     public static final HashSet readThisSetXml(XmlPullParser parser, String endTag,
                                                String[] name) throws XmlPullParserException, java.io.IOException {
         return readThisSetXml(parser, endTag, name, null, false);
     }
 
-    /**
-     * Read a HashSet object from an XmlPullParser. The XML data could previously
-     * have been generated by writeSetXml(). The XmlPullParser must be positioned
-     * <em>after</em> the tag that begins the set.
-     *
-     * @param parser The XmlPullParser from which to read the set data.
-     * @param endTag Name of the tag that will end the set, usually "set".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the set's tag.
-     * @return HashSet The newly generated set.
-     * @throws XmlPullParserException
-     * @throws java.io.IOException
-     * @see #readSetXml
-     */
+
     private static final HashSet readThisSetXml(XmlPullParser parser, String endTag,
                                                 String[] name, ReadMapCallback callback, boolean arrayMap)
             throws XmlPullParserException, java.io.IOException {
@@ -814,18 +541,7 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a byte[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeByteArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "list".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated byte[].
-     * @see #writeByteArrayXml
-     */
+
     public static final byte[] readThisByteArrayXml(XmlPullParser parser,
                                                     String endTag, String[] name)
             throws XmlPullParserException, java.io.IOException {
@@ -863,18 +579,7 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read an int[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeIntArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "list".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated int[].
-     * @see #readListXml
-     */
+
     public static final int[] readThisIntArrayXml(XmlPullParser parser,
                                                   String endTag, String[] name)
             throws XmlPullParserException, java.io.IOException {
@@ -912,18 +617,7 @@ public class XmlUtils {
                 "Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a long[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeLongArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "list".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated long[].
-     * @see #readListXml
-     */
+
     public static final long[] readThisLongArrayXml(XmlPullParser parser,
                                                     String endTag, String[] name)
             throws XmlPullParserException, java.io.IOException {
@@ -958,18 +652,7 @@ public class XmlUtils {
         throw new XmlPullParserException("Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a double[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeDoubleArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "double-array".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated double[].
-     * @see #readListXml
-     */
+
     public static final double[] readThisDoubleArrayXml(XmlPullParser parser, String endTag,
                                                         String[] name) throws XmlPullParserException, java.io.IOException {
 
@@ -1003,18 +686,7 @@ public class XmlUtils {
         throw new XmlPullParserException("Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a String[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeStringArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "string-array".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated String[].
-     * @see #readListXml
-     */
+
     public static final String[] readThisStringArrayXml(XmlPullParser parser, String endTag,
                                                         String[] name) throws XmlPullParserException, java.io.IOException {
 
@@ -1048,18 +720,6 @@ public class XmlUtils {
         throw new XmlPullParserException("Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a boolean[] object from an XmlPullParser.  The XML data could
-     * previously have been generated by writeBooleanArrayXml().  The XmlPullParser
-     * must be positioned <em>after</em> the tag that begins the list.
-     *
-     * @param parser The XmlPullParser from which to read the list data.
-     * @param endTag Name of the tag that will end the list, usually "string-array".
-     * @param name   An array of one string, used to return the name attribute
-     *               of the list's tag.
-     * @return Returns a newly generated boolean[].
-     * @see #readListXml
-     */
     public static final boolean[] readThisBooleanArrayXml(XmlPullParser parser, String endTag,
                                                           String[] name) throws XmlPullParserException, java.io.IOException {
 
@@ -1093,20 +753,7 @@ public class XmlUtils {
         throw new XmlPullParserException("Document ended before " + endTag + " end tag");
     }
 
-    /**
-     * Read a flattened object from an XmlPullParser.  The XML data could
-     * previously have been written with writeMapXml(), writeListXml(), or
-     * writeValueXml().  The XmlPullParser must be positioned <em>at</em> the
-     * tag that defines the value.
-     *
-     * @param parser The XmlPullParser from which to read the object.
-     * @param name   An array of one string, used to return the name attribute
-     *               of the value's tag.
-     * @return Object The newly generated value object.
-     * @see #readMapXml
-     * @see #readListXml
-     * @see #writeValueXml
-     */
+
     public static final Object readValueXml(XmlPullParser parser, String[] name)
             throws XmlPullParserException, java.io.IOException {
         int eventType = parser.getEventType();
@@ -1467,39 +1114,15 @@ public class XmlUtils {
         }
     }
 
-    /**
-     *
-     */
+
     public interface WriteMapCallback {
-        /**
-         * Called from writeMapXml when an Object type is not recognized. The implementer
-         * must write out the entire element including start and end tags.
-         *
-         * @param v    The object to be written out
-         * @param name The mapping key for v. Must be written into the "name" attribute of the
-         *             start tag.
-         * @param out  The XML output stream.
-         * @throws XmlPullParserException on unrecognized Object type.
-         * @throws IOException            on XmlSerializer serialization errors.
-         */
+
         void writeUnknownObject(Object v, String name, XmlSerializer out)
                 throws XmlPullParserException, IOException;
     }
 
-    /**
-     *
-     */
+
     public interface ReadMapCallback {
-        /**
-         * Called from readThisMapXml when a START_TAG is not recognized. The input stream
-         * is positioned within the start tag so that attributes can be read using in.getAttribute.
-         *
-         * @param in  the XML input stream
-         * @param tag the START_TAG that was not recognized.
-         * @return the Object parsed from the stream which will be put into the map.
-         * @throws XmlPullParserException if the START_TAG is not recognized.
-         * @throws IOException            on XmlPullParser serialization errors.
-         */
         Object readThisUnknownObjectXml(XmlPullParser in, String tag)
                 throws XmlPullParserException, IOException;
     }

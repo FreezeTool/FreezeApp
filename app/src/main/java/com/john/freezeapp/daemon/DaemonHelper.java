@@ -3,16 +3,8 @@ package com.john.freezeapp.daemon;
 import com.john.freezeapp.BuildConfig;
 
 public class DaemonHelper {
-    public static final int PORT = 33456;
-    public static final String LOCALHOST = "localhost";
-
-    public static final String IPC_TYPE_BIND = "bind";
-    public static final String IPC_TYPE_STOP = "stop";
-    public static final String IPC_TYPE_SHELL = "shell";
-    public static final String IPC_TYPE_SERVICE = "service";
-    public static final String ACTION_APP_PROCESS_START = "action.freeze.app.process.start";
-    public static final String ACTION_APP_PROCESS_STOP = "action.freeze.app.process.stop";
-    public static final String DAEMON_NICKNAME = "FreezeApp_" + BuildConfig.APPLICATION_ID;
+    public static final String FREEZE_APP_LABEL = "FreezeApp_";
+    public static final String DAEMON_NICKNAME = FREEZE_APP_LABEL + BuildConfig.APPLICATION_ID;
 
     public static final String DAEMON_MODULE_CUSTOM = "FreezeApp";
     public static final String DAEMON_MODULE_SYSTEM = "System";
