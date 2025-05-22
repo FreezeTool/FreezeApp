@@ -24,6 +24,7 @@ import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AppStandbyActivity extends ToolbarSearchActivity {
@@ -89,6 +90,7 @@ public class AppStandbyActivity extends ToolbarSearchActivity {
                 if (isDestroy()) {
                     return;
                 }
+                Collections.sort(appStandbyList);
                 List<PackageInfo> installApp = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ALL, true);
                 List<AppStandbyData> installAppStandbyData = new ArrayList<>();
                 for (AppStandbyData appStandbyData : appStandbyList) {

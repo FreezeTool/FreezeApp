@@ -68,11 +68,11 @@ public class AppStandbyBucketViewHolder extends CardViewHolder<AppStandbyData> {
             tvOperate.setOnClickListener(v -> {
                 AppStandby.setAppStandbyBucket(appStandbyData.packageName, bucket.getBucket());
                 int appStandbyBucket = AppStandby.getAppStandbyBucket(appStandbyData.packageName);
-                if (appStandbyBucket != -1) {
+                if (appStandbyBucket ==  bucket.getBucket()) {
                     appStandbyData.standbyBucket = appStandbyBucket;
                     onBind();
                 } else {
-                    FreezeUtil.showShortToast("设置失败～");
+                    FreezeUtil.showShortToast("无法修改～");
                 }
                 popupWindow.dismiss();
             });
