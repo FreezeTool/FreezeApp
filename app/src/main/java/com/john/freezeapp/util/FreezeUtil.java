@@ -373,7 +373,11 @@ public class FreezeUtil {
     }
 
 
-    public static void showToast(String msg) {
+    public static void showLongToast(String msg) {
         Toast.makeText(App.getApp(), msg, Toast.LENGTH_LONG).show();
+    }
+
+    public static void showShortToast(String msg) {
+        Toast.makeText(App.getApp(), msg, Toast.LENGTH_SHORT).show();
     }
 }

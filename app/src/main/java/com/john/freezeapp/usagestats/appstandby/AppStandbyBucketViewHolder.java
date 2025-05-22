@@ -42,13 +42,14 @@ public class AppStandbyBucketViewHolder extends CardViewHolder<AppStandbyData> {
         super.onBind();
         AppStandbyData data = getData();
         tvAppStandbyBucket.setText(AppStandby.getStandByBucketName(data.standbyBucket));
-        tvAppStandbyBucket.setOnClickListener(v -> {
+        itemView.setOnClickListener(v -> {
             if (data.standbyBucket == StandbyBucket.STANDBY_BUCKET_EXEMPTED.getBucket()) {
-                FreezeUtil.showToast(String.format("无法设置%s应用~", StandbyBucket.STANDBY_BUCKET_EXEMPTED.getName()));
+                FreezeUtil.showShortToast(String.format("无法设置%s应用~", StandbyBucket.STANDBY_BUCKET_EXEMPTED.getName()));
                 return;
             }
             showPopupNightModeWindow(data);
         });
+
         AppInfoLoader.load(getContext(), data.packageName, ivIcon, tvName);
 
     }
@@ -71,7 +72,7 @@ public class AppStandbyBucketViewHolder extends CardViewHolder<AppStandbyData> {
                     appStandbyData.standbyBucket = appStandbyBucket;
                     onBind();
                 } else {
-                    FreezeUtil.showToast("设置失败～");
+                    FreezeUtil.showShortToast("设置失败～");
                 }
                 popupWindow.dismiss();
             });
