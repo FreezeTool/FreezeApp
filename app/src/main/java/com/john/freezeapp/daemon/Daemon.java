@@ -87,7 +87,7 @@ public class Daemon {
     private void printDaemon() {
         DaemonLog.log("-----------------------------Daemon-----------------------------");
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("pid=");
+        stringBuilder.append("\npid=");
         stringBuilder.append(android.os.Process.myPid());
         stringBuilder.append("\n");
 
@@ -103,6 +103,7 @@ public class Daemon {
         stringBuilder.append(Os.uname());
         stringBuilder.append("\n");
         DaemonLog.log(stringBuilder.toString());
+        DaemonLog.toClient(stringBuilder.toString());
         DaemonLog.log("-----------------------------------------------------------------");
     }
 

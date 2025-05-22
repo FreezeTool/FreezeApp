@@ -37,6 +37,7 @@ import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
+import com.john.freezeapp.usagestats.appstandby.AppStandbyActivity;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.io.File;
@@ -132,6 +133,14 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_standby_bucket),
+                R.drawable.ic_vector_white_terminal,
+                0xff9986A4,
+                v -> {
+                    Intent intent = new Intent(context, AppStandbyActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }));
 
         list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,

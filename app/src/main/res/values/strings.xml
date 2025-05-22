@@ -15,7 +15,7 @@
     <string name="manage_space_name">App Manage Space</string>
     <string name="setting_name">App Setting</string>
     <string name="clipboard_name">App ClipBoard</string>
-
+    <string name="app_standby_name">App Standby Bucket</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -29,6 +29,7 @@
     <string name="main_app_ops_name">APP权限管理</string>
     <string name="main_storage_name">APP存储管理</string>
     <string name="main_clipboard_name">APP粘贴板管理</string>
+    <string name="main_app_standby_bucket">APP待机分桶</string>
 
     <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
     <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动Freeze服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>

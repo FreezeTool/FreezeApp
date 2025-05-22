@@ -31,8 +31,8 @@ public class DaemonLog {
         stringBuilder.append("    ");
         stringBuilder.append(pid);
         stringBuilder.append("    ");
-        stringBuilder.append(TAG);
-        stringBuilder.append(" : ");
+//        stringBuilder.append(TAG);
+//        stringBuilder.append(" : ");
         stringBuilder.append(msg);
         DaemonClientBinderProxy.notifyLog(stringBuilder.toString());
     }

@@ -15,7 +15,9 @@ import android.os.ShellCallback;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
+import android.widget.Toast;
 
+import com.john.freezeapp.App;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.client.ClientBinderManager;
@@ -23,6 +25,7 @@ import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 import com.john.freezeapp.setting.SettingActivity;
+import com.john.freezeapp.usagestats.appstandby.StandbyBucket;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -55,7 +58,7 @@ public class FreezeUtil {
 
     public static String getStartShell(Context context) {
         String debugArgs = "";
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             if (FreezeUtil.atLeast30()) {
                 debugArgs = "-Xcompiler-option" + " --debuggable" +
                         " -XjdwpProvider:adbconnection" +
@@ -370,4 +373,7 @@ public class FreezeUtil {
     }
 
 
+    public static void showToast(String msg) {
+        Toast.makeText(App.getApp(), msg, Toast.LENGTH_LONG).show();
+    }
 }

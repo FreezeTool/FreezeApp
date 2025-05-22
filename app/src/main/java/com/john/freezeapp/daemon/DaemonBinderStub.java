@@ -60,7 +60,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
         int targetCode = data.readInt();
         int targetFlags = data.readInt();
 
-        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call transactRemote descriptor=" + targetBinder.getInterfaceDescriptor() + ", code=" + targetCode + ", flags=" + targetFlags);
+//        DaemonLog.toClient(Binder.getCallingUid(), Binder.getCallingPid(), "call transactRemote descriptor=" + targetBinder.getInterfaceDescriptor() + ", code=" + targetCode + ", flags=" + targetFlags);
         Parcel newData = Parcel.obtain();
         try {
             newData.appendFrom(data, data.dataPosition(), data.dataAvail());
