@@ -93,6 +93,7 @@
 
     <string name="mi_mix_flip_home_app">外屏应用</string>
     <string name="mi_mix_flip_tip" formatted="false">首次请点击%s，即可在%s中显示全部应用。</string>
+    <string name="app_standby_knowledge" formatted="false">了解应用待机分桶优先级策略～</string>
 
     <string name="notification_channel_adb_pairing">无线调试配对</string>
     <string name="notification_adb_pairing_input_paring_code">输入配对码</string>

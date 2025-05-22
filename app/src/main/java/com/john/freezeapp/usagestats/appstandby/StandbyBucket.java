@@ -30,7 +30,7 @@ public enum StandbyBucket {
     STANDBY_BUCKET_FREQUENT(UsageStatsManager.STANDBY_BUCKET_FREQUENT, "常用"),
     STANDBY_BUCKET_RARE(UsageStatsManager.STANDBY_BUCKET_RARE, "极少使用"),
     STANDBY_BUCKET_RESTRICTED(UsageStatsManager.STANDBY_BUCKET_RESTRICTED, "受限"),
-    STANDBY_BUCKET_NEVER(UsageStatsManagerHidden.STANDBY_BUCKET_NEVER, "无法使用");
+    STANDBY_BUCKET_NEVER(UsageStatsManagerHidden.STANDBY_BUCKET_NEVER, "从未使用");
 
     private int bucket;
     private String name;
