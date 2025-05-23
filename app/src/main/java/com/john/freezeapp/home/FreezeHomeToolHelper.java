@@ -32,6 +32,7 @@ import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.clipboard.ClipboardActivity;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.util.SharedPreferencesImpl;
+import com.john.freezeapp.deviceidle.DeviceIdleActivity;
 import com.john.freezeapp.freeze.ManagerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
@@ -133,11 +134,23 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
-        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_standby_bucket),
+        if (FreezeUtil.atLeast28()) {
+            list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_standby_bucket),
+                    R.drawable.ic_vector_white_terminal,
+                    0xff9986A4,
+                    v -> {
+                        Intent intent = new Intent(context, AppStandbyActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        context.startActivity(intent);
+                    }));
+        }
+
+
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_device_idle),
                 R.drawable.ic_vector_white_terminal,
                 0xff9986A4,
                 v -> {
-                    Intent intent = new Intent(context, AppStandbyActivity.class);
+                    Intent intent = new Intent(context, DeviceIdleActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
                 }));

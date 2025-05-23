@@ -68,11 +68,7 @@ public class DaemonService {
         } else {
             permissionManager = null;
         }
-        if (FreezeUtil.atLeast30()) {
-            deviceIdleController = IDeviceIdleController.Stub.asInterface(ServiceManager.getService("deviceidle"));
-        } else {
-            deviceIdleController = null;
-        }
+        deviceIdleController = IDeviceIdleController.Stub.asInterface(ServiceManager.getService("deviceidle"));
         displayManager = IDisplayManager.Stub.asInterface(ServiceManager.getService("display"));
         batteryPropertiesRegistrar = IBatteryPropertiesRegistrar.Stub.asInterface(ServiceManager.getService("batteryproperties"));
         launcherApps = ILauncherApps.Stub.asInterface(ServiceManager.getService("launcherapps"));

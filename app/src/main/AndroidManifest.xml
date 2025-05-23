@@ -146,6 +146,11 @@
             android:name=".usagestats.appstandby.AppStandbyActivity"
             android:launchMode="singleTask"/>
 
+
+        <activity
+            android:name=".deviceidle.DeviceIdleActivity"
+            android:launchMode="singleTask"/>
+
         <service
             android:name=".monitor.AppMonitorService" />
 

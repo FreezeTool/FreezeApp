@@ -1,25 +1,21 @@
 package com.john.freezeapp.usagestats.appstandby;
 
-import android.content.DialogInterface;
 import android.content.pm.PackageInfo;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
-import com.john.freezeapp.clipboard.Clipboard;
 import com.john.freezeapp.usagestats.UsageStatsAdapter;
 import com.john.freezeapp.util.FreezeAppManager;
-import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
@@ -27,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@RequiresApi(Build.VERSION_CODES.P)
 public class AppStandbyActivity extends ToolbarSearchActivity {
 
     RecyclerView recyclerView;

@@ -25,12 +25,7 @@ public class UsageStatsViewHolder extends CardViewHolder<UsageStatsData> {
 
     private static final SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public static Creator<UsageStatsData> CREATOR = new Creator<UsageStatsData>() {
-        @Override
-        public UsageStatsViewHolder createViewHolder(LayoutInflater inflater, ViewGroup parent) {
-            return new UsageStatsViewHolder(inflater.inflate(R.layout.item_usage_stats, parent, false));
-        }
-    };
+    public static Creator<UsageStatsData> CREATOR = (inflater, parent) -> new UsageStatsViewHolder(inflater.inflate(R.layout.item_usage_stats, parent, false));
 
     public UsageStatsViewHolder(View itemView) {
         super(itemView);

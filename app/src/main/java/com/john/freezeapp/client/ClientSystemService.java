@@ -11,6 +11,7 @@ import android.content.IClipboard;
 import android.content.pm.IPackageManager;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.IDeviceIdleController;
 import android.os.IInstalld;
 import android.os.storage.IStorageManager;
 import android.permission.IPermissionManager;
@@ -189,6 +190,25 @@ public class ClientSystemService {
         }
     };
 
+    private final static ClientBinderSingleton<IDeviceIdleController> iDeviceIdleController = new ClientBinderSingleton<IDeviceIdleController>() {
+        @Override
+        protected IDeviceIdleController createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            IBinder iBinder = SystemServiceHelper.getSystemService("deviceidle");
+            if (iBinder != null) {
+                return IDeviceIdleController.Stub.asInterface(new ClientSystemBinderWrapper(iBinder));
+            }
+
+            return null;
+        }
+    };
+
+    public static IDeviceIdleController getDeviceIdleController() {
+        return iDeviceIdleController.get();
+    }
 
     public static IActivityManager getActivityManager() {
         return iActivityManager.get();

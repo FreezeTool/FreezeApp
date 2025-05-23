@@ -16,6 +16,7 @@
     <string name="setting_name">App Setting</string>
     <string name="clipboard_name">App ClipBoard</string>
     <string name="app_standby_name">App Standby Bucket</string>
+    <string name="app_device_idle">App Device Idle</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -30,6 +31,7 @@
     <string name="main_storage_name">APP存储管理</string>
     <string name="main_clipboard_name">APP粘贴板管理</string>
     <string name="main_app_standby_bucket">APP待机分桶</string>
+    <string name="main_app_device_idle">APP休眠模式（白名单）</string>
 
     <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
     <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动Freeze服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>
@@ -42,6 +44,7 @@
 
     <string name="main_wireless_adb_start_server_title">无线调试启动</string>
     <string name="main_wireless_adb_start_server_content">在Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动Freeze服务，无需连接到计算机。</string>
+
 
 
     <string name="main_server_active">正在运行</string>
@@ -94,6 +97,7 @@
     <string name="mi_mix_flip_home_app">外屏应用</string>
     <string name="mi_mix_flip_tip" formatted="false">首次请点击%s，即可在%s中显示全部应用。</string>
     <string name="app_standby_knowledge" formatted="false">了解应用待机分桶优先级策略～</string>
+    <string name="device_idle_tip">设置休眠模式白名单～</string>
 
     <string name="notification_channel_adb_pairing">无线调试配对</string>
     <string name="notification_adb_pairing_input_paring_code">输入配对码</string>

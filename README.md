@@ -8,6 +8,7 @@
 * APP存储管理
 * APP粘贴板管理
 * APP待机分桶
+* APP休眠模式（白名单配置）
 * APP外屏配置（XIAOMI MIX FLIP）
 
 ## 后续计划
