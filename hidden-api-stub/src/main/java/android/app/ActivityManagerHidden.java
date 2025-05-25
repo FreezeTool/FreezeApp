@@ -38,4 +38,8 @@ public class ActivityManagerHidden {
 
 
     }
+
+    public static class TaskSnapshot {
+
+    }
 }

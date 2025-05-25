@@ -1,6 +1,7 @@
 package com.john.freezeapp.monitor;
 
 import android.app.ActivityManager;
+import android.app.ActivityManagerHidden;
 import android.app.ITaskStackListener;
 import android.content.ComponentName;
 import android.window.TaskSnapshot;
@@ -145,5 +146,10 @@ public class TaskStackListener extends ITaskStackListener.Stub {
     @Override
     public void onLockTaskModeChanged(int mode) {
         ClientLog.log(String.format("AppMonitorManager onLockTaskModeChanged displayId=%d", mode));
+    }
+
+    @Override
+    public void onTaskSnapshotChanged(int taskId, ActivityManagerHidden.TaskSnapshot snapshot) {
+
     }
 }

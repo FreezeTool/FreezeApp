@@ -1,6 +1,7 @@
 package com.john.freezeapp.daemon.monitor;
 
 import android.app.ActivityManager;
+import android.app.ActivityManagerHidden;
 import android.app.ITaskStackListener;
 import android.content.ComponentName;
 import android.window.TaskSnapshot;
@@ -144,5 +145,10 @@ public class DaemonTaskStackListener extends ITaskStackListener.Stub {
     @Override
     public void onLockTaskModeChanged(int mode) {
         DaemonLog.log(String.format("AppMonitorManager onLockTaskModeChanged displayId=%d", mode));
+    }
+
+    @Override
+    public void onTaskSnapshotChanged(int taskId, ActivityManagerHidden.TaskSnapshot snapshot) {
+
     }
 }

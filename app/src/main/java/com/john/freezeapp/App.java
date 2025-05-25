@@ -2,6 +2,7 @@ package com.john.freezeapp;
 
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -9,7 +10,6 @@ import com.john.freezeapp.clipboard.Clipboard;
 import com.john.freezeapp.monitor.AppMonitorManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SettingUtil;
-import com.john.freezeapp.util.SharedPrefUtil;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;
 
@@ -32,6 +32,7 @@ public class App extends Application {
         }
         AppMonitorManager.startAppMonitor(getApp());
         Clipboard.startClipboardFloating(getApp());
+        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Log.d("FreezeApp", e.getMessage()));
     }
 
     public static App getApp() {
