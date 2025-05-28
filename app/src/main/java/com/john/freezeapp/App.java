@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import com.john.freezeapp.clipboard.Clipboard;
 import com.john.freezeapp.monitor.AppMonitorManager;
 import com.john.freezeapp.util.DeviceUtil;
-import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SettingUtil;
 
 import org.lsposed.hiddenapibypass.HiddenApiBypass;

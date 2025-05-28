@@ -14,12 +14,9 @@ import android.text.TextUtils;
 import androidx.annotation.IntDef;
 
 import com.john.freezeapp.BuildConfig;
-import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 
-import java.io.DataOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -27,10 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
-import rikka.shizuku.Shizuku;
-import rikka.shizuku.ShizukuRemoteProcess;
 
 public class FreezeAppManager {
 
@@ -398,41 +392,6 @@ public class FreezeAppManager {
             e.printStackTrace();
         }
         return null;
-    }
-
-
-    public static void execShizuku(Context context, Callback2 callback) {
-        ThreadPool.execute(new Runnable() {
-            @Override
-            public void run() {
-                String[] arrays = {"sh"};
-                ShizukuRemoteProcess shizukuRemoteProcess = Shizuku.newProcess(arrays, null, null);
-                DataOutputStream os = null;
-                try {
-                    os = new DataOutputStream(shizukuRemoteProcess.getOutputStream());
-                    os.write(FreezeUtil.getStartShell(context).getBytes());
-                    os.writeBytes("\n");
-                    os.flush();
-                    os.writeBytes("exit\n");
-                    os.flush();
-                    boolean result = DaemonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
-                    if (callback != null) {
-                        callback.success();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (callback != null) {
-                        callback.fail();
-                    }
-                } finally {
-                    try {
-                        os.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
 

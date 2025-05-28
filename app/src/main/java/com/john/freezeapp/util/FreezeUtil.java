@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import rikka.shizuku.Shizuku;
-
 public class FreezeUtil {
     public static String getDevice() {
         String manufacturer = Character.toUpperCase(Build.MANUFACTURER.charAt(0)) + Build.MANUFACTURER.substring(1);
@@ -86,23 +84,33 @@ public class FreezeUtil {
 
     public static void generateShell(Context context) {
 //        coppyDaemonApk(context);
+
+        long freezeAppVersion = BuildConfig.FREEZEAPP_VERSION;
+
+        // 获取本地存储的时间戳
+        SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
+        long spFreezeAppVersion = sp.getLong("daemon_shell_version", 0);
         String shellFilePath = FreezeUtil.getShellFilePath(context);
-        PrintWriter printWriter = null;
-        try {
-            printWriter = new PrintWriter(shellFilePath);
-            printWriter.println(FreezeUtil.getStartShell(context));
-            printWriter.println("sleep 1");
-            printWriter.println("echo success");
-            printWriter.close();
-            DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
-        } catch (Throwable th) {
+        // 如果时间戳不一致，则复制资源
+        if (freezeAppVersion != spFreezeAppVersion || !new File(shellFilePath).exists()) {
+            PrintWriter printWriter = null;
             try {
-                if (printWriter != null) {
-                    printWriter.close();
+                printWriter = new PrintWriter(shellFilePath);
+                printWriter.println(FreezeUtil.getStartShell(context));
+                printWriter.println("sleep 1");
+                printWriter.println("echo success");
+                printWriter.close();
+                DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
+            } catch (Throwable th) {
+                try {
+                    if (printWriter != null) {
+                        printWriter.close();
+                    }
+                } catch (Throwable th2) {
+                    th.addSuppressed(th2);
                 }
-            } catch (Throwable th2) {
-                th.addSuppressed(th2);
             }
+            sp.edit().putLong("daemon_shell_version", freezeAppVersion).apply();
         }
     }
 
@@ -131,21 +139,6 @@ public class FreezeUtil {
             x.printStackTrace();
         }
         return false;
-    }
-
-    public static boolean isShizukuActive() {
-        try {
-            return Shizuku.getBinder() != null;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public static boolean checkShizukuPermission() {
-        if (Shizuku.checkSelfPermission() != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        return true;
     }
 
 
@@ -359,17 +352,17 @@ public class FreezeUtil {
                 // 复制 sourceDir 文件到外部存储
                 String sourceDir = context.getApplicationInfo().sourceDir;
                 File sourceFile = new File(sourceDir);
-                
+
                 // 获取外部存储目录
                 File externalDir = context.getExternalFilesDir(null);
                 if (externalDir != null && externalDir.exists()) {
                     File destFile = new File(externalDir, "daemon.apk");
-                    
+
                     if (!destFile.exists() || destFile.lastModified() != sourceFile.lastModified()) {
                         FileUtils.copyFile(sourceFile, destFile);
                     }
                 }
-                
+
                 // 更新本地存储的时间戳
                 sp.edit().putString("build_timestamp", buildTimestamp).apply();
             }
@@ -380,26 +373,22 @@ public class FreezeUtil {
 
     public static void coppyDaemonApk(Context context) {
         try {
-            // 读取 assets 中的 version.txt
-            InputStream is = context.getAssets().open("version.txt");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-            String buildTimestamp = reader.readLine();
-            reader.close();
-            is.close();
+
+            long freezeAppVersion = BuildConfig.FREEZEAPP_VERSION;
 
             // 获取本地存储的时间戳
             SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
-            String localTimestamp = sp.getString("daemon_apk_version", "");
+            long spFreezeAppVersion = sp.getLong("daemon_apk_version", 0);
 
             // 如果时间戳不一致，则复制资源
-            if (!buildTimestamp.equals(localTimestamp)) {
+            if (freezeAppVersion != spFreezeAppVersion) {
                 // 复制 daemon.apk 到外部存储
                 InputStream apkIs = context.getAssets().open("daemon.apk");
                 File externalDir = context.getExternalFilesDir(null);
                 if (externalDir != null && externalDir.exists()) {
                     File destFile = new File(externalDir, "daemon.apk");
                     FileOutputStream fos = new FileOutputStream(destFile);
-                    
+
                     byte[] buffer = new byte[4096];
                     int len;
                     while ((len = apkIs.read(buffer)) != -1) {
@@ -407,9 +396,9 @@ public class FreezeUtil {
                     }
                     fos.close();
                     apkIs.close();
-                    
+
                     // 更新本地存储的时间戳
-                    sp.edit().putString("daemon_apk_version", buildTimestamp).apply();
+                    sp.edit().putLong("daemon_apk_version", freezeAppVersion).apply();
                 }
             }
         } catch (IOException e) {

@@ -22,6 +22,7 @@ android {
             abiFilters "arm64-v8a"
         }
         buildConfigField 'String', 'DAEMON_CLASS_NAME', '\"com.john.freezeapp.daemon.Daemon\"'
+        buildConfigField 'long', 'FREEZEAPP_VERSION', "${System.currentTimeMillis()}"
     }
 
     signingConfigs {
@@ -74,8 +75,8 @@ dependencies {
     implementation libs.gson
     implementation libs.recyclerview
     implementation libs.material
-    implementation libs.shisuku.api
-    implementation libs.shisuku.provider
+    debugImplementation libs.shisuku.api
+    debugImplementation libs.shisuku.provider
     implementation libs.hiddenapibypass
     implementation libs.wheelpicker
     implementation libs.bcpkix.jdk15on
@@ -93,7 +94,7 @@ android.applicationVariants.all { variant ->
     def mergeAssetsTask = tasks.named("merge${variantName}Assets").get()
     def compressAssetsTask = tasks.named("compress${variantName}Assets").get()
 
-    
+
 //    // 创建复制 daemon.apk 的任务
 //    task("copyDaemonApk${variantName}", type: Copy) {
 //        from new File(project(':daemon').buildDir, "outputs/apk/debug/daemon-debug.apk")
@@ -103,29 +104,7 @@ android.applicationVariants.all { variant ->
 //        // 关闭增量构建
 //        outputs.upToDateWhen { false }
 //    }
-    
-    task("write${variantName}AssetsFile") {
-        // 定义输入：依赖对应 variant 的 mergeAssets 输出
-        inputs.files(mergeAssetsTask.outputs.files)
-        
-        doLast {
-            // 从 inputs 中获取输出目录
-            def assetsDir = inputs.files.singleFile
-            if (!assetsDir.exists()) {
-                assetsDir.mkdirs()
-            }
-            // 在 inputs 目录下生成 version.txt
-            def versionFile = new File(assetsDir, "version.txt")
-            versionFile.text = System.currentTimeMillis().toString()
-        }
-    }
-
 //    def copyDaemonApkTask = tasks.named("copyDaemonApk${variantName}").get()
-    def writeAssetsFileTask = tasks.named("write${variantName}AssetsFile").get()
-    
-    // 设置任务依赖关系
-    compressAssetsTask.dependsOn writeAssetsFileTask
 //    compressAssetsTask.dependsOn copyDaemonApkTask
-    writeAssetsFileTask.dependsOn mergeAssetsTask
-//    copyDaemonApkTask.dependsOn writeAssetsFileTask
+//    copyDaemonApkTask.dependsOn mergeAssetsTask
 }

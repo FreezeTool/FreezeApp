@@ -27,7 +27,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.freezeapp.BaseFragment;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.IDaemonBinder;
+import com.john.freezeapp.OnRequestPermissionResultListener;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ShizukuUtil;
 import com.john.freezeapp.adb.AdbPairActivity;
 import com.john.freezeapp.adb.AdbStartDialog;
 import com.john.freezeapp.client.ClientBinderManager;
@@ -43,8 +45,6 @@ import com.john.freezeapp.util.SharedPrefUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-import rikka.shizuku.Shizuku;
-
 public class HomeFragment extends BaseFragment {
 
 
@@ -54,7 +54,7 @@ public class HomeFragment extends BaseFragment {
     private boolean isShizuku = false;
     static final int REQUEST_CODE = 124;
 
-    private final Shizuku.OnRequestPermissionResultListener onRequestPermissionResultListener = new Shizuku.OnRequestPermissionResultListener() {
+    private final OnRequestPermissionResultListener onRequestPermissionResultListener = new OnRequestPermissionResultListener() {
         @Override
         public void onRequestPermissionResult(int requestCode, int grantResult) {
             if (requestCode == REQUEST_CODE && grantResult == PackageManager.PERMISSION_GRANTED) {
@@ -66,7 +66,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Shizuku.addRequestPermissionResultListener(onRequestPermissionResultListener);
+        ShizukuUtil.addRequestPermissionResultListener(onRequestPermissionResultListener);
         setHasOptionsMenu(true);
     }
 
@@ -126,7 +126,7 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         isRoot = FreezeUtil.isSuEnable();
-        isShizuku = FreezeUtil.isShizukuActive();
+        isShizuku = ShizukuUtil.isShizukuActive();
         updateData(view.getContext());
     }
 
@@ -134,7 +134,7 @@ public class HomeFragment extends BaseFragment {
     public void onResume() {
         super.onResume();
         boolean isRoot = FreezeUtil.isSuEnable();
-        boolean isShizuku = FreezeUtil.isShizukuActive();
+        boolean isShizuku = ShizukuUtil.isShizukuActive();
 
         if (this.isRoot != isRoot || this.isShizuku != isShizuku) {
             updateData(getContext());
@@ -168,7 +168,7 @@ public class HomeFragment extends BaseFragment {
         }
 
         startDaemonData.add(adbDaemonData);
-        if (BuildConfig.DEBUG) {
+        if (ShizukuUtil.isEnable()) {
             startDaemonData.add(shizukuDaemonData);
         }
         startDaemonData.add(rootDaemonData);
@@ -385,7 +385,7 @@ public class HomeFragment extends BaseFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Shizuku.removeRequestPermissionResultListener(onRequestPermissionResultListener);
+        ShizukuUtil.removeRequestPermissionResultListener();
     }
 
     private void showWatchCommandDialog() {
@@ -410,8 +410,8 @@ public class HomeFragment extends BaseFragment {
 
     public void toShizuku(View v) {
 
-        if (!FreezeUtil.checkShizukuPermission()) {
-            Shizuku.requestPermission(REQUEST_CODE);
+        if (!ShizukuUtil.checkShizukuPermission()) {
+            ShizukuUtil.requestPermission(REQUEST_CODE);
         } else {
             toRealShizuku();
         }
@@ -419,6 +419,6 @@ public class HomeFragment extends BaseFragment {
 
     private void toRealShizuku() {
         showLoading();
-        FreezeAppManager.execShizuku(getContext(), null);
+        ShizukuUtil.execShizuku(getContext(), null);
     }
 }
