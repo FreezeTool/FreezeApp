@@ -14,10 +14,10 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.text.TextUtils;
+
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.daemon.util.DaemonUtil;
 import com.john.freezeapp.util.DeviceUtil;
-import com.john.freezeapp.util.ThreadPool;
 import com.john.hidden.api.ReplaceRef;
 
 import java.util.ArrayList;
@@ -92,26 +92,24 @@ public class DaemonBinderManager {
     }
 
     public static void sendBinderContainer() {
-        ThreadPool.execute(() -> {
-            try {
-                String name = "com.john.freezeapp.daemon";
-                DaemonLog.log("sendBinderContainer start");
-                IContentProvider contentProvider = getContentProviderExternal(name, 0, null, name);
-                DaemonLog.log("sendBinderContainer step 1");
-                if (contentProvider == null) {
-                    DaemonLog.log("sendBinder contentProvider = null");
-                    return;
-                }
-                Bundle extras = new Bundle();
-                extras.putBinder("binder", sBinderContainer.asBinder());
-                DaemonLog.log("sendBinderContainer step 2");
-                String callingPackageName = DaemonUtil.getDaemonPackageName();
-                Bundle reply = callCompat(contentProvider, callingPackageName, name, "sendBinder", null, extras);
-                DaemonLog.log("sendBinderContainer step 3");
-            } catch (Throwable e) {
-                DaemonLog.e(e, "sendBinderContainer");
+        try {
+            String name = "com.john.freezeapp.daemon";
+            DaemonLog.log("sendBinderContainer start");
+            IContentProvider contentProvider = getContentProviderExternal(name, 0, null, name);
+            DaemonLog.log("sendBinderContainer step 1");
+            if (contentProvider == null) {
+                DaemonLog.log("sendBinder contentProvider = null");
+                return;
             }
-        });
+            Bundle extras = new Bundle();
+            extras.putBinder("binder", sBinderContainer.asBinder());
+            DaemonLog.log("sendBinderContainer step 2");
+            String callingPackageName = DaemonUtil.getDaemonPackageName();
+            Bundle reply = callCompat(contentProvider, callingPackageName, name, "sendBinder", null, extras);
+            DaemonLog.log("sendBinderContainer step 3");
+        } catch (Throwable e) {
+            DaemonLog.e(e, "sendBinderContainer");
+        }
     }
 
 
