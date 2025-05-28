@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.john.freezeapp.clipboard.Clipboard;
 import com.john.freezeapp.monitor.AppMonitorManager;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SettingUtil;
 
@@ -27,7 +28,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (FreezeUtil.atLeast28()) {
+        if (DeviceUtil.atLeast28()) {
             HiddenApiBypass.addHiddenApiExemptions("L");
         }
         AppMonitorManager.startAppMonitor(getApp());

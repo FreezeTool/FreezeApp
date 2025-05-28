@@ -16,6 +16,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import com.john.freezeapp.App;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ScreenUtils;
 
@@ -65,7 +66,7 @@ public class AppOpsDetailViewHolder extends CardViewHolder<AppOpsDetailData> {
         } else {
             modes.add(new Pair<>(AppOps.MODE_IGNORED, AppOps.MODE_IGNORED));
         }
-        if (FreezeUtil.atLeast29()) {
+        if (DeviceUtil.atLeast29()) {
             modes.add(new Pair<>(AppOps.MODE_FOREGROUND, AppOps.MODE_FOREGROUND));
         }
 

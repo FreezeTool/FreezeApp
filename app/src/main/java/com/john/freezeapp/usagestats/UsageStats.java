@@ -8,6 +8,7 @@ import android.os.RemoteException;
 
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.hidden.api.ReplaceRef;
@@ -58,7 +59,7 @@ public final class UsageStats {
             usageStatsData.lastTimeStamp = usageStats.getLastTimeStamp();
             usageStatsData.lastTimeUsed = usageStats.getLastTimeUsed();
             usageStatsData.totalTimeInForeground = usageStats.getTotalTimeInForeground();
-            if (FreezeUtil.atLeast29()) {
+            if (DeviceUtil.atLeast29()) {
                 usageStatsData.lastTimeVisible = usageStats.getLastTimeVisible();
                 usageStatsData.totalTimeVisible = usageStats.getTotalTimeVisible();
                 usageStatsData.lastTimeForegroundServiceUsed = usageStats.getLastTimeForegroundServiceUsed();
@@ -66,7 +67,7 @@ public final class UsageStats {
 
             }
             usageStatsData.launchCount = ReplaceRef.<UsageStatsHidden>unsafeCast(usageStats).mLaunchCount;
-            if (FreezeUtil.atLeast28()) {
+            if (DeviceUtil.atLeast28()) {
                 usageStatsData.appLaunchCount = ReplaceRef.<UsageStatsHidden>unsafeCast(usageStats).mAppLaunchCount;
             }
             usageStatsDatas.add(usageStatsData);

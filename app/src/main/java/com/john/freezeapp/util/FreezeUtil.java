@@ -22,16 +22,13 @@ import com.john.freezeapp.App;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.client.ClientBinderManager;
-import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonShellUtils;
 import com.john.freezeapp.setting.SettingActivity;
-import com.john.freezeapp.usagestats.appstandby.StandbyBucket;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,11 +63,11 @@ public class FreezeUtil {
     public static String getStartShell(Context context) {
         String debugArgs = "";
         if (BuildConfig.DEBUG) {
-            if (FreezeUtil.atLeast30()) {
+            if (DeviceUtil.atLeast30()) {
                 debugArgs = "-Xcompiler-option" + " --debuggable" +
                         " -XjdwpProvider:adbconnection" +
                         " -XjdwpOptions:suspend=n,server=y";
-            } else if (FreezeUtil.atLeast28()) {
+            } else if (DeviceUtil.atLeast28()) {
                 debugArgs = "-Xcompiler-option" + " --debuggable" +
                         " -XjdwpProvider:internal" +
                         " -XjdwpOptions:transport=dt_android_adb,suspend=n,server=y";
@@ -83,11 +80,12 @@ public class FreezeUtil {
                 debugArgs,
                 context.getApplicationInfo().sourceDir,
                 DaemonHelper.DAEMON_NICKNAME,
-                Daemon.class.getName(),
+                BuildConfig.DAEMON_CLASS_NAME,
                 context.getPackageName());
     }
 
     public static void generateShell(Context context) {
+//        coppyDaemonApk(context);
         String shellFilePath = FreezeUtil.getShellFilePath(context);
         PrintWriter printWriter = null;
         try {
@@ -213,7 +211,7 @@ public class FreezeUtil {
     }
 
     public static boolean isOverlayPermission(Context context) {
-        if (!atLeast26()) {
+        if (!DeviceUtil.atLeast26()) {
             return true;
         }
         return Settings.canDrawOverlays(context);
@@ -232,52 +230,6 @@ public class FreezeUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-
-    public static boolean isMIUI() {
-        String manufacturer = Build.MANUFACTURER;
-        if ("xiaomi".equalsIgnoreCase(manufacturer)) {
-            return true;
-        }
-        return false;
-    }
-
-
-    public static boolean atLeast26() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
-    public static boolean atLeast24() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-    }
-
-    public static boolean atLeast28() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
-    }
-
-    public static boolean atLeast29() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-    }
-
-    public static boolean atLeast30() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.R;
-    }
-
-    public static boolean atLeast31() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.S;
-    }
-
-    public static boolean atLeast33() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
-    }
-
-    public static boolean atLeast34() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
-    }
-
-    public static boolean atLeast35() {
-        return Build.VERSION.SDK_INT >= 35;
     }
 
 
@@ -420,6 +372,45 @@ public class FreezeUtil {
                 
                 // 更新本地存储的时间戳
                 sp.edit().putString("build_timestamp", buildTimestamp).apply();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void coppyDaemonApk(Context context) {
+        try {
+            // 读取 assets 中的 version.txt
+            InputStream is = context.getAssets().open("version.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String buildTimestamp = reader.readLine();
+            reader.close();
+            is.close();
+
+            // 获取本地存储的时间戳
+            SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
+            String localTimestamp = sp.getString("daemon_apk_version", "");
+
+            // 如果时间戳不一致，则复制资源
+            if (!buildTimestamp.equals(localTimestamp)) {
+                // 复制 daemon.apk 到外部存储
+                InputStream apkIs = context.getAssets().open("daemon.apk");
+                File externalDir = context.getExternalFilesDir(null);
+                if (externalDir != null && externalDir.exists()) {
+                    File destFile = new File(externalDir, "daemon.apk");
+                    FileOutputStream fos = new FileOutputStream(destFile);
+                    
+                    byte[] buffer = new byte[4096];
+                    int len;
+                    while ((len = apkIs.read(buffer)) != -1) {
+                        fos.write(buffer, 0, len);
+                    }
+                    fos.close();
+                    apkIs.close();
+                    
+                    // 更新本地存储的时间戳
+                    sp.edit().putString("daemon_apk_version", buildTimestamp).apply();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

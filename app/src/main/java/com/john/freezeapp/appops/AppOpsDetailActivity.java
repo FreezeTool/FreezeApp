@@ -18,6 +18,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.recyclerview.CardData;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class AppOpsDetailActivity extends BaseActivity {
         appOpsPackageDetailData.packageName = packageName;
         try {
             ApplicationInfo applicationInfo;
-            if (FreezeUtil.atLeast33()) {
+            if (DeviceUtil.atLeast33()) {
                 applicationInfo = ClientSystemService.getPackageManager().getApplicationInfo(packageName, 0L, 0);
             } else {
                 applicationInfo = ClientSystemService.getPackageManager().getApplicationInfo(packageName, 0, 0);
@@ -102,7 +103,7 @@ public class AppOpsDetailActivity extends BaseActivity {
             appOpsPackageDetailData.api = applicationInfo.targetSdkVersion;
 
             PackageInfo packageInfo;
-            if (FreezeUtil.atLeast33()) {
+            if (DeviceUtil.atLeast33()) {
                 packageInfo = ClientSystemService.getPackageManager().getPackageInfo(packageName, 0L, 0);
             } else {
                 packageInfo = ClientSystemService.getPackageManager().getPackageInfo(packageName, 0, 0);

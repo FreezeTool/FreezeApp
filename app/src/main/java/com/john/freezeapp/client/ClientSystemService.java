@@ -19,6 +19,7 @@ import android.view.IWindowManager;
 
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IBatteryStats;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 public class ClientSystemService {
@@ -48,7 +49,7 @@ public class ClientSystemService {
                 return null;
             }
             IBinder binder = new ClientSystemBinderWrapper(SystemServiceHelper.getSystemService(Context.ACTIVITY_SERVICE));
-            if (FreezeUtil.atLeast26()) {
+            if (DeviceUtil.atLeast26()) {
                 return IActivityManager.Stub.asInterface(binder);
             } else {
                 return ActivityManagerNative.asInterface(binder);

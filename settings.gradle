@@ -1,5 +1,3 @@
-
-
 pluginManagement {
 
     repositories {
@@ -26,8 +24,11 @@ rootProject.name = "FreezeApp"
 
 include ':app'
 include ':hidden-api-stub'
-include ':processor'
-project(':processor').projectDir = new File('./hidden-api-processor')
-include ':replace-annotation'
-project(':replace-annotation').projectDir = new File('./hidden-api-annotation')
-includeBuild('hidden-api-plugin')
+project(':hidden-api-stub').projectDir = new File(rootDir, 'hidden-api/hidden-api-stub')
+include ':hidden-api-processor'
+project(':hidden-api-processor').projectDir = new File(rootDir, 'hidden-api/hidden-api-processor')
+include ':hidden-api-annotation'
+project(':hidden-api-annotation').projectDir = new File(rootDir, 'hidden-api/hidden-api-annotation')
+includeBuild 'hidden-api/hidden-api-plugin'
+include ':daemon'
+include ':common'

@@ -8,6 +8,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.lang.reflect.Field;
@@ -274,12 +275,12 @@ public class AppOps {
         sOpDes.put("START_FOREGROUND", R.string.op_desc_START_FOREGROUND);
         sOpDes.put("READ_DEVICE_IDENTIFIERS", R.string.op_desc_READ_DEVICE_IDENTIFIERS);
         sOpDes.put("ACCESS_MEDIA_LOCATION", R.string.op_desc_ACCESS_MEDIA_LOCATION);
-        if (FreezeUtil.atLeast30()) {
+        if (DeviceUtil.atLeast30()) {
             sOpDes.put("TOAST_WINDOW", R.string.op_desc_TOAST_WINDOW_30);
         }
         sOpDes.put("special:sensors", R.string.op_desc_special_SENSORS);
 
-        if (FreezeUtil.isMIUI()) {
+        if (DeviceUtil.isMIUI()) {
             initMIUIOpSimpleName();
         }
 
@@ -428,7 +429,7 @@ public class AppOps {
                 PermissionInfo permissionInfo = getPermissionInfo(permission, packageName);
 
                 int protection;
-                if (FreezeUtil.atLeast28()) {
+                if (DeviceUtil.atLeast28()) {
                     protection = permissionInfo.getProtection();
                 } else {
                     protection = permissionInfo.protectionLevel & PermissionInfo.PROTECTION_MASK_BASE;
@@ -454,7 +455,7 @@ public class AppOps {
                 PermissionInfo permissionInfo = getPermissionInfo(permission, packageName);
 
                 int flags;
-                if (FreezeUtil.atLeast28()) {
+                if (DeviceUtil.atLeast28()) {
                     flags = permissionInfo.getProtectionFlags();
                 } else {
                     flags = permissionInfo.protectionLevel & ~PermissionInfo.PROTECTION_MASK_BASE;
@@ -485,7 +486,7 @@ public class AppOps {
 
     public static String getOpName(int op) {
 
-        if (FreezeUtil.isMIUI() && op >= OP_MIUI_START) {
+        if (DeviceUtil.isMIUI() && op >= OP_MIUI_START) {
             String opName = sMIUIOpStr.get(op);
             if (!TextUtils.isEmpty(opName)) {
                 return opName;
@@ -638,9 +639,9 @@ public class AppOps {
     public static int getPackageUid(String packageName) {
         int packageUid = 0;
         try {
-            if (FreezeUtil.atLeast33()) {
+            if (DeviceUtil.atLeast33()) {
                 packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0L, 0);
-            } else if (FreezeUtil.atLeast24()) {
+            } else if (DeviceUtil.atLeast24()) {
                 packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0, 0);
             } else {
                 packageUid = ClientSystemService.getPackageManager().getPackageUid(packageName, 0);
@@ -653,9 +654,9 @@ public class AppOps {
 
     public static PermissionInfo getPermissionInfo(String permission, String packageName) throws RemoteException {
         PermissionInfo permissionInfo;
-        if (FreezeUtil.atLeast30()) {
+        if (DeviceUtil.atLeast30()) {
             permissionInfo = ClientSystemService.getPermissionManager().getPermissionInfo(permission, packageName, 0);
-        } else if (FreezeUtil.atLeast26()) {
+        } else if (DeviceUtil.atLeast26()) {
             permissionInfo = ClientSystemService.getPackageManager().getPermissionInfo(permission, packageName, 0);
         } else {
             permissionInfo = ClientSystemService.getPackageManager().getPermissionInfo(permission, 0);

@@ -1,0 +1,43 @@
+plugins {
+    alias(libs.plugins.android.library)
+}
+
+version = '1.0'
+
+android {
+    namespace 'com.john.freezeapp.daemon'
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 24
+        consumerProguardFiles "consumer-rules.pro"
+        buildConfigField 'String', 'DAEMON_VERSION', "\"${version}\""
+        buildConfigField 'String', 'CLIENT_PACKAGE', '\"com.john.freezeapp\"'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+        prefab true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation libs.gson
+    implementation libs.annotation
+    annotationProcessor project(':hidden-api-processor')
+    compileOnly project(':hidden-api-stub')
+    implementation project(':hidden-api-annotation')
+    implementation project(':common')
+}

@@ -26,6 +26,7 @@ import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.recyclerview.CardData;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.NetworkUtils;
 
@@ -192,7 +193,7 @@ public class AdbPairActivity extends BaseActivity {
             list.add(developPairData);
 
 
-            if(FreezeUtil.isMIUI()) {
+            if(DeviceUtil.isMIUI()) {
                 AdbPairData miuiTipData = new AdbPairData();
                 miuiTipData.icon = R.drawable.ic_vector_error;
                 miuiTipData.subTitle = "MIUI用户可能需要在系统设置中从“通知管理”-“通知显示设置”将通知样式切换为“原生样式。\n否则，您可能会无法从通知输入配对码。”";

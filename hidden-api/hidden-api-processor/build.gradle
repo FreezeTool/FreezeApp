@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    annotationProcessor libs.auto.service
+    implementation libs.auto.service.annotation
+    implementation libs.asm.commons
+    implementation project(':hidden-api-annotation')
+}

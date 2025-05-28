@@ -39,6 +39,7 @@ import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.usagestats.appstandby.AppStandbyActivity;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 import java.io.File;
@@ -72,7 +73,7 @@ public class FreezeHomeToolHelper {
                 }));
 
         IBatteryStats batteryStats = ClientSystemService.getBatteryStats();
-        if (batteryStats != null && FreezeUtil.atLeast31()) {
+        if (batteryStats != null && DeviceUtil.atLeast31()) {
             list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_battery_usage),
                     R.drawable.ic_vector_battery,
                     0xffB5EBDA,
@@ -134,7 +135,7 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
-        if (FreezeUtil.atLeast28()) {
+        if (DeviceUtil.atLeast28()) {
             list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_standby_bucket),
                     R.drawable.ic_vector_white_terminal,
                     0xff9986A4,

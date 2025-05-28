@@ -35,6 +35,7 @@ import com.john.freezeapp.client.ClientDaemonService;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientRemoteShell;
 import com.john.freezeapp.daemon.DaemonHelper;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
@@ -162,7 +163,7 @@ public class HomeFragment extends BaseFragment {
         FreezeHomeDaemonData wirelessAdbDaemonData = getFreezeHomeWirelessAdbData(context);
 
         List<FreezeHomeData> startDaemonData = new ArrayList<>();
-        if (FreezeUtil.atLeast30()) {
+        if (DeviceUtil.atLeast30()) {
             startDaemonData.add(wirelessAdbDaemonData);
         }
 

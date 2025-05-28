@@ -23,6 +23,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.recyclerview.CardData;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
@@ -57,7 +58,7 @@ public class StorageActivity extends ToolbarSearchActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_storage);
         RecyclerView recyclerView = findViewById(R.id.recycler);
-        if (FreezeUtil.atLeast30()) {
+        if (DeviceUtil.atLeast30()) {
             AppOps.setUidMode(AppOpsManagerHidden.OP_MANAGE_EXTERNAL_STORAGE, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
         }
         AppOps.setUidMode(AppOpsManagerHidden.OP_GET_USAGE_STATS, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);

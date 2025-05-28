@@ -4,6 +4,7 @@ import android.app.usage.AppStandbyInfo;
 import android.content.pm.ParceledListSlice;
 
 import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 
@@ -81,7 +82,7 @@ public class AppStandby {
         sAppStandbyBuckets.add(StandbyBucket.STANDBY_BUCKET_WORKING_SET);
         sAppStandbyBuckets.add(StandbyBucket.STANDBY_BUCKET_FREQUENT);
         sAppStandbyBuckets.add(StandbyBucket.STANDBY_BUCKET_RARE);
-        if (FreezeUtil.atLeast30()) {
+        if (DeviceUtil.atLeast30()) {
             sAppStandbyBuckets.add(StandbyBucket.STANDBY_BUCKET_RESTRICTED);
         }
         sAppStandbyBuckets.add(StandbyBucket.STANDBY_BUCKET_NEVER);

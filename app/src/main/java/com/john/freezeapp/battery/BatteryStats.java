@@ -17,6 +17,7 @@ import androidx.annotation.RequiresApi;
 import com.android.internal.app.IBatteryStats;
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.client.ClientBinderManager;
@@ -180,7 +181,7 @@ public class BatteryStats {
                         BatteryConsumer appsConsumer;
 
 
-                        if (FreezeUtil.atLeast34()) {
+                        if (DeviceUtil.atLeast34()) {
                             deviceConsumer = batteryUsageStats.getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_DEVICE);
                             appsConsumer = batteryUsageStats.getAggregateBatteryConsumer(BatteryUsageStats.AGGREGATE_BATTERY_CONSUMER_SCOPE_ALL_APPS);
                         } else {

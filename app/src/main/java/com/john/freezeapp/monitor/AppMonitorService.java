@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 
 import com.john.freezeapp.App;
 import com.john.freezeapp.R;
+import com.john.freezeapp.util.DeviceUtil;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ScreenUtils;
 import com.john.freezeapp.util.UIExecutor;
@@ -38,7 +39,7 @@ public class AppMonitorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (FreezeUtil.atLeast26()) {
+        if (DeviceUtil.atLeast26()) {
             createNotificationChannel(getApplicationContext());
         }
 

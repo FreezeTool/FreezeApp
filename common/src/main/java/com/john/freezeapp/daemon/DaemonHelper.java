@@ -1,0 +1,25 @@
+package com.john.freezeapp.daemon;
+
+public class DaemonHelper {
+    public static final String FREEZE_APP_LABEL = "FreezeApp_";
+    public static final String DAEMON_NICKNAME = FREEZE_APP_LABEL + "com.john.freezeapp";
+
+    public static final String DAEMON_MODULE_CUSTOM = "FreezeApp";
+    public static final String DAEMON_MODULE_SYSTEM = "System";
+    public static final String DAEMON_MODULE_SYSTEM_PROPERTIES = "SystemProperties";
+    public static final String KEY_DAEMON_VERSION = "key_daemon_version";
+    public static final String KEY_DAEMON_PACKAGE_NAME = "key_daemon_package_name";
+    public static final String KEY_DAEMON_PID = "key_daemon_pid";
+    public static final String KEY_DAEMON_UID = "key_daemon_uid";
+    public static final String KEY_DAEMON_USERID = "key_daemon_userid";
+
+    public static final String DAEMON_SHELL_PACKAGE = "com.android.shell";
+    public static final String DAEMON_BINDER_FRP = "daemon_binder_frp";
+    public static final String DAEMON_BINDER_APP_MONITOR = "daemon_binder_app_monitor";
+    public static final String DAEMON_BINDER_CLIPBOARD_MONITOR = "daemon_binder_clipboard_monitor";
+
+
+    public static final String DAEMON_CLIPBOARD_PATH = "/sdcard/Android/.freezeapp/clipboard_data.xml";
+    public static final String DAEMON_CONFIG_PATH = "/sdcard/Android/.freezeapp/config.xml";
+    public static final String SP_KEY_CLIPBOARD_SWITCHER = "sp_key_clipboard_switcher";
+}
