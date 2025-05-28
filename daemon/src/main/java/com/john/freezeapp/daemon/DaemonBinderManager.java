@@ -70,6 +70,13 @@ public class DaemonBinderManager {
         public void onForegroundServicesChanged(int pid, int uid, int serviceTypes) throws RemoteException {
 
         }
+
+        @Override
+        public void onProcessStarted(int pid, int processUid, int packageUid, String packageName, String processName) throws RemoteException {
+            DaemonLog.log("onProcessStateChanged - pid=" + pid + ",uid=" + processUid + ",packageUid=" + packageUid + ",packageName=" + packageName + ",processName=" + processName);
+        }
+
+
     };
 
     public static void sendBinder(int uid, int pid) {
