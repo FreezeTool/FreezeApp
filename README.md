@@ -1,4 +1,6 @@
 # FreezeApp
+项目最早使用了WebSocket通信，后来发现[Shizuku](https://github.com/RikkaApps/Shizuku)的原理更简单。因此复制了[Shizuku](https://github.com/RikkaApps/Shizuku)中的部分代码。
+
 ## 已有能力
 * APP冻结管理
 * APP电池记录
