@@ -5,6 +5,7 @@ import android.app.AppOpsManagerHidden;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -27,8 +28,14 @@ import com.john.freezeapp.daemon.DaemonShellUtils;
 import com.john.freezeapp.setting.SettingActivity;
 import com.john.freezeapp.usagestats.appstandby.StandbyBucket;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -379,5 +386,43 @@ public class FreezeUtil {
 
     public static void showShortToast(String msg) {
         Toast.makeText(App.getApp(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+
+    public static void writeDaemonData(Context context) {
+        try {
+            // 读取 assets 中的 version.txt
+            InputStream is = context.getAssets().open("version.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String buildTimestamp = reader.readLine();
+            reader.close();
+            is.close();
+
+            // 获取本地存储的时间戳
+            SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
+            String localTimestamp = sp.getString("build_timestamp", "");
+
+            // 如果时间戳不一致，则复制资源
+            if (!buildTimestamp.equals(localTimestamp)) {
+                // 复制 sourceDir 文件到外部存储
+                String sourceDir = context.getApplicationInfo().sourceDir;
+                File sourceFile = new File(sourceDir);
+                
+                // 获取外部存储目录
+                File externalDir = context.getExternalFilesDir(null);
+                if (externalDir != null && externalDir.exists()) {
+                    File destFile = new File(externalDir, "daemon.apk");
+                    
+                    if (!destFile.exists() || destFile.lastModified() != sourceFile.lastModified()) {
+                        FileUtils.copyFile(sourceFile, destFile);
+                    }
+                }
+                
+                // 更新本地存储的时间戳
+                sp.edit().putString("build_timestamp", buildTimestamp).apply();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -8,3 +8,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+.specstory
+# SpecStory explanation file
+.specstory/.what-is-this.md
+.vscode/
+.cursorindexingignore/

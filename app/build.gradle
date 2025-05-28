@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace 'com.john.freezeapp'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "com.john.freezeapp"
@@ -84,4 +84,30 @@ dependencies {
     annotationProcessor project(':processor')
     compileOnly project(':hidden-api-stub')
     implementation project(':replace-annotation')
+}
+
+android.applicationVariants.all { variant ->
+    def variantName = variant.name.capitalize()
+    def mergeAssetsTask = tasks.named("merge${variantName}Assets").get()
+    def compressAssetsTask = tasks.named("compress${variantName}Assets").get()
+    
+    task("write${variantName}AssetsFile") {
+        // 定义输入：依赖对应 variant 的 mergeAssets 输出
+        inputs.files(mergeAssetsTask.outputs.files)
+        
+        doLast {
+            // 从 inputs 中获取输出目录
+            def assetsDir = inputs.files.singleFile
+            if (!assetsDir.exists()) {
+                assetsDir.mkdirs()
+            }
+            // 在 inputs 目录下生成 version.txt
+            def versionFile = new File(assetsDir, "version.txt")
+            versionFile.text = System.currentTimeMillis().toString()
+        }
+    }
+    
+    // 设置任务依赖关系
+    compressAssetsTask.dependsOn tasks.named("write${variantName}AssetsFile").get()
+    tasks.named("write${variantName}AssetsFile").get().dependsOn mergeAssetsTask
 }
