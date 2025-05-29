@@ -58,6 +58,7 @@ public class FileServerManager {
             return true;
         } catch (Exception e) {
             DaemonLog.e(e, "startServer");
+            server = null;
             return false;
         }
     }
