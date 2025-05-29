@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.john.freezeapp.clipboard.Clipboard;
@@ -32,7 +33,10 @@ public class App extends Application {
         }
         AppMonitorManager.startAppMonitor(getApp());
         Clipboard.startClipboardFloating(getApp());
-        Thread.setDefaultUncaughtExceptionHandler((t, e) -> Log.d("FreezeApp", e.getMessage()));
+        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+            Log.d("FreezeApp", e.getMessage());
+            Log.d("FreezeApp", e.getMessage());
+        });
     }
 
     public static App getApp() {

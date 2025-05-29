@@ -7,11 +7,13 @@ import android.content.ClipDescription;
 import android.content.IClipboard;
 import android.content.IOnPrimaryClipChangedListener;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
 import com.android.internal.app.IAppOpsService;
+import com.john.freezeapp.daemon.BuildConfig;
 import com.john.freezeapp.daemon.Daemon;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonLog;
@@ -156,22 +158,26 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
                 ClipData primaryClipData;
                 String primaryClipSource;
                 if (DeviceUtil.atLeast34()) {
-                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 2");
-//                    if (!clipboard.hasPrimaryClip(callingPackageName, null, 0, 0)) {
-//                        return;
-//                    }
-
                     primaryClipSource = clipboard.getPrimaryClipSource(callingPackageName, null, 0, 0);
                     primaryClipData = clipboard.getPrimaryClip(callingPackageName, null, 0, 0);
-                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 3");
-                } else {
-                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 4");
+                } else if (DeviceUtil.atLeast33()) {
                     if (!clipboard.hasPrimaryClip(callingPackageName, null, 0)) {
                         return;
                     }
-                    DaemonLog.log("DaemonClipboardMonitorBinder updateClipData 5");
                     primaryClipSource = clipboard.getPrimaryClipSource(callingPackageName, null, 0);
                     primaryClipData = clipboard.getPrimaryClip(callingPackageName, null, 0);
+                } else if (DeviceUtil.atLeast29()) {
+                    if (!clipboard.hasPrimaryClip(callingPackageName, 0)) {
+                        return;
+                    }
+                    primaryClipSource = "";
+                    primaryClipData = clipboard.getPrimaryClip(callingPackageName, 0);
+                } else {
+                    if (!clipboard.hasPrimaryClip(callingPackageName)) {
+                        return;
+                    }
+                    primaryClipSource = "";
+                    primaryClipData = clipboard.getPrimaryClip(callingPackageName);
                 }
 
                 DaemonLog.log("DaemonClipboardMonitorBinder updateClipData primaryClipSource=" + primaryClipSource);
@@ -279,8 +285,12 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             if (clipboard != null) {
                 if (DeviceUtil.atLeast34()) {
                     clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0, 0);
-                } else {
+                } else if(DeviceUtil.atLeast33()) {
                     clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0);
+                }  else if (DeviceUtil.atLeast29()) {
+                    clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, BuildConfig.CLIENT_PACKAGE, 0);
+                } else {
+                    clipboard.addPrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName());
                 }
             }
             isActive = true;
@@ -302,8 +312,12 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             if (clipboard != null) {
                 if (DeviceUtil.atLeast34()) {
                     clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0, 0);
-                } else {
+                } else if(DeviceUtil.atLeast33()) {
                     clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), null, 0);
+                } else if (DeviceUtil.atLeast29()) {
+                    clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener, DaemonUtil.getDaemonPackageName(), 0);
+                } else {
+                    clipboard.removePrimaryClipChangedListener(iOnPrimaryClipChangedListener);
                 }
             }
             isActive = false;
@@ -342,8 +356,12 @@ public class DaemonClipboardMonitorBinder extends IDaemonClipboardMonitorBinder.
             String daemonPackageName = DaemonUtil.getDaemonPackageName();
             if (DeviceUtil.atLeast34()) {
                 clipboard.setPrimaryClip(clipData, daemonPackageName, null, 0, 0);
-            } else {
+            } else if(DeviceUtil.atLeast33()) {
                 clipboard.setPrimaryClip(clipData, daemonPackageName, null, 0);
+            } else if (DeviceUtil.atLeast29()) {
+                clipboard.setPrimaryClip(clipData, daemonPackageName, 0);
+            } else {
+                clipboard.setPrimaryClip(clipData, daemonPackageName);
             }
         }
 

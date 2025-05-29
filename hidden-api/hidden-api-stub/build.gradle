@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace 'com.john.hidden.api'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         minSdk 24
