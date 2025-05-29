@@ -151,6 +151,10 @@
             android:name=".deviceidle.DeviceIdleActivity"
             android:launchMode="singleTask"/>
 
+        <activity
+            android:name=".fs.FileServerActivity"
+            android:launchMode="singleTask"/>
+
         <service
             android:name=".monitor.AppMonitorService" />
 

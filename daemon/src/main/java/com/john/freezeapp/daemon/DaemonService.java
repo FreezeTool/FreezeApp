@@ -7,6 +7,7 @@ import android.content.IClipboard;
 import android.content.pm.ILauncherApps;
 import android.content.pm.IPackageManager;
 import android.hardware.display.IDisplayManager;
+import android.net.wifi.IWifiManager;
 import android.os.IBatteryPropertiesRegistrar;
 import android.os.IBinder;
 import android.os.IDeviceIdleController;
@@ -30,6 +31,7 @@ public class DaemonService {
     private static final ILauncherApps launcherApps;
     private static final IWindowManager windowManager;
     private static final IClipboard iClipboard;
+    private static final IWifiManager iWifiManager;
 
 
     public static IActivityManager getActivityManager() {
@@ -46,6 +48,11 @@ public class DaemonService {
 
     public static IAppOpsService getAppOps() {
         return appOps;
+    }
+
+
+    public static IWifiManager getWifiManager() {
+        return iWifiManager;
     }
 
     static {
@@ -75,5 +82,7 @@ public class DaemonService {
         windowManager = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
 
         iClipboard = IClipboard.Stub.asInterface(ServiceManager.getService(Context.CLIPBOARD_SERVICE));
+
+        iWifiManager = IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE));
     }
 }

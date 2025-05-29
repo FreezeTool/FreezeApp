@@ -17,6 +17,7 @@ public class DaemonHelper {
     public static final String DAEMON_BINDER_FRP = "daemon_binder_frp";
     public static final String DAEMON_BINDER_APP_MONITOR = "daemon_binder_app_monitor";
     public static final String DAEMON_BINDER_CLIPBOARD_MONITOR = "daemon_binder_clipboard_monitor";
+    public static final String DAEMON_BINDER_FILE_SERVER = "daemon_binder_file_server";
 
 
     public static final String DAEMON_CLIPBOARD_PATH = "/sdcard/Android/.freezeapp/clipboard_data.xml";

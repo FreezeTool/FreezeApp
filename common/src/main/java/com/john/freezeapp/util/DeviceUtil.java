@@ -25,6 +25,10 @@ public class DeviceUtil {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
     }
 
+    public static boolean atLeast27() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1;
+    }
+
     public static boolean atLeast29() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
     }

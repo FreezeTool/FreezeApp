@@ -29,6 +29,8 @@ public class AppOpsManagerHidden {
 
     public static int OP_READ_CLIPBOARD;
 
+    public static int OP_WRITE_CLIPBOARD;
+
     public static int OP_READ_EXTERNAL_STORAGE;
 
     @RequiresApi(Build.VERSION_CODES.Q)

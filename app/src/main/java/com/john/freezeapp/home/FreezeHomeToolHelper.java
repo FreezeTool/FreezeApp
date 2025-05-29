@@ -30,10 +30,13 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.clipboard.ClipboardActivity;
+import com.john.freezeapp.daemon.DaemonBinderManager;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.util.SharedPreferencesImpl;
 import com.john.freezeapp.deviceidle.DeviceIdleActivity;
 import com.john.freezeapp.freeze.ManagerActivity;
+import com.john.freezeapp.fs.ClientFileServer;
+import com.john.freezeapp.fs.FileServerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.storage.StorageActivity;
@@ -156,6 +159,17 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
+
+
+        list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_app_file_server),
+                R.drawable.ic_vector_white_terminal,
+                0xff9986A4,
+                v -> {
+                    Intent intent = new Intent(context, FileServerActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }));
+
         list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_command_app),
                 R.drawable.ic_vector_white_terminal,
                 0xffF4E1B9,
@@ -170,6 +184,18 @@ public class FreezeHomeToolHelper {
             list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_test),
                     R.drawable.ic_vector_window,
                     0xffD0ACA3,
+                    v -> toTest(context)));
+
+
+
+            list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_test2),
+                    R.drawable.ic_vector_window,
+                    0xffD0ACA3,
+                    v -> toTest2(context)));
+
+            list.add(new FreezeHomeToolData(context.getResources().getString(R.string.main_test2),
+                    R.drawable.ic_vector_window,
+                    0xffD0ACA3,
                     v -> toTest3(context)));
         }
 
@@ -178,11 +204,7 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
-        AppOps.setUidMode(AppOpsManagerHidden.OP_MANAGE_EXTERNAL_STORAGE, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
-        File file = new File(DaemonHelper.DAEMON_CONFIG_PATH);
-        SharedPreferencesImpl sharedPreferences = new SharedPreferencesImpl(file);
-        boolean aBoolean = sharedPreferences.getBoolean(DaemonHelper.SP_KEY_CLIPBOARD_SWITCHER, false);
-        ClientLog.log("a" + aBoolean);
+
     }
 
     /**
@@ -191,24 +213,7 @@ public class FreezeHomeToolHelper {
      * @param context
      */
     private static void toTest2(Context context) {
-        try {
-            ISmartspaceManager smartspaceManager = ClientSystemService.getSmartspaceManager();
-            if (smartspaceManager != null) {
-                UserHandle userHandle = UserHandle.getUserHandleForUid(Process.myUid());
-                SmartspaceSessionId sessionId = new SmartspaceSessionId(context.getPackageName() + ":" + UUID.randomUUID().toString(), userHandle);
-                SmartspaceConfig smartspaceConfig = new SmartspaceConfig.Builder(context, "lockscreen").build();
 
-                smartspaceManager.createSmartspaceSession(smartspaceConfig, sessionId, new Binder());
-
-                BaseTemplateData baseTemplateData = new BaseTemplateData.Builder(SmartspaceTarget.UI_TEMPLATE_SUB_CARD).setSubtitleItem(new BaseTemplateData.SubItemInfo.Builder().setText(new Text.Builder("John").build()).build()).build();
-                SmartspaceTarget smartspaceTarget = new SmartspaceTarget.Builder(BuildConfig.APPLICATION_ID, new ComponentName(BuildConfig.APPLICATION_ID, MainActivity.class.getName()), userHandle).setTemplateData(baseTemplateData).build();
-                SmartspaceTargetEvent smartspaceTargetEvent = new SmartspaceTargetEvent.Builder(SmartspaceTargetEvent.EVENT_UI_SURFACE_SHOWN).setSmartspaceTarget(smartspaceTarget).build();
-
-                smartspaceManager.notifySmartspaceEvent(sessionId, smartspaceTargetEvent);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
 

@@ -12,6 +12,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.Keep;
 
+import com.john.freezeapp.daemon.fs.FileServerManager;
 import com.john.freezeapp.util.UserHandleCompat;
 
 @Keep

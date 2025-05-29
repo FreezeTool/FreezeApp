@@ -115,7 +115,7 @@ public class DaemonBinderManager {
 
     private static boolean isFreezeApp(int uid) throws RemoteException {
         DaemonLog.log("isFreezeApp start");
-        String[] packages = getPackageManager().getPackagesForUid(uid);
+        String[] packages = DaemonService.getPackageManager().getPackagesForUid(uid);
         DaemonLog.log("isFreezeApp packages");
         for (String aPackage : packages) {
             if (TextUtils.equals(aPackage, BuildConfig.CLIENT_PACKAGE)) {
@@ -123,22 +123,6 @@ public class DaemonBinderManager {
             }
         }
         return false;
-    }
-
-    private static IPackageManager getPackageManager() {
-        IBinder iBinder = ServiceManager.getService("package");
-        return IPackageManager.Stub.asInterface(iBinder);
-    }
-
-    private static IActivityManager getActivityManager() {
-        IBinder iBinder = ServiceManager.getService(Context.ACTIVITY_SERVICE);
-        IActivityManager am;
-        if (DeviceUtil.atLeast26()) {
-            am = IActivityManager.Stub.asInterface(iBinder);
-        } else {
-            am = ActivityManagerNative.asInterface(iBinder);
-        }
-        return am;
     }
 
     public static IContentProvider getContentProviderExternal( String name, int userId,  IBinder token,  String tag) throws RemoteException {
@@ -181,7 +165,7 @@ public class DaemonBinderManager {
     public static void register(Context context) {
         sContext = context;
         try {
-            getActivityManager().registerProcessObserver(iProcessObserverStub);
+            DaemonService.getActivityManager().registerProcessObserver(iProcessObserverStub);
         } catch (Throwable e) {
             //
         }
@@ -189,7 +173,7 @@ public class DaemonBinderManager {
 
     public static void unregister() {
         try {
-            getActivityManager().unregisterProcessObserver(iProcessObserverStub);
+            DaemonService.getActivityManager().unregisterProcessObserver(iProcessObserverStub);
         } catch (Throwable e) {
             //
         }

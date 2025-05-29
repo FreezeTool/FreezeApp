@@ -12,6 +12,7 @@
 * APP待机分桶
 * APP休眠模式（白名单配置）
 * APP外屏配置（XIAOMI MIX FLIP）
+* APP文件服务器
 
 ## 后续计划
 * run-as 读取/data/data私有目录
