@@ -53,12 +53,9 @@ public class FileServerActivity extends ToolbarActivity {
                 } else {
                     ClientRunAs.startServer(getContext(), ((RunAsModel) object).runAsProcessModel.packageName);
                 }
-                UIExecutor.postDelay(new Runnable() {
-                    @Override
-                    public void run() {
-                        hideLoading();
-                        updateRunAsModel();
-                    }
+                UIExecutor.postDelay(() -> {
+                    hideLoading();
+                    updateRunAsModel();
                 }, 100);
             }
         });
@@ -79,25 +76,26 @@ public class FileServerActivity extends ToolbarActivity {
 
         TextView tvInternalAppUrl = findViewById(R.id.tv_internal_app_url);
         tvInternalAppUrl.setText(ClientRunAs.getInternalAppFileServerUrl());
-        tvInternalAppUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                if (clipboardManager != null) {
-                    clipboardManager.setText(tvInternalAppUrl.getText());
-                    FreezeUtil.showShortToast("复制成功");
-                }
+        tvInternalAppUrl.setOnClickListener(v -> {
+            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboardManager != null) {
+                clipboardManager.setText(tvInternalAppUrl.getText());
+                FreezeUtil.showShortToast("复制成功");
             }
         });
 
         btnFS = findViewById(R.id.btn_file_server);
         btnFS.setOnClickListener(view -> {
+            showLoading();
             if (ClientFileServer.isActive()) {
                 ClientFileServer.stopServer();
             } else {
                 ClientFileServer.startServer();
             }
-            updateUI();
+            UIExecutor.postDelay(() -> {
+                hideLoading();
+                updateUI();
+            }, 200);
         });
         updateUI();
         updateRunAsModel();
