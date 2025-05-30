@@ -6,7 +6,6 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
@@ -23,7 +22,7 @@ import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.appops.AppOps;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.daemon.DaemonHelper;
-import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.daemon.CommonShellUtils;
 import com.john.freezeapp.setting.SettingActivity;
 
 import java.io.BufferedReader;
@@ -58,29 +57,10 @@ public class FreezeUtil {
         return file.getAbsolutePath();
     }
 
-    public static String getStartShell(Context context) {
-        String debugArgs = "";
-        if (BuildConfig.DEBUG) {
-            if (DeviceUtil.atLeast30()) {
-                debugArgs = "-Xcompiler-option" + " --debuggable" +
-                        " -XjdwpProvider:adbconnection" +
-                        " -XjdwpOptions:suspend=n,server=y";
-            } else if (DeviceUtil.atLeast28()) {
-                debugArgs = "-Xcompiler-option" + " --debuggable" +
-                        " -XjdwpProvider:internal" +
-                        " -XjdwpOptions:transport=dt_android_adb,suspend=n,server=y";
-            } else {
-                debugArgs = "-Xcompiler-option" + " --debuggable" +
-                        " -agentlib:jdwp=transport=dt_android_adb,suspend=n,server=y";
-            }
-        }
-        return String.format("nohup app_process %s -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
-                debugArgs,
-                context.getApplicationInfo().sourceDir,
-                DaemonHelper.DAEMON_NICKNAME,
-                BuildConfig.DAEMON_CLASS_NAME,
-                context.getPackageName());
+    public static String getStartDaemonShell(Context context) {
+        return CommonUtil.getAppProcessShell(context.getApplicationInfo().sourceDir, BuildConfig.DAEMON_CLASS_NAME, DaemonHelper.DAEMON_NICKNAME, context.getPackageName(), BuildConfig.DEBUG);
     }
+
 
     public static void generateShell(Context context) {
 //        coppyDaemonApk(context);
@@ -96,11 +76,11 @@ public class FreezeUtil {
             PrintWriter printWriter = null;
             try {
                 printWriter = new PrintWriter(shellFilePath);
-                printWriter.println(FreezeUtil.getStartShell(context));
+                printWriter.println(FreezeUtil.getStartDaemonShell(context));
                 printWriter.println("sleep 1");
                 printWriter.println("echo success");
                 printWriter.close();
-                DaemonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
+                CommonShellUtils.execCommand("chmod a+r " + shellFilePath, false, null);
             } catch (Throwable th) {
                 try {
                     if (printWriter != null) {

@@ -12,14 +12,13 @@ import android.os.SystemProperties;
 import android.text.TextUtils;
 
 
-
-
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.IRemoteProcess;
 import com.john.freezeapp.daemon.clipboard.DaemonClipboardMonitorBinder;
 import com.john.freezeapp.daemon.fs.DaemonFileServerBinder;
 import com.john.freezeapp.daemon.monitor.DaemonAppMonitorBinderStub;
 import com.john.freezeapp.daemon.process.RemoteProcess;
+import com.john.freezeapp.daemon.runas.DaemonRunAsBinder;
 import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
@@ -41,6 +40,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_APP_MONITOR, new DaemonAppMonitorBinderStub());
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_CLIPBOARD_MONITOR, new DaemonClipboardMonitorBinder());
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_FILE_SERVER, new DaemonFileServerBinder());
+        sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_RUN_AS, new DaemonRunAsBinder());
     }
 
     @Override

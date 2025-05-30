@@ -2,7 +2,6 @@ package com.john.freezeapp.fs;
 
 import android.app.AppOpsManager;
 import android.app.AppOpsManagerHidden;
-import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,18 +11,28 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
 import com.john.freezeapp.appops.AppOps;
-import com.john.freezeapp.client.ClientSystemService;
+import com.john.freezeapp.common.CommonAdapter;
+import com.john.freezeapp.runas.ClientRunAs;
+import com.john.freezeapp.runas.RunAsModel;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.UIExecutor;
+
+import java.util.List;
 
 public class FileServerActivity extends ToolbarActivity {
 
     TextView mTvUrl;
     Button btnFS;
+
+    RecyclerView recyclerView;
+    CommonAdapter mCommonAdapter = new CommonAdapter();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,7 +45,26 @@ public class FileServerActivity extends ToolbarActivity {
             finish();
             return;
         }
-
+        mCommonAdapter.setListener((CommonAdapter.ItemListener) object -> {
+            if (object instanceof RunAsModel) {
+                showLoading();
+                if (((RunAsModel) object).runAsProcessModel.active) {
+                    ClientRunAs.stopServer(((RunAsModel) object).runAsProcessModel.packageName);
+                } else {
+                    ClientRunAs.startServer(getContext(), ((RunAsModel) object).runAsProcessModel.packageName);
+                }
+                UIExecutor.postDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        hideLoading();
+                        updateRunAsModel();
+                    }
+                }, 100);
+            }
+        });
+        recyclerView = findViewById(R.id.recycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(mCommonAdapter);
 
         mTvUrl = findViewById(R.id.tv_url);
         mTvUrl.setOnClickListener(view -> {
@@ -48,6 +76,20 @@ public class FileServerActivity extends ToolbarActivity {
                 }
             }
         });
+
+        TextView tvInternalAppUrl = findViewById(R.id.tv_internal_app_url);
+        tvInternalAppUrl.setText(ClientRunAs.getInternalAppFileServerUrl());
+        tvInternalAppUrl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboardManager != null) {
+                    clipboardManager.setText(tvInternalAppUrl.getText());
+                    FreezeUtil.showShortToast("复制成功");
+                }
+            }
+        });
+
         btnFS = findViewById(R.id.btn_file_server);
         btnFS.setOnClickListener(view -> {
             if (ClientFileServer.isActive()) {
@@ -58,7 +100,12 @@ public class FileServerActivity extends ToolbarActivity {
             updateUI();
         });
         updateUI();
+        updateRunAsModel();
+    }
 
+    private void updateRunAsModel() {
+        List<RunAsModel> runAsModel = ClientRunAs.getRunAsModel();
+        mCommonAdapter.updateData(runAsModel);
     }
 
     private void updateUI() {

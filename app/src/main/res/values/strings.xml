@@ -270,4 +270,6 @@
     <string name="permission_group_sms">短信</string>
     <string name="permission_group_storage">存储空间</string>
 
+    <string name="file_server_tip">App内部沙盒FS启动后，需要启动App才能访问～</string>
+
 </resources>

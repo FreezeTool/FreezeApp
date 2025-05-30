@@ -31,4 +31,9 @@ public class DaemonFileServerBinder extends IDaemonFileServer.Stub {
     public String getAccessUrl() throws RemoteException {
         return fileServerManager.getAccessUrl();
     }
+
+    @Override
+    public String getLocalIpAddress() throws RemoteException {
+        return fileServerManager.getLocalIpAddress();
+    }
 }

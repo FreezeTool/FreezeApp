@@ -7,7 +7,7 @@ import android.os.Process;
 import com.google.gson.Gson;
 import com.john.freezeapp.daemon.BuildConfig;
 import com.john.freezeapp.daemon.DaemonHelper;
-import com.john.freezeapp.runas.RunAs;
+import com.john.freezeapp.daemon.runas.RunAs;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -66,7 +66,7 @@ public class DaemonUtil {
     public static String getRunAsShell(Context context, String packageName) {
         return String.format("nohup app_process -Djava.class.path=%s /system/bin --nice-name=%s %s %s > /dev/null 2>&1 &",
                 context.getApplicationInfo().sourceDir,
-                DaemonHelper.FREEZE_APP_LABEL + packageName,
+                DaemonHelper.FREEZE_DAEMON_PREFIX + packageName,
                 RunAs.class.getName(),
                 context.getPackageName());
     }

@@ -39,6 +39,7 @@ import com.john.freezeapp.fs.ClientFileServer;
 import com.john.freezeapp.fs.FileServerActivity;
 import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
+import com.john.freezeapp.runas.ClientRunAs;
 import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.usagestats.appstandby.AppStandbyActivity;

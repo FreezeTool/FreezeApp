@@ -16,6 +16,7 @@ import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
 import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
@@ -50,7 +51,7 @@ public class AppOpsActivity extends ToolbarSearchActivity {
 
     private void requestInstallApp() {
         showLoading();
-        FreezeAppManager.requestAppList(this, FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ALL, false, new FreezeAppManager.Callback() {
+        FreezeAppManager.requestAppList(this, PackageUtil.TYPE_NORMAL_APP, PackageUtil.STATUS_ALL, false, new FreezeAppManager.Callback() {
             @Override
             public void success(List<FreezeAppManager.AppModel> list) {
                 hideLoading();

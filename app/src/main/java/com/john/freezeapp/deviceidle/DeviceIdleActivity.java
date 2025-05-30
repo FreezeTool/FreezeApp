@@ -12,6 +12,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.common.CommonAdapter;
 import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
@@ -77,7 +78,7 @@ public class DeviceIdleActivity extends ToolbarSearchActivity {
             @Override
             public void run() {
                 List<DeviceIdleData> userPowerWhitelist = DeviceIdle.getUserPowerWhitelist();
-                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ALL, true);
+                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(PackageUtil.TYPE_NORMAL_APP, PackageUtil.STATUS_ALL, true);
                 List<DeviceIdleData> deviceIdleList = new ArrayList<>();
 
                 for (PackageInfo packageInfo : installApp) {

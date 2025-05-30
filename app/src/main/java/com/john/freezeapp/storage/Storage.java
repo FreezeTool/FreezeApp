@@ -28,6 +28,7 @@ import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.usagestats.UsageStats;
 import com.john.freezeapp.usagestats.UsageStatsData;
 import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.hidden.api.ReplaceRef;
 
@@ -61,7 +62,7 @@ public class Storage {
     public static void requestStorageStats(Context context, Callback2 callback) {
         ThreadPool.execute(() -> {
             try {
-                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ENABLE_APP, true);
+                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(PackageUtil.TYPE_NORMAL_APP, PackageUtil.STATUS_ENABLE_APP, true);
                 StorageVolume storageVolume = getStorageVolume(context);
                 List<Model> models = new ArrayList<>();
                 String daemonPackageName = ClientDaemonService.getDaemonPackageName();
@@ -90,7 +91,7 @@ public class Storage {
     public static void requestStorageStats(Context context, Callback callback) {
         ThreadPool.execute(() -> {
             try {
-                List<PackageInfo> installApps = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ENABLE_APP, true);
+                List<PackageInfo> installApps = FreezeAppManager.getInstallApp(PackageUtil.TYPE_NORMAL_APP, PackageUtil.STATUS_ENABLE_APP, true);
 
                 List<PackageInfo> packageInfos = new ArrayList<>();
 

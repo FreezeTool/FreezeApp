@@ -11,4 +11,6 @@ interface IDaemonFileServer {
     boolean isActive();
 
     String getAccessUrl();
+
+    String getLocalIpAddress();
 }

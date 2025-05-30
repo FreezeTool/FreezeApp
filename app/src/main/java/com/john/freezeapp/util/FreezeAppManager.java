@@ -1,5 +1,10 @@
 package com.john.freezeapp.util;
 
+import static com.john.freezeapp.util.PackageUtil.STATUS_ALL;
+import static com.john.freezeapp.util.PackageUtil.STATUS_DISABLE_APP;
+import static com.john.freezeapp.util.PackageUtil.STATUS_ENABLE_APP;
+import static com.john.freezeapp.util.PackageUtil.TYPE_NORMAL_APP;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -11,14 +16,10 @@ import android.graphics.drawable.Drawable;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
-
 import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientSystemService;
-import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.daemon.CommonShellUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,33 +33,6 @@ public class FreezeAppManager {
     private static final Map<String, AppModel> sAllAppMap = new HashMap<>();
 
     private static final Map<String, CacheAppModel> sCacheAppModel = new ConcurrentHashMap<>();
-
-
-    @IntDef(value = {
-            TYPE_ALL,
-            TYPE_SYSTEM_APP,
-            TYPE_NORMAL_APP
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TYPE {
-    }
-
-    @IntDef(value = {
-            STATUS_ALL,
-            STATUS_ENABLE_APP,
-            STATUS_DISABLE_APP,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface STATUS {
-    }
-
-    public static final int TYPE_ALL = 0;
-    public static final int TYPE_SYSTEM_APP = 1;
-    public static final int TYPE_NORMAL_APP = 2;
-
-    public static final int STATUS_ALL = 0;
-    public static final int STATUS_ENABLE_APP = 1;
-    public static final int STATUS_DISABLE_APP = 2;
 
     public static class CacheAppModel {
         public String packageName;
@@ -193,7 +167,7 @@ public class FreezeAppManager {
         requestAppList(context, TYPE_NORMAL_APP, STATUS_ALL, false, callback);
     }
 
-    public static void requestAppList(Context context, @TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp, Callback callback) {
+    public static void requestAppList(Context context, @PackageUtil.TYPE int appType, @PackageUtil.STATUS int appStatus, boolean ignoreFreezeApp, Callback callback) {
         ThreadPool.execute(() -> {
             List<AppModel> install = getInstallAppModel(appType, appStatus, ignoreFreezeApp);
             if (install != null) {
@@ -204,7 +178,7 @@ public class FreezeAppManager {
         });
     }
 
-    public static List<AppModel> getInstallAppModel(@TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp) {
+    public static List<AppModel> getInstallAppModel(@PackageUtil.TYPE int appType, @PackageUtil.STATUS int appStatus, boolean ignoreFreezeApp) {
         List<PackageInfo> packageInfos = getInstallApp(appType, appStatus, ignoreFreezeApp);
         if (packageInfos != null) {
             List<AppModel> list = new ArrayList<>();
@@ -345,9 +319,8 @@ public class FreezeAppManager {
         return getInstallApp(TYPE_NORMAL_APP, STATUS_ALL, false);
     }
 
-    public static List<PackageInfo> getInstallApp(@TYPE int appType, @STATUS int appStatus, boolean ignoreFreezeApp) {
+    public static List<PackageInfo> getInstallApp(@PackageUtil.TYPE int appType, @PackageUtil.STATUS int appStatus, boolean ignoreFreezeApp) {
         try {
-            List<PackageInfo> packageInfos = new ArrayList<>();
             ParceledListSlice<PackageInfo> installedPackages = null;
             if (DeviceUtil.atLeast33()) {
                 installedPackages = ClientSystemService.getPackageManager().getInstalledPackages(0L, 0);
@@ -355,39 +328,8 @@ public class FreezeAppManager {
                 installedPackages = ClientSystemService.getPackageManager().getInstalledPackages(0, 0);
             }
             if (installedPackages != null) {
-                for (PackageInfo packageInfo : installedPackages.getList()) {
-
-
-                    if (TextUtils.equals(packageInfo.packageName, BuildConfig.APPLICATION_ID) && ignoreFreezeApp) {
-                        continue;
-                    }
-
-                    boolean isApex = false;
-                    if (DeviceUtil.atLeast29()) {
-                        isApex = packageInfo.isApex;
-                    }
-                    final boolean isSystem = !isApex
-                            && (packageInfo.applicationInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
-                    final boolean isEnabled = !isApex && packageInfo.applicationInfo.enabled;
-
-                    if (appType != TYPE_ALL) {
-                        if ((appType == TYPE_SYSTEM_APP && !isSystem) || (appType == TYPE_NORMAL_APP && isSystem)) {
-                            continue;
-                        }
-                    }
-
-                    if (appStatus != STATUS_ALL) {
-                        if ((appStatus == STATUS_DISABLE_APP && isEnabled) || (appStatus == STATUS_ENABLE_APP && !isEnabled)) {
-                            continue;
-                        }
-                    }
-
-
-                    packageInfos.add(packageInfo);
-                }
+                return PackageUtil.filterApp(installedPackages.getList(), appType, appStatus, ignoreFreezeApp);
             }
-
-            return packageInfos;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -396,9 +338,9 @@ public class FreezeAppManager {
 
 
     public static void toRoot(Context context) {
-        DaemonShellUtils.execCommand(FreezeUtil.getStartShell(context), true, new DaemonShellUtils.ShellCommandResultCallback() {
+        CommonShellUtils.execCommand(FreezeUtil.getStartDaemonShell(context), true, new CommonShellUtils.ShellCommandResultCallback() {
             @Override
-            public void callback(DaemonShellUtils.ShellCommandResult commandResult) {
+            public void callback(CommonShellUtils.ShellCommandResult commandResult) {
 
             }
         });

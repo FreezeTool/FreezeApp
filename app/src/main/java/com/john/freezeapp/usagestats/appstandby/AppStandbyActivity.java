@@ -16,6 +16,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.usagestats.UsageStatsAdapter;
 import com.john.freezeapp.util.FreezeAppManager;
+import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
 import com.john.freezeapp.util.UIExecutor;
 
@@ -88,7 +89,7 @@ public class AppStandbyActivity extends ToolbarSearchActivity {
                     return;
                 }
                 Collections.sort(appStandbyList);
-                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(FreezeAppManager.TYPE_NORMAL_APP, FreezeAppManager.STATUS_ALL, true);
+                List<PackageInfo> installApp = FreezeAppManager.getInstallApp(PackageUtil.TYPE_NORMAL_APP, PackageUtil.STATUS_ALL, true);
                 List<AppStandbyData> installAppStandbyData = new ArrayList<>();
                 for (AppStandbyData appStandbyData : appStandbyList) {
                     if (installApp.stream().anyMatch(packageInfo -> TextUtils.equals(packageInfo.packageName, appStandbyData.packageName))) {

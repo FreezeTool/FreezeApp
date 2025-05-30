@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class DaemonShellUtils {
+public class CommonShellUtils {
 
     public static final String COMMAND_SU = "su"; // 获取root权限的命令
     public static final String COMMAND_SH = "sh"; // 执行sh文件的命令
@@ -23,7 +23,7 @@ public class DaemonShellUtils {
         sExecutor.shutdown();
     }
 
-    private DaemonShellUtils() {
+    private CommonShellUtils() {
         throw new AssertionError();
     }
 
@@ -215,7 +215,7 @@ public class DaemonShellUtils {
 
         @Override
         public String toString() {
-            return "ShellCommandResult{" + "result=" + result + ", successMsg='" + successMsg + '\'' + ", errorMsg='" + errorMsg + '\'' + '}';
+            return "ShellCommandResult{" + "result=" + result + ", successMsg='" + successMsg + ", errorMsg='" + errorMsg + '}';
         }
     }
 }

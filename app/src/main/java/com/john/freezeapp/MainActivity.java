@@ -20,6 +20,7 @@ import com.john.freezeapp.home.HomeFragment;
 import com.john.freezeapp.home.LogFragment;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
 import com.john.freezeapp.util.ThreadPool;
 
@@ -145,7 +146,7 @@ public class MainActivity extends ToolbarActivity {
         if (!isDaemonActive()) {
             return;
         }
-        FreezeAppManager.requestAppList(getContext(), FreezeAppManager.TYPE_ALL, FreezeAppManager.STATUS_ALL, true, new FreezeAppManager.Callback() {
+        FreezeAppManager.requestAppList(getContext(), PackageUtil.TYPE_ALL, PackageUtil.STATUS_ALL, true, new FreezeAppManager.Callback() {
             @Override
             public void success(List<FreezeAppManager.AppModel> list) {
                 ExecutorService executorService = ThreadPool.createExecutorService(4);

@@ -73,4 +73,19 @@ public class ClientFileServer {
         return false;
 
     }
+
+
+    public static String getLocalIpAddress() {
+        IDaemonFileServer fileServerBinder = getFileServerBinder();
+
+        if (fileServerBinder != null) {
+            try {
+                return fileServerBinder.getLocalIpAddress();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+
+    }
 }

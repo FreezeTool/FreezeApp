@@ -3,9 +3,7 @@ package com.john.freezeapp;
 import android.content.Context;
 import android.content.pm.PackageManager;
 
-import androidx.annotation.NonNull;
-
-import com.john.freezeapp.daemon.DaemonShellUtils;
+import com.john.freezeapp.daemon.CommonShellUtils;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.ThreadPool;
 
@@ -28,12 +26,12 @@ public class ShizukuUtil {
                 DataOutputStream os = null;
                 try {
                     os = new DataOutputStream(shizukuRemoteProcess.getOutputStream());
-                    os.write(FreezeUtil.getStartShell(context).getBytes());
+                    os.write(FreezeUtil.getStartDaemonShell(context).getBytes());
                     os.writeBytes("\n");
                     os.flush();
                     os.writeBytes("exit\n");
                     os.flush();
-                    boolean result = DaemonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
+                    boolean result = CommonShellUtils.waitFor(shizukuRemoteProcess, 1, TimeUnit.SECONDS);
                     if (callback != null) {
                         callback.success();
                     }

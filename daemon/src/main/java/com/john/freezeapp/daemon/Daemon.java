@@ -6,13 +6,12 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
-import android.os.RemoteException;
 import android.system.Os;
 import android.text.TextUtils;
 
 import androidx.annotation.Keep;
 
-import com.john.freezeapp.daemon.fs.FileServerManager;
+import com.john.freezeapp.daemon.runas.RunAsManager;
 import com.john.freezeapp.util.UserHandleCompat;
 
 @Keep
@@ -54,18 +53,14 @@ public class Daemon {
     }
 
     private void killOtherDaemon() {
-        DaemonShellUtils.execCommand(String.format("ps | grep '%s' | awk '{print $2}'", DaemonHelper.DAEMON_NICKNAME), false, new DaemonShellUtils.ShellCommandResultCallback() {
-            @Override
-            public void callback(DaemonShellUtils.ShellCommandResult commandResult) {
-                int cPid = Process.myPid();
-                DaemonLog.log(commandResult.toString());
-                if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
-                    String[] pids = commandResult.successMsg.split("\\s+");
-                    for (String pid : pids) {
-                        if (!TextUtils.equals(pid, cPid + "")) {
-//                            android.os.Process.killProcess(pid);
-                            DaemonShellUtils.execCommand("kill -9 " + pid, false, null);
-                        }
+        CommonShellUtils.execCommand(String.format("ps | grep '%s' | awk '{print $2}'", DaemonHelper.DAEMON_NICKNAME), false, commandResult -> {
+            int cPid = Process.myPid();
+            DaemonLog.log("killOtherDaemon commandResult=" + commandResult.toString());
+            if (commandResult.result && !TextUtils.isEmpty(commandResult.successMsg)) {
+                String[] pids = commandResult.successMsg.split("\\s+");
+                for (String pid : pids) {
+                    if (!TextUtils.equals(pid, cPid + "")) {
+                        CommonShellUtils.execCommand("kill -9 " + pid, false, null);
                     }
                 }
             }
@@ -75,6 +70,7 @@ public class Daemon {
     public Daemon() {
         printDaemon();
         killOtherDaemon();
+        RunAsManager.killAllRunAsProcess();
         mHandler = new Handler(Looper.getMainLooper());
         mActivityThread = ActivityThread.systemMain();
         DaemonBinderManager.register(mActivityThread.getSystemContext());
