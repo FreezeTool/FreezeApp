@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import fi.iki.elonen.NanoHTTPD;
+import fi.iki.elonen.NanoHTTPD.Response;
 
 public class FileServer extends NanoHTTPD {
     private final File rootDir;
@@ -46,6 +47,11 @@ public class FileServer extends NanoHTTPD {
     @Override
     public Response serve(IHTTPSession session) {
         try {
+            // 处理文件上传
+            if (session.getMethod() == Method.POST) {
+                return handleUpload(session);
+            }
+
             // 获取并清理请求路径
             String uri = sanitizeUri(session.getUri());
             boolean isDownload = session.getParms().containsKey("download");
@@ -70,6 +76,62 @@ public class FileServer extends NanoHTTPD {
             }
         } catch (Exception e) {
             return errorResponse(Response.Status.INTERNAL_ERROR, e.getMessage());
+        }
+    }
+
+    private Response handleUpload(IHTTPSession session) {
+        try {
+            // 获取上传目录
+            String uploadDir = session.getParms().get("path");
+            if (uploadDir == null) {
+                uploadDir = "/";
+            }
+
+            // 确保上传目录存在
+            File targetDir = new File(rootDir, uploadDir);
+            if (!targetDir.exists()) {
+                targetDir.mkdirs();
+            }
+
+            // 处理上传的文件
+            Map<String, String> files = new HashMap<>();
+            try {
+                session.parseBody(files);
+            } catch (Exception e) {
+                return errorResponse(Response.Status.INTERNAL_ERROR, "Failed to parse upload: " + e.getMessage());
+            }
+            for (Map.Entry<String, String> entry : files.entrySet()) {
+                String filename = session.getParms().get(entry.getKey());
+                if (filename != null) {
+                    File uploadedFile = new File(entry.getValue());
+                    File targetFile = new File(targetDir, filename);
+
+                    // 移动上传的文件到目标位置
+                    if (uploadedFile.exists()) {
+                        if (!uploadedFile.renameTo(targetFile)) {
+                            // 如果重命名失败，尝试复制文件
+                            try (FileInputStream in = new FileInputStream(uploadedFile);
+                                 FileOutputStream out = new FileOutputStream(targetFile)) {
+                                byte[] buffer = new byte[4096];
+                                int len;
+                                while ((len = in.read(buffer)) > 0) {
+                                    out.write(buffer, 0, len);
+                                }
+                            }
+                            uploadedFile.delete();
+                        }
+                    }
+                }
+            }
+
+            // 获取上传的文件
+
+            // 返回成功响应并重定向到目录列表
+            Response response = newFixedLengthResponse(Response.Status.REDIRECT, "text/plain", "Upload successful");
+            response.addHeader("Location", uploadDir);
+            return response;
+        } catch (Exception e) {
+            return errorResponse(Response.Status.INTERNAL_ERROR, "Upload failed: " + e.getMessage());
         }
     }
 
@@ -130,11 +192,23 @@ public class FileServer extends NanoHTTPD {
                 .append(".file-icon { margin-right: 10px; }")
                 .append(".file-name { flex-grow: 1; }")
                 .append(".file-size { color: #666; margin: 0 20px; }")
-                .append(".download-btn { padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 3px; }")
+                .append(".download-btn { padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 3px; margin-right: 10px; }")
                 .append(".download-btn:hover { background-color: #45a049; }")
+                .append(".upload-form { margin: 20px 0; padding: 20px; background-color: #f8f8f8; border-radius: 5px; }")
+                .append(".upload-form input[type='file'] { margin: 10px 0; }")
+                .append(".upload-form input[type='submit'] { padding: 5px 15px; background-color: #2196F3; color: white; border: none; border-radius: 3px; cursor: pointer; }")
+                .append(".upload-form input[type='submit']:hover { background-color: #1976D2; }")
                 .append("</style>")
                 .append("</head><body>")
-                .append("<h1>Index of ").append(currentUri).append("</h1><hr>")
+                .append("<h1>Index of ").append(currentUri).append("</h1>")
+                .append("<div class='upload-form'>")
+                .append("<form action='").append(currentUri).append("' method='post' enctype='multipart/form-data'>")
+                .append("<input type='file' name='file' multiple>")
+                .append("<input type='hidden' name='path' value='").append(currentUri).append("'>")
+                .append("<input type='submit' value='Upload'>")
+                .append("</form>")
+                .append("</div>")
+                .append("<hr>")
                 .append("<ul class='file-list'>");
 
         // 添加上级目录链接（非根目录时）
