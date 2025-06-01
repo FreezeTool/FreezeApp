@@ -36,12 +36,14 @@ public class MainActivity extends ToolbarActivity {
     private final List<Tab> tabs = new ArrayList<>();
 
     public static class Tab {
-        public int menuId;
+        public int itemId;
+        public int title;
         public Fragment fragment;
 
-        public Tab(int menuId, Fragment fragment) {
+        public Tab(int itemId, int title, Fragment fragment) {
             this.fragment = fragment;
-            this.menuId = menuId;
+            this.itemId = itemId;
+            this.title = title;
         }
     }
 
@@ -56,9 +58,9 @@ public class MainActivity extends ToolbarActivity {
         setContentView(R.layout.activity_main);
 
         FreezeUtil.generateShell(this);
-        tabs.add(new Tab(R.id.navigation_home, new HomeFragment()));
-        tabs.add(new Tab(R.id.navigation_tool, new ToolFragment()));
-        tabs.add(new Tab(R.id.navigation_log, new LogFragment()));
+        tabs.add(new Tab(R.id.navigation_home, R.string.app_name, new HomeFragment()));
+        tabs.add(new Tab(R.id.navigation_tool, R.string.main_home_func, new ToolFragment()));
+        tabs.add(new Tab(R.id.navigation_log, R.string.main_home_log, new LogFragment()));
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPager = findViewById(R.id.viewPager);
@@ -73,6 +75,7 @@ public class MainActivity extends ToolbarActivity {
             @Override
             public void onPageSelected(int position) {
                 bottomNavigationView.getMenu().getItem(position).setChecked(true);
+                getSupportActionBar().setTitle(tabs.get(position).title);
             }
 
             @Override
@@ -84,7 +87,7 @@ public class MainActivity extends ToolbarActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 for (int i = 0; i < tabs.size(); i++) {
-                    if (tabs.get(i).menuId == item.getItemId()) {
+                    if (tabs.get(i).itemId == item.getItemId()) {
                         viewPager.setCurrentItem(i);
                         return true;
                     }
@@ -198,7 +201,7 @@ public class MainActivity extends ToolbarActivity {
             public void run() {
                 for (int i = 0; i < tabs.size(); i++) {
                     Tab tab = tabs.get(i);
-                    if (tab.menuId == menu) {
+                    if (tab.itemId == menu) {
                         viewPager.setCurrentItem(i);
                     }
                 }
