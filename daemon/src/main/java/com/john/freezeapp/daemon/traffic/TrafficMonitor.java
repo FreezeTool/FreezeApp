@@ -2,12 +2,9 @@ package com.john.freezeapp.daemon.traffic;
 
 import android.net.DataUsageRequest;
 import android.net.INetworkStatsService;
-import android.net.INetworkStatsSession;
-import android.net.NetworkStatsHistory;
 import android.net.NetworkTemplate;
 import android.net.netstats.IUsageCallback;
 
-import com.john.freezeapp.daemon.DaemonLog;
 import com.john.freezeapp.daemon.DaemonService;
 import com.john.freezeapp.daemon.util.DaemonUtil;
 import com.john.freezeapp.util.DeviceUtil;
@@ -44,7 +41,7 @@ public class TrafficMonitor {
                         this.request = finalRequest;
                     }
                 };
-                if (DeviceUtil.atLeast36()) {
+                if (isNewUsageCallback()) {
                     NetworkTemplate networkTemplate = new NetworkTemplate.Builder(NetworkTemplate.MATCH_WIFI).build();
                     final DataUsageRequest request = new DataUsageRequest(DataUsageRequest.REQUEST_ID_UNSET,
                             networkTemplate, 1024);
@@ -89,6 +86,20 @@ public class TrafficMonitor {
             sUsageCallbackWrapper = null;
         }
     }
+
+    /**
+     * fix 部分手机的IUsageCallback包名有问题
+     * @return
+     */
+    public static boolean isNewUsageCallback() {
+        try {
+            Class.forName("android.net.connectivity.android.net.netstats.IUsageCallback");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
 
     private interface IUsageCallbackWrapper {
 
