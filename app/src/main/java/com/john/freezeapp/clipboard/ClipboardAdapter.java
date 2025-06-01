@@ -1,7 +1,7 @@
 package com.john.freezeapp.clipboard;
 
-import com.john.freezeapp.home.CommonEmptyData;
-import com.john.freezeapp.home.CommonEmptyViewHolder;
+import com.john.freezeapp.main.CommonEmptyData;
+import com.john.freezeapp.main.CommonEmptyViewHolder;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.recyclerview.CardRecyclerViewAdapter;
 import com.john.freezeapp.recyclerview.ClassCreatorPool;

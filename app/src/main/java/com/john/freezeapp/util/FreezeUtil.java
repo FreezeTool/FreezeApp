@@ -68,8 +68,7 @@ public class FreezeUtil {
         long freezeAppVersion = BuildConfig.FREEZEAPP_VERSION;
 
         // 获取本地存储的时间戳
-        SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
-        long spFreezeAppVersion = sp.getLong("daemon_shell_version", 0);
+        long spFreezeAppVersion = SharedPrefUtil.getLong(SharedPrefUtil.KEY_DAEMON_SHELL_VERSION, 0);
         String shellFilePath = FreezeUtil.getShellFilePath(context);
         // 如果时间戳不一致，则复制资源
         if (freezeAppVersion != spFreezeAppVersion || !new File(shellFilePath).exists()) {
@@ -90,7 +89,7 @@ public class FreezeUtil {
                     th.addSuppressed(th2);
                 }
             }
-            sp.edit().putLong("daemon_shell_version", freezeAppVersion).apply();
+            SharedPrefUtil.setLong(SharedPrefUtil.KEY_DAEMON_SHELL_VERSION, freezeAppVersion);
         }
     }
 
@@ -324,8 +323,7 @@ public class FreezeUtil {
             is.close();
 
             // 获取本地存储的时间戳
-            SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
-            String localTimestamp = sp.getString("build_timestamp", "");
+            String localTimestamp = SharedPrefUtil.getString(SharedPrefUtil.KEY_BUILD_TIMESTAMP, "");
 
             // 如果时间戳不一致，则复制资源
             if (!buildTimestamp.equals(localTimestamp)) {
@@ -344,7 +342,7 @@ public class FreezeUtil {
                 }
 
                 // 更新本地存储的时间戳
-                sp.edit().putString("build_timestamp", buildTimestamp).apply();
+                SharedPrefUtil.setString(SharedPrefUtil.KEY_BUILD_TIMESTAMP, buildTimestamp);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -357,8 +355,7 @@ public class FreezeUtil {
             long freezeAppVersion = BuildConfig.FREEZEAPP_VERSION;
 
             // 获取本地存储的时间戳
-            SharedPreferences sp = context.getSharedPreferences("freeze_config", Context.MODE_PRIVATE);
-            long spFreezeAppVersion = sp.getLong("daemon_apk_version", 0);
+            long spFreezeAppVersion = SharedPrefUtil.getLong(SharedPrefUtil.KEY_DAEMON_APK_VERSION, 0);
 
             // 如果时间戳不一致，则复制资源
             if (freezeAppVersion != spFreezeAppVersion) {
@@ -378,7 +375,7 @@ public class FreezeUtil {
                     apkIs.close();
 
                     // 更新本地存储的时间戳
-                    sp.edit().putLong("daemon_apk_version", freezeAppVersion).apply();
+                    SharedPrefUtil.setLong(SharedPrefUtil.KEY_DAEMON_APK_VERSION, freezeAppVersion);
                 }
             }
         } catch (IOException e) {

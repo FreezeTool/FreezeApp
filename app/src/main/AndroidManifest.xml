@@ -30,7 +30,7 @@
         tools:targetApi="33">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".main.MainActivity"
             android:configChanges="orientation|screenLayout|screenSize"
             android:exported="true"
             android:launchMode="singleTask">

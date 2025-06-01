@@ -22,20 +22,31 @@
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
     <string name="main_manager_app">APP冻结管理</string>
+    <string name="main_manager_app_short_title">冻结管理</string>
     <string name="main_battery_usage">APP电池记录</string>
+    <string name="main_battery_usage_short_title">电池记录</string>
     <string name="main_command_app">ADB</string>
     <string name="main_app_usage">App使用记录</string>
+    <string name="main_app_usage_short_title">应用记录</string>
     <string name="main_test">TEST</string>
     <string name="main_test2">TEST2</string>
     <string name="main_test3">TEST3</string>
     <string name="main_mi_flip_setting">APP外屏配置（小米MixFlip）</string>
+    <string name="main_mi_flip_setting_short_title">外屏配置</string>
     <string name="main_app_monitor">APP实时监控（topActivity）</string>
+    <string name="main_app_monitor_short_title">实时监控</string>
     <string name="main_app_ops_name">APP权限管理</string>
+    <string name="main_app_ops_short_title">权限管理</string>
     <string name="main_storage_name">APP存储管理</string>
+    <string name="main_storage_short_title">存储管理</string>
     <string name="main_clipboard_name">APP粘贴板管理</string>
+    <string name="main_clipboard_short_title">粘贴板管理</string>
     <string name="main_app_standby_bucket">APP待机分桶</string>
+    <string name="main_app_standby_bucket_short_title">待机分桶配置</string>
     <string name="main_app_device_idle">APP休眠模式（白名单）</string>
+    <string name="main_app_device_idle_short_title">休眠模式配置</string>
     <string name="main_app_file_server">APP文件服务器</string>
+    <string name="main_app_file_server_short_title">文件服务器</string>
 
     <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
     <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动Freeze服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>
@@ -48,7 +59,6 @@
 
     <string name="main_wireless_adb_start_server_title">无线调试启动</string>
     <string name="main_wireless_adb_start_server_content">在Android 11 或更高版本上，您可以直接从您的设备启用无线调试并启动Freeze服务，无需连接到计算机。</string>
-
 
 
     <string name="main_server_active">正在运行</string>
@@ -89,7 +99,7 @@
     <string name="freeze_stop_daemon_title">Freeze服务将被停止</string>
 
     <string name="main_home_menu">首页</string>
-    <string name="main_home_func">功能</string>
+    <string name="main_home_func">工具箱</string>
     <string name="main_home_log">日志</string>
 
     <string name="main_home_daemon_not_active_content">启动Freeze服务后使用～</string>

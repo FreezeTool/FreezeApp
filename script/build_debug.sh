@@ -12,4 +12,4 @@ adb $serial install -r app/build/outputs/apk/debug/app-debug.apk
 # 阻塞0.3s
 sleep 0.3
 #运行
-adb $serial shell am start -n com.john.freezeapp/.MainActivity
+adb $serial shell am start -n com.john.freezeapp/.main.MainActivity

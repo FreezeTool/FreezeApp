@@ -19,6 +19,7 @@ import com.john.freezeapp.daemon.fs.DaemonFileServerBinder;
 import com.john.freezeapp.daemon.monitor.DaemonAppMonitorBinderStub;
 import com.john.freezeapp.daemon.process.RemoteProcess;
 import com.john.freezeapp.daemon.runas.DaemonRunAsBinder;
+import com.john.freezeapp.daemon.traffic.DaemonTrafficBinder;
 import com.john.hidden.api.ReplaceRef;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public class DaemonBinderStub extends IDaemonBinder.Stub {
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_CLIPBOARD_MONITOR, new DaemonClipboardMonitorBinder());
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_FILE_SERVER, new DaemonFileServerBinder());
         sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_RUN_AS, new DaemonRunAsBinder());
+        sDaemonBinderMap.put(DaemonHelper.DAEMON_BINDER_TRAFFIC_MONITOR, new DaemonTrafficBinder());
     }
 
     @Override

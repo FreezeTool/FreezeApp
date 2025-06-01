@@ -21,6 +21,7 @@ public class DaemonHelper {
     public static final String DAEMON_BINDER_CLIPBOARD_MONITOR = "daemon_binder_clipboard_monitor";
     public static final String DAEMON_BINDER_FILE_SERVER = "daemon_binder_file_server";
     public static final String DAEMON_BINDER_RUN_AS = "daemon_binder_run_as";
+    public static final String DAEMON_BINDER_TRAFFIC_MONITOR = "daemon_binder_traffic_monitor";
 
 
     public static final String DAEMON_CLIPBOARD_PATH = "/sdcard/Android/.freezeapp/clipboard_data.xml";

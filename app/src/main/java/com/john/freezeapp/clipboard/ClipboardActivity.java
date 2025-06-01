@@ -1,12 +1,10 @@
 package com.john.freezeapp.clipboard;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
 import com.john.freezeapp.daemon.clipboard.ClipboardData;
-import com.john.freezeapp.home.CommonEmptyData;
+import com.john.freezeapp.main.CommonEmptyData;
 import com.john.freezeapp.recyclerview.CardData;
 
 import java.util.ArrayList;

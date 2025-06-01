@@ -15,6 +15,10 @@ public class SharedPrefUtil {
     public static final String KEY_APP_MONITOR_TEXT_SIZE = "key_app_monitor_text_size";
     public static final String KEY_SETTING_NIGHT_MODE = "key_setting_night_mode";
     public static final String KEY_CLIPBOARD_FLOAT_SWITCHER = "key_clipboard_float_switcher";
+    public static final String KEY_DAEMON_SHELL_VERSION = "key_daemon_shell_version";
+    public static final String KEY_BUILD_TIMESTAMP = "key_build_timestamp";
+    public static final String KEY_DAEMON_APK_VERSION = "key_daemon_apk_version";
+    public static final String KEY_TOOL_STYLE = "key_tool_style";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);
@@ -48,6 +52,17 @@ public class SharedPrefUtil {
     public static void setInt(String key, int value) {
         SharedPreferences.Editor edit = getSharedPref().edit();
         edit.putInt(key, value);
+        edit.apply();
+    }
+
+
+    public static long getLong(String key, long def) {
+        return getSharedPref().getLong(key, def);
+    }
+
+    public static void setLong(String key, long value) {
+        SharedPreferences.Editor edit = getSharedPref().edit();
+        edit.putLong(key, value);
         edit.apply();
     }
 
