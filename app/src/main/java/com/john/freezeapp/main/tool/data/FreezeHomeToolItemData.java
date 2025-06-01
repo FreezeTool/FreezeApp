@@ -2,7 +2,7 @@ package com.john.freezeapp.main.tool.data;
 
 import android.view.View;
 
-public class FreezeHomeToolItemData extends FreezeHomeToolBaseData {
+public class FreezeHomeToolItemData extends FreezeHomeToolBaseData  implements ISpanSizeLookup {
 
     public FreezeHomeToolItemData(String text, int icon, int bgColor, View.OnClickListener clickListener) {
         super(text, icon, bgColor, clickListener);

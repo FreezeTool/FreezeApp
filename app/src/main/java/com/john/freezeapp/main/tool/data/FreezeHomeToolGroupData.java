@@ -1,6 +1,6 @@
 package com.john.freezeapp.main.tool.data;
 
-public class FreezeHomeToolGroupData extends FreezeHomeToolData {
+public class FreezeHomeToolGroupData extends FreezeHomeToolData implements ISpanSizeLookup {
     public int group;
     public String text;
 

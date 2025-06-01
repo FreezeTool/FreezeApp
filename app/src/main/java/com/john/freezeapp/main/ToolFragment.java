@@ -19,6 +19,7 @@ import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.R;
 import com.john.freezeapp.main.tool.data.FreezeHomeToolData;
 import com.john.freezeapp.main.tool.FreezeHomeToolHelper;
+import com.john.freezeapp.main.tool.data.ISpanSizeLookup;
 import com.john.freezeapp.recyclerview.CardData;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
@@ -40,8 +41,11 @@ public class ToolFragment extends BaseFragment {
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                FreezeHomeToolData toolData = homeAdapter.getItemAt(position);
-                return toolData.getSpanSize();
+                CardData toolData = homeAdapter.getItemAt(position);
+                if (toolData instanceof ISpanSizeLookup) {
+                    return ((ISpanSizeLookup) toolData).getSpanSize();
+                }
+                return 1;
             }
         });
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -127,6 +131,7 @@ public class ToolFragment extends BaseFragment {
             commonEmptyData.content = getContext().getString(R.string.main_home_daemon_not_active_content);
             commonEmptyData.height = recyclerView.getMeasuredHeight();
             commonEmptyData.onClickListener = v -> switchHomeFragment();
+            commonEmptyData.spanSize = FreezeHomeToolData.TOOL_SINGLE;
             list.add(commonEmptyData);
 
         }

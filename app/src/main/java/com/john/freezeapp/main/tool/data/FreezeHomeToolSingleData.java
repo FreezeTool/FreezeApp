@@ -3,7 +3,7 @@ package com.john.freezeapp.main.tool.data;
 import android.view.View;
 
 
-public class FreezeHomeToolSingleData extends FreezeHomeToolBaseData {
+public class FreezeHomeToolSingleData extends FreezeHomeToolBaseData implements ISpanSizeLookup {
 
 
     public FreezeHomeToolSingleData(String text, int icon, int bgColor, View.OnClickListener clickListener) {
