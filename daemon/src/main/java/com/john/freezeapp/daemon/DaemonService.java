@@ -2,6 +2,7 @@ package com.john.freezeapp.daemon;
 
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
+import android.app.INotificationManager;
 import android.content.Context;
 import android.content.IClipboard;
 import android.content.pm.ILauncherApps;
@@ -34,6 +35,7 @@ public class DaemonService {
     private static final IClipboard iClipboard;
     private static final IWifiManager iWifiManager;
     private static final INetworkStatsService iNetworkStatsService;
+    private static final INotificationManager iNotificationManager;
 
 
     public static IActivityManager getActivityManager() {
@@ -59,6 +61,10 @@ public class DaemonService {
 
     public static INetworkStatsService getNetworkStatsService() {
         return iNetworkStatsService;
+    }
+
+    public static INotificationManager getNotificationManager() {
+        return iNotificationManager;
     }
 
     static {
@@ -92,5 +98,9 @@ public class DaemonService {
         iWifiManager = IWifiManager.Stub.asInterface(ServiceManager.getService(Context.WIFI_SERVICE));
 
         iNetworkStatsService = INetworkStatsService.Stub.asInterface(ServiceManager.getService(Context.NETWORK_STATS_SERVICE));
+
+        iNotificationManager = INotificationManager.Stub.asInterface(ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+
+
     }
 }

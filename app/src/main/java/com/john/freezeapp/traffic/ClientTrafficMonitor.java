@@ -1,11 +1,16 @@
 package com.john.freezeapp.traffic;
 
+import android.net.INetworkStatsService;
+import android.net.INetworkStatsSession;
 import android.os.IBinder;
 import android.os.RemoteException;
 
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.traffic.IDaemonTrafficBinder;
+import com.john.freezeapp.util.SharedPrefUtil;
 
 public class ClientTrafficMonitor {
 
@@ -22,13 +27,13 @@ public class ClientTrafficMonitor {
     }
 
 
-    public static void start() {
+    public static void start(int threshold) {
         IDaemonTrafficBinder daemonTrafficBinder = getDaemonTrafficBinder();
         if (daemonTrafficBinder != null) {
             try {
-                daemonTrafficBinder.start();
+                daemonTrafficBinder.start(threshold);
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
     }
@@ -39,12 +44,44 @@ public class ClientTrafficMonitor {
             try {
                 daemonTrafficBinder.stop();
             } catch (RemoteException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
     }
 
     public static void getHistory() {
+        INetworkStatsService networkStatsService = ClientSystemService.getNetworkStatsService();
+        INetworkStatsSession iNetworkStatsSession = networkStatsService.openSessionForUsageStats(0, BuildConfig.APPLICATION_ID);
+        if (iNetworkStatsSession != null) {
+//            iNetworkStatsSession.getHistoryForNetwork()
+        }
+    }
 
+    public static int getTrafficThreshold() {
+        return SharedPrefUtil.getInt(SharedPrefUtil.KEY_TRAFFIC_THRESHOLD, 0);
+    }
+
+    public static void setTrafficThreshold(int threshold) {
+        SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_THRESHOLD, threshold);
+    }
+
+    public static boolean isTrafficSwitchOpen() {
+        return SharedPrefUtil.getBoolean(SharedPrefUtil.KEY_TRAFFIC_SWITCHER, false);
+    }
+
+    public static void setTrafficSwitch(boolean isOpen) {
+        SharedPrefUtil.setBoolean(SharedPrefUtil.KEY_TRAFFIC_SWITCHER, isOpen);
+    }
+
+    public static boolean isActive() {
+        IDaemonTrafficBinder daemonTrafficBinder = getDaemonTrafficBinder();
+        if (daemonTrafficBinder != null) {
+            try {
+                return daemonTrafficBinder.isActive();
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

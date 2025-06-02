@@ -18,6 +18,7 @@
     <string name="app_standby_name">App Standby Bucket</string>
     <string name="app_device_idle">App Device Idle</string>
     <string name="app_file_server">App File Server</string>
+    <string name="app_traffic_monitor">Traffic Monitor</string>
 
     <string name="main_app_server_active">Freeze服务正在运行</string>
     <string name="main_app_server_not_active">Freeze服务未启动</string>
@@ -47,6 +48,8 @@
     <string name="main_app_device_idle_short_title">休眠模式配置</string>
     <string name="main_app_file_server">APP文件服务器</string>
     <string name="main_app_file_server_short_title">文件服务器</string>
+    <string name="main_app_traffic_monitor">APP流量监控</string>
+    <string name="main_app_traffic_monitor_short_title">流量监控</string>
 
     <string name="main_adb_start_server_title">adb启动（连接电脑启动）</string>
     <string name="main_adb_start_server_content">没有root的设备需要借助adb来启动Freeze服务（需要连接电脑）。这个过程每次设备重新启动后需要重新进行。</string>

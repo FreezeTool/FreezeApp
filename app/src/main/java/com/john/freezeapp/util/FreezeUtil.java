@@ -294,15 +294,6 @@ public class FreezeUtil {
         return result;
     }
 
-    private final static String[] UNITS = new String[]{"B", "KB", "MB", "GB", "TB"};
-
-
-    public static String getSizeText(long cacheBytes) {
-        if (cacheBytes <= 0) return "0B";
-        int digitGroups = (int) (Math.log10(cacheBytes) / Math.log10(1024));
-        return new DecimalFormat("#,##0.##").format(cacheBytes / Math.pow(1024, digitGroups)) + " " + UNITS[digitGroups];
-    }
-
 
     public static void showLongToast(String msg) {
         Toast.makeText(App.getApp(), msg, Toast.LENGTH_LONG).show();

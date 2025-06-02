@@ -1,5 +1,7 @@
 package com.john.freezeapp.util;
 
+import java.text.DecimalFormat;
+
 public class CommonUtil {
 
     public static String getAppProcessShell(String classPath, String className, String nickName, String executeArgs, boolean enableDebug) {
@@ -24,6 +26,16 @@ public class CommonUtil {
                 nickName,
                 className,
                 executeArgs);
+    }
+
+
+    private final static String[] UNITS = new String[]{"B", "KB", "MB", "GB", "TB"};
+
+
+    public static String getSizeText(long cacheBytes) {
+        if (cacheBytes <= 0) return "0B";
+        int digitGroups = (int) (Math.log10(cacheBytes) / Math.log10(1024));
+        return new DecimalFormat("#,##0.##").format(cacheBytes / Math.pow(1024, digitGroups)) + " " + UNITS[digitGroups];
     }
 
 }

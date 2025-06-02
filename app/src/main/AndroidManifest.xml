@@ -144,22 +144,34 @@
 
         <activity
             android:name=".usagestats.appstandby.AppStandbyActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
 
 
         <activity
             android:name=".deviceidle.DeviceIdleActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
 
         <activity
             android:name=".fs.FileServerActivity"
-            android:launchMode="singleTask"/>
+            android:launchMode="singleTask" />
 
-        <service
-            android:name=".monitor.AppMonitorService" />
+        <activity
+            android:name=".traffic.TrafficMonitorActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="com.john.freezeapp.traffic.monitor" />
+            </intent-filter>
+        </activity>
 
-        <service
-            android:name=".clipboard.ClipboardService" />
+        <activity
+            android:name=".traffic.TrafficRecordActivity"
+            android:launchMode="singleTask" />
+
+        <service android:name=".monitor.AppMonitorService" />
+
+        <service android:name=".clipboard.ClipboardService" />
 
         <service
             android:name=".adb.AdbPairService"

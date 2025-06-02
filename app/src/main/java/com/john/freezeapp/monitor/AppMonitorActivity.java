@@ -13,9 +13,11 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarActivity;
+import com.john.freezeapp.traffic.ClientTrafficMonitor;
 import com.john.freezeapp.util.FreezeUtil;
 
-public class AppMonitorActivity extends BaseActivity {
+public class AppMonitorActivity extends ToolbarActivity {
 
     private static final int MIN_SEEKBAR = 5;
     private static final int MAX_SEEKBAR = 20;
@@ -24,9 +26,13 @@ public class AppMonitorActivity extends BaseActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app_monitor);
-        initToolbar();
         initSwitcher();
         initSeekbar();
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getContext().getString(R.string.app_monitor);
     }
 
     private void initSeekbar() {
@@ -66,7 +72,7 @@ public class AppMonitorActivity extends BaseActivity {
 
     private void initSwitcher() {
         SwitchCompat switchCompat = findViewById(R.id.switcher);
-        switchCompat.setChecked(AppMonitorManager.isAppMonitor());
+        switchCompat.setChecked(ClientTrafficMonitor.isActive());
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -81,23 +87,5 @@ public class AppMonitorActivity extends BaseActivity {
                 }
             }
         });
-    }
-
-    private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 }

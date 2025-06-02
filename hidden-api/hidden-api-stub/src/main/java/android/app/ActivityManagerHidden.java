@@ -5,6 +5,9 @@ import com.john.hidden.api.Replace;
 
 @Replace(ActivityManager.class)
 public class ActivityManagerHidden {
+
+    public static int INTENT_SENDER_ACTIVITY;
+
     public static final class PendingIntentInfo {
 
         private final String mCreatorPackage;

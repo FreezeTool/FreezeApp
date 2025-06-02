@@ -9,6 +9,7 @@ import android.app.usage.IUsageStatsManager;
 import android.content.Context;
 import android.content.IClipboard;
 import android.content.pm.IPackageManager;
+import android.net.INetworkStatsService;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.IDeviceIdleController;
@@ -206,6 +207,26 @@ public class ClientSystemService {
             return null;
         }
     };
+
+    private final static ClientBinderSingleton<INetworkStatsService> iNetworkStatsService = new ClientBinderSingleton<INetworkStatsService>() {
+        @Override
+        protected INetworkStatsService createBinder() {
+            if (!isActive()) {
+                return null;
+            }
+
+            IBinder iBinder = SystemServiceHelper.getSystemService(Context.NETWORK_STATS_SERVICE);
+            if (iBinder != null) {
+                return INetworkStatsService.Stub.asInterface(new ClientSystemBinderWrapper(iBinder));
+            }
+
+            return null;
+        }
+    };
+
+    public static INetworkStatsService getNetworkStatsService() {
+        return iNetworkStatsService.get();
+    }
 
     public static IDeviceIdleController getDeviceIdleController() {
         return iDeviceIdleController.get();

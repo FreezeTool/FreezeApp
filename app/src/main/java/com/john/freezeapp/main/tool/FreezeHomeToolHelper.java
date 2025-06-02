@@ -26,6 +26,7 @@ import com.john.freezeapp.hyper.MiMixFlipSettingActivity;
 import com.john.freezeapp.monitor.AppMonitorActivity;
 import com.john.freezeapp.storage.StorageActivity;
 import com.john.freezeapp.traffic.ClientTrafficMonitor;
+import com.john.freezeapp.traffic.TrafficMonitorActivity;
 import com.john.freezeapp.usagestats.UsageStatsActivity;
 import com.john.freezeapp.usagestats.appstandby.AppStandbyActivity;
 import com.john.freezeapp.util.DeviceUtil;
@@ -220,6 +221,17 @@ public class FreezeHomeToolHelper {
                     context.startActivity(intent);
                 }));
 
+        list.add(new FreezeHomeToolModel(FreezeHomeToolModel.GROUP_TOOL,
+                context.getResources().getString(R.string.main_app_traffic_monitor),
+                context.getResources().getString(R.string.main_app_traffic_monitor_short_title),
+                R.drawable.ic_vector_white_terminal,
+                0xffF4E1B9,
+                v -> {
+                    Intent intent = new Intent(context, TrafficMonitorActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }));
+
 
         if (BuildConfig.DEBUG) {
             list.add(new FreezeHomeToolModel(FreezeHomeToolModel.GROUP_OTHER,
@@ -250,7 +262,7 @@ public class FreezeHomeToolHelper {
 
 
     private static void toTest3(Context context) {
-        ClientTrafficMonitor.getHistory();
+//        ClientTrafficMonitor.getHistory();
     }
 
     /**
@@ -259,7 +271,7 @@ public class FreezeHomeToolHelper {
      * @param context
      */
     private static void toTest2(Context context) {
-        ClientTrafficMonitor.stop();
+//        ClientTrafficMonitor.stop();
     }
 
 
@@ -269,6 +281,6 @@ public class FreezeHomeToolHelper {
      * @param context
      */
     private static void toTest(Context context) {
-        ClientTrafficMonitor.start();
+//        ClientTrafficMonitor.start(1024 * 1024);
     }
 }

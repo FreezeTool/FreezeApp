@@ -10,6 +10,7 @@ import androidx.annotation.RequiresApi;
 import com.john.freezeapp.R;
 import com.john.freezeapp.recyclerview.CardViewHolder;
 import com.john.freezeapp.util.AppInfoLoader;
+import com.john.freezeapp.util.CommonUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -37,7 +38,7 @@ public class StorageViewHolder extends CardViewHolder<StorageData> {
         if(data.storageStats == null) {
             tvCache.setText("正在计算");
         } else {
-            tvCache.setText(FreezeUtil.getSizeText(data.cacheBytes) + " 缓存");
+            tvCache.setText(CommonUtil.getSizeText(data.cacheBytes) + " 缓存");
         }
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

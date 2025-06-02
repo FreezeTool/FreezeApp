@@ -19,6 +19,8 @@ public class SharedPrefUtil {
     public static final String KEY_BUILD_TIMESTAMP = "key_build_timestamp";
     public static final String KEY_DAEMON_APK_VERSION = "key_daemon_apk_version";
     public static final String KEY_TOOL_STYLE = "key_tool_style";
+    public static final String KEY_TRAFFIC_THRESHOLD = "key_traffic_threshold";
+    public static final String KEY_TRAFFIC_SWITCHER = "key_traffic_switcher";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);

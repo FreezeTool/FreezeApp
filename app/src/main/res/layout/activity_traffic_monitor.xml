@@ -27,7 +27,7 @@
                 style="@style/TextView.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="显示当前Activity"
+                android:text="移动数据流量监控"
                 android:textSize="16dp" />
         </LinearLayout>
     </RelativeLayout>
@@ -49,8 +49,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="文字大小：5"
-
+            android:text="流量阈值：10M"
             android:textSize="16dp" />
 
         <androidx.appcompat.widget.AppCompatSeekBar

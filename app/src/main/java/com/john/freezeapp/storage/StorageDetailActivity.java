@@ -19,6 +19,7 @@ import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
 import com.john.freezeapp.client.ClientBinderManager;
+import com.john.freezeapp.util.CommonUtil;
 import com.john.freezeapp.util.FreezeUtil;
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -104,10 +105,10 @@ public class StorageDetailActivity extends ToolbarActivity {
         postUI(new Runnable() {
             @Override
             public void run() {
-                tvCache.setText(FreezeUtil.getSizeText(data.cacheBytes));
-                tvUserData.setText(FreezeUtil.getSizeText(data.dataBytes));
-                tvCode.setText(FreezeUtil.getSizeText(data.codeBytes));
-                tvTotal.setText(FreezeUtil.getSizeText(data.cacheBytes + data.dataBytes + data.codeBytes));
+                tvCache.setText(CommonUtil.getSizeText(data.cacheBytes));
+                tvUserData.setText(CommonUtil.getSizeText(data.dataBytes));
+                tvCode.setText(CommonUtil.getSizeText(data.codeBytes));
+                tvTotal.setText(CommonUtil.getSizeText(data.cacheBytes + data.dataBytes + data.codeBytes));
             }
         });
     }
