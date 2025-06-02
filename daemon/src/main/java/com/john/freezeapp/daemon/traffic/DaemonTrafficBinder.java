@@ -4,9 +4,9 @@ import android.os.RemoteException;
 
 public class DaemonTrafficBinder extends IDaemonTrafficBinder.Stub {
     @Override
-    public void start(int threshold) throws RemoteException {
+    public void start(int threshold, int matchRule) throws RemoteException {
         try {
-            TrafficMonitor.start(threshold);
+            TrafficMonitor.start(threshold, matchRule);
         } catch (Exception e) {
             e.printStackTrace();
         }

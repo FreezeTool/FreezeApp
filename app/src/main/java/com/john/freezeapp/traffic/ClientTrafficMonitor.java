@@ -2,6 +2,7 @@ package com.john.freezeapp.traffic;
 
 import android.net.INetworkStatsService;
 import android.net.INetworkStatsSession;
+import android.net.NetworkTemplate;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -27,11 +28,11 @@ public class ClientTrafficMonitor {
     }
 
 
-    public static void start(int threshold) {
+    public static void start(int threshold, int matchRule) {
         IDaemonTrafficBinder daemonTrafficBinder = getDaemonTrafficBinder();
         if (daemonTrafficBinder != null) {
             try {
-                daemonTrafficBinder.start(threshold);
+                daemonTrafficBinder.start(threshold, matchRule);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -64,6 +65,16 @@ public class ClientTrafficMonitor {
     public static void setTrafficThreshold(int threshold) {
         SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_THRESHOLD, threshold);
     }
+
+
+    public static int getTrafficMatchRule() {
+        return SharedPrefUtil.getInt(SharedPrefUtil.KEY_TRAFFIC_MATCH_RULE, NetworkTemplate.MATCH_MOBILE);
+    }
+
+    public static void setTrafficMatchRule(int matchRule) {
+        SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_MATCH_RULE, matchRule);
+    }
+
 
     public static boolean isTrafficSwitchOpen() {
         return SharedPrefUtil.getBoolean(SharedPrefUtil.KEY_TRAFFIC_SWITCHER, false);
