@@ -1,6 +1,11 @@
 package com.john.freezeapp.traffic;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.util.Base64;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -8,11 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.john.freezeapp.BuildConfig;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
-import com.john.freezeapp.monitor.AppMonitorManager;
 import com.john.freezeapp.util.CommonUtil;
-import com.john.freezeapp.util.FreezeUtil;
+import com.john.freezeapp.util.ImageUtils;
+import com.john.freezeapp.util.UIExecutor;
 
 public class TrafficMonitorActivity extends ToolbarActivity {
 
