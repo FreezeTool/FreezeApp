@@ -37,10 +37,12 @@ android {
 dependencies {
     implementation libs.gson
     implementation libs.annotation
+    implementation libs.appcompat
+    implementation libs.nanohttpd
     annotationProcessor project(':hidden-api-processor')
     compileOnly project(':hidden-api-stub')
     implementation project(':hidden-api-annotation')
     implementation project(':common')
-    implementation libs.nanohttpd
+
 
 }

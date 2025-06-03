@@ -2,7 +2,6 @@ package com.john.freezeapp.traffic;
 
 import android.net.INetworkStatsService;
 import android.net.INetworkStatsSession;
-import android.net.NetworkTemplate;
 import android.os.IBinder;
 import android.os.RemoteException;
 
@@ -11,6 +10,7 @@ import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.traffic.IDaemonTrafficBinder;
+import com.john.freezeapp.daemon.traffic.TrafficConstant;
 import com.john.freezeapp.util.SharedPrefUtil;
 
 public class ClientTrafficMonitor {
@@ -67,12 +67,12 @@ public class ClientTrafficMonitor {
     }
 
 
-    public static int getTrafficMatchRule() {
-        return SharedPrefUtil.getInt(SharedPrefUtil.KEY_TRAFFIC_MATCH_RULE, NetworkTemplate.MATCH_MOBILE);
+    public static int getTrafficType() {
+        return SharedPrefUtil.getInt(SharedPrefUtil.KEY_TRAFFIC_TYPE, TrafficConstant.TRAFFIC_MOBILE);
     }
 
-    public static void setTrafficMatchRule(int matchRule) {
-        SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_MATCH_RULE, matchRule);
+    public static void setTrafficType(int matchRule) {
+        SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_TYPE, matchRule);
     }
 
 

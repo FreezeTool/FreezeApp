@@ -1,6 +1,5 @@
 package com.john.freezeapp.traffic;
 
-import android.net.NetworkTemplate;
 import android.os.Bundle;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -12,6 +11,7 @@ import androidx.appcompat.widget.SwitchCompat;
 
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
+import com.john.freezeapp.daemon.traffic.TrafficConstant;
 import com.john.freezeapp.util.CommonUtil;
 
 public class TrafficMonitorActivity extends ToolbarActivity {
@@ -31,26 +31,26 @@ public class TrafficMonitorActivity extends ToolbarActivity {
 
     private void initRadioGroup() {
         RadioGroup radioGroup = findViewById(R.id.radio_group);
-        int matchRule = ClientTrafficMonitor.getTrafficMatchRule();
+        int trafficType = ClientTrafficMonitor.getTrafficType();
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            ClientTrafficMonitor.setTrafficMatchRule(getMatchRule(checkedId));
+            ClientTrafficMonitor.setTrafficType(getTrafficType(checkedId));
             if (ClientTrafficMonitor.isActive()) {
                 startTrafficMonitor();
             }
         });
-        radioGroup.check(getCheckId(matchRule));
+        radioGroup.check(getCheckId(trafficType));
 
     }
 
-    private int getMatchRule(int checkedId) {
+    private int getTrafficType(int checkedId) {
         if (R.id.radio1 == checkedId) {
-            return NetworkTemplate.MATCH_MOBILE;
+            return TrafficConstant.TRAFFIC_MOBILE;
         }
-        return NetworkTemplate.MATCH_WIFI;
+        return TrafficConstant.TRAFFIC_WIFI;
     }
 
-    private int getCheckId(int matchRule) {
-        if (matchRule == NetworkTemplate.MATCH_MOBILE) {
+    private int getCheckId(int trafficType) {
+        if (trafficType == TrafficConstant.TRAFFIC_MOBILE) {
             return R.id.radio1;
         }
         return R.id.radio2;
@@ -126,7 +126,7 @@ public class TrafficMonitorActivity extends ToolbarActivity {
     }
 
     private void startTrafficMonitor() {
-        ClientTrafficMonitor.start(getThresholdValue(ClientTrafficMonitor.getTrafficThreshold()), ClientTrafficMonitor.getTrafficMatchRule());
+        ClientTrafficMonitor.start(getThresholdValue(ClientTrafficMonitor.getTrafficThreshold()), ClientTrafficMonitor.getTrafficType());
         updateTip(true);
     }
 }

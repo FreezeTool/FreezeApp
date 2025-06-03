@@ -21,7 +21,7 @@ public class SharedPrefUtil {
     public static final String KEY_TOOL_STYLE = "key_tool_style";
     public static final String KEY_TRAFFIC_THRESHOLD = "key_traffic_threshold";
     public static final String KEY_TRAFFIC_SWITCHER = "key_traffic_switcher";
-    public static final String KEY_TRAFFIC_MATCH_RULE = "key_traffic_match_rule";
+    public static final String KEY_TRAFFIC_TYPE = "key_traffic_match_rule";
 
     public static SharedPreferences getSharedPref() {
         return App.getApp().getSharedPreferences(NAMESPACE, Context.MODE_PRIVATE);
