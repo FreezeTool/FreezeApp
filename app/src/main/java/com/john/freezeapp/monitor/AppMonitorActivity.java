@@ -1,7 +1,6 @@
 package com.john.freezeapp.monitor;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -9,13 +8,9 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.appcompat.widget.SwitchCompat;
-import androidx.appcompat.widget.Toolbar;
 
-import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarActivity;
-import com.john.freezeapp.traffic.ClientTrafficMonitor;
-import com.john.freezeapp.util.FreezeUtil;
 
 public class AppMonitorActivity extends ToolbarActivity {
 
@@ -72,7 +67,7 @@ public class AppMonitorActivity extends ToolbarActivity {
 
     private void initSwitcher() {
         SwitchCompat switchCompat = findViewById(R.id.switcher);
-        switchCompat.setChecked(ClientTrafficMonitor.isActive());
+        switchCompat.setChecked(AppMonitorManager.isAppMonitor());
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

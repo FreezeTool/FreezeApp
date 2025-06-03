@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.john.freezeapp.BaseActivity;
 import com.john.freezeapp.R;
+import com.john.freezeapp.ToolbarActivity;
 import com.john.freezeapp.client.ClientBinderManager;
 import com.john.freezeapp.client.ClientSystemService;
 import com.john.freezeapp.recyclerview.CardData;
@@ -24,7 +25,7 @@ import com.john.freezeapp.util.FreezeUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AppOpsDetailActivity extends BaseActivity {
+public class AppOpsDetailActivity extends ToolbarActivity {
 
     public static final String KEY_PACKAGE = "KEY_PACKAGE";
 
@@ -44,15 +45,17 @@ public class AppOpsDetailActivity extends BaseActivity {
             finish();
             return;
         }
-
-        initToolbar();
-
         RecyclerView recyclerView = findViewById(R.id.recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
         Intent intent = getIntent();
         String packageName = intent.getStringExtra(KEY_PACKAGE);
         requestAppOps(packageName);
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return getResources().getString(R.string.app_ops_detail_name);
     }
 
     private void requestAppOps(String packageName) {
@@ -122,21 +125,4 @@ public class AppOpsDetailActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                // 在这里处理返回按钮的点击事件
-                finish(); // 或者其他你想要执行的操作
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 }
