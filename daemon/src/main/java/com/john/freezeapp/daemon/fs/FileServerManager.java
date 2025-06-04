@@ -39,7 +39,7 @@ public class FileServerManager {
      * 启动文件服务器（使用默认端口和共享目录）
      */
     public boolean startServer() {
-        File defaultDir = new File("sdcard");
+        File defaultDir = new File("/");
         return startServer(65001, defaultDir);
     }
 
