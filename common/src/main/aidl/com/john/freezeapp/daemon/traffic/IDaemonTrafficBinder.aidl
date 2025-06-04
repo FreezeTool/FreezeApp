@@ -4,7 +4,7 @@ package com.john.freezeapp.daemon.traffic;
 
 interface IDaemonTrafficBinder {
 
-    void start(int threshold, int trafficType);
+    void start(long threshold, int trafficType);
     void stop();
     boolean isActive();
 }

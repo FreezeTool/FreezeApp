@@ -28,7 +28,7 @@ public class ClientTrafficMonitor {
     }
 
 
-    public static void start(int threshold, int matchRule) {
+    public static void start(long threshold, int matchRule) {
         IDaemonTrafficBinder daemonTrafficBinder = getDaemonTrafficBinder();
         if (daemonTrafficBinder != null) {
             try {
@@ -58,11 +58,11 @@ public class ClientTrafficMonitor {
         }
     }
 
-    public static int getTrafficThreshold() {
+    public static int getTrafficProcess() {
         return SharedPrefUtil.getInt(SharedPrefUtil.KEY_TRAFFIC_THRESHOLD, 0);
     }
 
-    public static void setTrafficThreshold(int threshold) {
+    public static void setTrafficProcess(int threshold) {
         SharedPrefUtil.setInt(SharedPrefUtil.KEY_TRAFFIC_THRESHOLD, threshold);
     }
 

@@ -65,9 +65,9 @@ public class TrafficMonitorActivity extends ToolbarActivity {
         AppCompatSeekBar seekBar = findViewById(R.id.seekbar);
         TextView tvSeekbarValue = findViewById(R.id.tv_seekbar_value);
         seekBar.setMax(100);
-        int threshold = ClientTrafficMonitor.getTrafficThreshold();
-        seekBar.setProgress(threshold);
-        tvSeekbarValue.setText(getSeekbarText(getDisplayValue(threshold)));
+        int process = ClientTrafficMonitor.getTrafficProcess();
+        seekBar.setProgress(process);
+        tvSeekbarValue.setText(getSeekbarText(getDisplayValue(process)));
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -82,7 +82,7 @@ public class TrafficMonitorActivity extends ToolbarActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 int progress = seekBar.getProgress();
-                ClientTrafficMonitor.setTrafficThreshold(progress);
+                ClientTrafficMonitor.setTrafficProcess(progress);
                 if (ClientTrafficMonitor.isActive()) {
                     startTrafficMonitor();
                 }
@@ -90,15 +90,15 @@ public class TrafficMonitorActivity extends ToolbarActivity {
         });
     }
 
-    public int getDisplayValue(int process) {
+    public long getDisplayValue(int process) {
         return (int) Math.pow(2, (float) process / 10);
     }
 
-    public int getThresholdValue(int process) {
+    public long getThresholdValue(int process) {
         return getDisplayValue(process) * 1024 * 1024;
     }
 
-    private String getSeekbarText(int textSize) {
+    private String getSeekbarText(long textSize) {
         return String.format("流量阈值：%s", CommonUtil.getSizeText(textSize * 1024 * 1024));
     }
 
@@ -126,7 +126,7 @@ public class TrafficMonitorActivity extends ToolbarActivity {
     }
 
     private void startTrafficMonitor() {
-        ClientTrafficMonitor.start(getThresholdValue(ClientTrafficMonitor.getTrafficThreshold()), ClientTrafficMonitor.getTrafficType());
+        ClientTrafficMonitor.start(getThresholdValue(ClientTrafficMonitor.getTrafficProcess()), ClientTrafficMonitor.getTrafficType());
         updateTip(true);
     }
 }
