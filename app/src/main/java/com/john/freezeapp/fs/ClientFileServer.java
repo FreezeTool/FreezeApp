@@ -12,7 +12,7 @@ public class ClientFileServer {
         try {
             IBinder service = ClientBinderManager.getDaemonBinder().getService(DaemonHelper.DAEMON_BINDER_FILE_SERVER);
             return IDaemonFileServer.Stub.asInterface(service);
-        } catch (RemoteException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -24,7 +24,7 @@ public class ClientFileServer {
         if (fileServerBinder != null) {
             try {
                 return fileServerBinder.startServer();
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -38,7 +38,7 @@ public class ClientFileServer {
         if (fileServerBinder != null) {
             try {
                 fileServerBinder.stopServer();
-            } catch (RemoteException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

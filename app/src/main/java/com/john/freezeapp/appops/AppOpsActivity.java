@@ -2,12 +2,8 @@ package com.john.freezeapp.appops;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +14,7 @@ import com.john.freezeapp.usagestats.UsageStatsData;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.Collections;

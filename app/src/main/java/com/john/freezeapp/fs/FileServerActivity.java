@@ -6,7 +6,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Process;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -22,7 +21,7 @@ import com.john.freezeapp.common.CommonAdapter;
 import com.john.freezeapp.runas.ClientRunAs;
 import com.john.freezeapp.runas.RunAsModel;
 import com.john.freezeapp.util.FreezeUtil;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 import java.util.List;
 
@@ -48,6 +47,7 @@ public class FileServerActivity extends ToolbarActivity {
         mCommonAdapter.setListener((CommonAdapter.ItemListener) object -> {
             if (object instanceof RunAsModel) {
                 showLoading();
+                hideLoading(3000);
                 if (((RunAsModel) object).runAsProcessModel.active) {
                     ClientRunAs.stopServer(((RunAsModel) object).runAsProcessModel.packageName);
                 } else {
@@ -87,6 +87,7 @@ public class FileServerActivity extends ToolbarActivity {
         btnFS = findViewById(R.id.btn_file_server);
         btnFS.setOnClickListener(view -> {
             showLoading();
+            hideLoading(3000);
             if (ClientFileServer.isActive()) {
                 ClientFileServer.stopServer();
             } else {

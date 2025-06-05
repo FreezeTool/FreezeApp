@@ -1,4 +1,4 @@
-package com.john.freezeapp.util;
+package com.john.freezeapp.daemon.util;
 
 import android.os.Handler;
 import android.os.Looper;

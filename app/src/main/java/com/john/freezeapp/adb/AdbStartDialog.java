@@ -8,7 +8,7 @@ import android.widget.Toast;
 import com.john.freezeapp.client.ClientLog;
 import com.john.freezeapp.util.FreezeUtil;
 import com.john.freezeapp.util.SharedPrefUtil;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

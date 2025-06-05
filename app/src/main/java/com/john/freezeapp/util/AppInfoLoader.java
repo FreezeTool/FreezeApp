@@ -6,6 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.john.freezeapp.R;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 public class AppInfoLoader {
 

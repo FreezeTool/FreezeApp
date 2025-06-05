@@ -15,7 +15,7 @@ import com.john.freezeapp.R;
 import com.john.freezeapp.ToolbarSearchActivity;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.ThreadPool;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.HashMap;

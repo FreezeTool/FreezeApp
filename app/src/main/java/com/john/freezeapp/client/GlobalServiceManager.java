@@ -2,7 +2,7 @@ package com.john.freezeapp.client;
 
 import com.john.freezeapp.IDaemonBinder;
 import com.john.freezeapp.monitor.AppMonitorManager;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 public class GlobalServiceManager {
 

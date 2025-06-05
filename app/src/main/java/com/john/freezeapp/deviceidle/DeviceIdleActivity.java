@@ -14,7 +14,7 @@ import com.john.freezeapp.common.CommonAdapter;
 import com.john.freezeapp.util.FreezeAppManager;
 import com.john.freezeapp.util.PackageUtil;
 import com.john.freezeapp.util.ThreadPool;
-import com.john.freezeapp.util.UIExecutor;
+import com.john.freezeapp.daemon.util.UIExecutor;
 
 import java.util.ArrayList;
 import java.util.Collections;
