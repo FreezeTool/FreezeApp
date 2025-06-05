@@ -36,6 +36,10 @@ public class DaemonUtil {
         return BuildConfig.CLIENT_PACKAGE;
     }
 
+    public static String getShellPackageName() {
+        return DaemonHelper.DAEMON_SHELL_PACKAGE;
+    }
+
 
     public static String md5(String plainString) {
         String cipherString = null;

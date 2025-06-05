@@ -106,7 +106,7 @@ public class FreezeUtil {
 
     public static boolean isSuEnable() {
         File file = null;
-        String[] paths = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/", "/su/bin/"};
+        String[] paths = {"/system/bin/", "/system/xbin/", "/system/sbin/", "/sbin/", "/vendor/bin/", "/su/bin/", "/system_ext/bin/"};
         try {
             for (String path : paths) {
                 file = new File(path + "su");

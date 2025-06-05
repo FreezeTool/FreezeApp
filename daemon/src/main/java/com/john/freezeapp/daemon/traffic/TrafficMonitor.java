@@ -59,12 +59,14 @@ public class TrafficMonitor {
 
         sUsageCallbackWrapper = createUsageCallback();
         sThreshold = threshold;
+
+        String callingPackage = DaemonUtil.getShellPackageName();
         if (isNewUsageCallback()) {
 
             NetworkTemplate networkTemplate = new NetworkTemplate.Builder(getNetworkMatchRule(trafficType)).build();
             final DataUsageRequest request = new DataUsageRequest(DataUsageRequest.REQUEST_ID_UNSET,
                     networkTemplate, threshold);
-            final DataUsageRequest finalRequest = networkStatsService.registerUsageCallback(DaemonUtil.getCallingPackageName(), request, new android.net.connectivity.android.net.netstats.IUsageCallback.Stub() {
+            final DataUsageRequest finalRequest = networkStatsService.registerUsageCallback(callingPackage, request, new android.net.connectivity.android.net.netstats.IUsageCallback.Stub() {
                 @Override
                 public void onThresholdReached(DataUsageRequest request) {
                     sUsageCallbackWrapper.onThresholdReached(request);
@@ -80,7 +82,7 @@ public class TrafficMonitor {
             NetworkTemplate networkTemplate = new NetworkTemplate.Builder(getNetworkMatchRule(trafficType)).build();
             final DataUsageRequest request = new DataUsageRequest(DataUsageRequest.REQUEST_ID_UNSET,
                     networkTemplate, threshold);
-            networkStatsService.registerUsageCallback(DaemonUtil.getCallingPackageName(), request, new IUsageCallback.Stub() {
+            final DataUsageRequest finalRequest = networkStatsService.registerUsageCallback(callingPackage, request, new IUsageCallback.Stub() {
                 @Override
                 public void onThresholdReached(DataUsageRequest request) {
                     sUsageCallbackWrapper.onThresholdReached(request);
@@ -91,6 +93,7 @@ public class TrafficMonitor {
                     sUsageCallbackWrapper.onCallbackReleased(request);
                 }
             });
+            sUsageCallbackWrapper.setRequest(finalRequest);
         } else {
             NetworkTemplate networkTemplate;
             if (trafficType == TrafficConstant.TRAFFIC_MOBILE) {
@@ -101,8 +104,8 @@ public class TrafficMonitor {
             final DataUsageRequest request = new DataUsageRequest(DataUsageRequest.REQUEST_ID_UNSET,
                     networkTemplate, threshold);
             CallbackHandler callbackHandler = new CallbackHandler(Looper.getMainLooper(), networkTemplate.getMatchRule(), networkTemplate.getSubscriberId(), sUsageCallbackWrapper);
-            networkStatsService.registerUsageCallback(DaemonUtil.getCallingPackageName(), request, new Messenger(callbackHandler), new Binder());
-            sUsageCallbackWrapper.setRequest(request);
+            final DataUsageRequest finalRequest = networkStatsService.registerUsageCallback(callingPackage, request, new Messenger(callbackHandler), new Binder());
+            sUsageCallbackWrapper.setRequest(finalRequest);
         }
 
 
@@ -144,7 +147,7 @@ public class TrafficMonitor {
     private static void doTrafficMonitor(DataUsageRequest request) {
         try {
             INotificationManager notificationManager = DaemonService.getNotificationManager();
-            String packageName = DaemonUtil.getCallingPackageName();
+            String packageName = DaemonUtil.getShellPackageName();
             if (notificationManager != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     NotificationChannel notificationChannel = new NotificationChannel("trafficMonitor", "流量监控", NotificationManager.IMPORTANCE_LOW);
@@ -214,7 +217,7 @@ public class TrafficMonitor {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction("com.john.freezeapp.traffic.monitor");
         IIntentSender intentSender = DaemonService.getActivityManager().getIntentSenderWithFeature(
-                ActivityManagerHidden.INTENT_SENDER_ACTIVITY, DaemonUtil.getCallingPackageName(),
+                ActivityManagerHidden.INTENT_SENDER_ACTIVITY, DaemonUtil.getShellPackageName(),
                 null, null, null, 1, new Intent[]{intent},
                 null,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE, null, 0);
@@ -230,8 +233,13 @@ public class TrafficMonitor {
 
         if (sUsageCallbackWrapper != null) {
             sNotifyCount = 0;
-            networkStatsService.unregisterUsageRequest(sUsageCallbackWrapper.getRequest());
+            DataUsageRequest request = sUsageCallbackWrapper.getRequest();
             sUsageCallbackWrapper = null;
+            try {
+                networkStatsService.unregisterUsageRequest(request);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
