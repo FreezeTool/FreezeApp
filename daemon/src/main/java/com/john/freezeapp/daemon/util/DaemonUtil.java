@@ -3,14 +3,18 @@ package com.john.freezeapp.daemon.util;
 import android.app.ActivityThread;
 import android.content.Context;
 import android.os.Process;
+import android.system.ErrnoException;
+import android.system.Os;
 
 import com.google.gson.Gson;
 import com.john.freezeapp.daemon.BuildConfig;
 import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.runas.RunAs;
+import com.john.freezeapp.util.ThreadPool;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.concurrent.Callable;
 
 public class DaemonUtil {
     public static String getDaemonPackageName() {
@@ -27,10 +31,9 @@ public class DaemonUtil {
     }
 
 
-
     public static String getCallingPackageName() {
 
-        if (android.system.Os.getuid() == 2000) {
+        if (Os.getuid() == 2000) {
             return DaemonHelper.DAEMON_SHELL_PACKAGE;
         }
         return BuildConfig.CLIENT_PACKAGE;
@@ -74,4 +77,76 @@ public class DaemonUtil {
                 RunAs.class.getName(),
                 context.getPackageName());
     }
+
+    private static void setUid(int uid) {
+        try {
+            Os.setuid(uid);
+        } catch (ErrnoException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private synchronized static <T> T innerRunShellProcess(Callable<T> callable, long delay) {
+
+        try {
+            setUid(2000);
+            T t = null;
+            try {
+                t = callable.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            if (delay == 0) {
+                try {
+                    Thread.sleep(delay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return t;
+        } finally {
+            setUid(0);
+        }
+    }
+
+    public synchronized static void syncRunShellProcess(Runnable runnable, long delay) {
+        if (Os.getuid() == 0) {
+            ThreadPool.execute(() -> innerRunShellProcess(new Callable<Object>() {
+                @Override
+                public Object call() throws Exception {
+                    runnable.run();
+                    return null;
+                }
+            }, delay));
+        } else {
+            runnable.run();
+        }
+    }
+
+    public synchronized static <T> T runShellProcess(Callable<T> callable) {
+        if (Os.getuid() == 0) {
+            return innerRunShellProcess(callable, 0);
+        } else {
+            try {
+                return callable.call();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+
+    public synchronized static void runShellProcess(Runnable callable) {
+        if (Os.getuid() == 0) {
+            innerRunShellProcess(() -> {
+                callable.run();
+                return null;
+            }, 0);
+        } else {
+            callable.run();
+        }
+    }
+
+
 }

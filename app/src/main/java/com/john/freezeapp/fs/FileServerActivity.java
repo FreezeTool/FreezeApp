@@ -38,12 +38,14 @@ public class FileServerActivity extends ToolbarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_server);
 
-        AppOps.setUidMode(AppOpsManagerHidden.OP_WRITE_CLIPBOARD, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
-
         if (!isDaemonActive()) {
             finish();
             return;
         }
+
+        AppOps.setUidMode(AppOpsManagerHidden.OP_WRITE_CLIPBOARD, AppOpsManager.MODE_ALLOWED, Process.myUid(), BuildConfig.APPLICATION_ID);
+
+
         mCommonAdapter.setListener((CommonAdapter.ItemListener) object -> {
             if (object instanceof RunAsModel) {
                 showLoading();

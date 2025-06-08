@@ -12,31 +12,59 @@ public class DaemonFileServerBinder extends IDaemonFileServer.Stub {
 
     @Override
     public boolean startServer() throws RemoteException {
-        return fileServerManager.startServer();
+        try {
+            return fileServerManager.startServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean startFileServer(int port, String shareDir) throws RemoteException {
-        return fileServerManager.startServer(port, new File(shareDir));
+        try {
+            return fileServerManager.startServer(port, new File(shareDir));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public void stopServer() throws RemoteException {
-        fileServerManager.stopServer();
+        try {
+            fileServerManager.stopServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public boolean isActive() throws RemoteException {
-        return fileServerManager.isRunning();
+        try {
+            return fileServerManager.isRunning();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
     public String getAccessUrl() throws RemoteException {
-        return fileServerManager.getAccessUrl();
+        try {
+            return fileServerManager.getAccessUrl();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     @Override
     public String getLocalIpAddress() throws RemoteException {
-        return fileServerManager.getLocalIpAddress();
+        try {
+            return fileServerManager.getLocalIpAddress();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 }

@@ -4,11 +4,10 @@ import android.net.wifi.IWifiManager;
 import android.net.wifi.WifiInfo;
 import android.text.format.Formatter;
 
+import com.john.freezeapp.daemon.DaemonHelper;
 import com.john.freezeapp.daemon.DaemonLog;
 import com.john.freezeapp.daemon.DaemonService;
-import com.john.freezeapp.daemon.util.DaemonUtil;
 import com.john.freezeapp.util.DeviceUtil;
-
 import java.io.File;
 
 import fi.iki.elonen.NanoHTTPD;
@@ -17,13 +16,17 @@ public class FileServerManager {
     private FileServer server;
 
     String getLocalIpAddress() {
+        return getRealLocalIpAddress();
+    }
+
+    String getRealLocalIpAddress() {
         IWifiManager wifiManager = DaemonService.getWifiManager();
         if (wifiManager != null) {
             WifiInfo connectionInfo;
             if (DeviceUtil.atLeast30()) {
-                connectionInfo = wifiManager.getConnectionInfo(DaemonUtil.getCallingPackageName(), null);
+                connectionInfo = wifiManager.getConnectionInfo(DaemonHelper.DAEMON_SHELL_PACKAGE, null);
             } else if (DeviceUtil.atLeast27()) {
-                connectionInfo = wifiManager.getConnectionInfo(DaemonUtil.getCallingPackageName());
+                connectionInfo = wifiManager.getConnectionInfo(DaemonHelper.DAEMON_SHELL_PACKAGE);
             } else {
                 connectionInfo = wifiManager.getConnectionInfo();
             }
@@ -32,7 +35,7 @@ public class FileServerManager {
                 return Formatter.formatIpAddress(connectionInfo.getIpAddress());
             }
         }
-        return null;
+        return "";
     }
 
     /**

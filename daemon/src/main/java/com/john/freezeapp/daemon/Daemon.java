@@ -75,14 +75,6 @@ public class Daemon {
         RunAsManager.killAllRunAsProcess();
         mHandler = new Handler(Looper.getMainLooper());
         mActivityThread = ActivityThread.systemMain();
-        // 临时先让root进程uid改为shell进程uid，解决很多功能不可用问题。
-        if (Os.getuid() == 0) {
-            try {
-                Os.setuid(2000);
-            } catch (ErrnoException e) {
-                e.printStackTrace();
-            }
-        }
         DaemonBinderManager.register(mActivityThread.getSystemContext());
         DaemonBinderManager.sendBinderContainer();
         printDaemon();
